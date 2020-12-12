@@ -4,9 +4,18 @@ import { ide } from "./ide";
 import React from "react";
 import {
   DocumentNode,
+  FieldDefinitionNode,
+  FieldNode,
   GraphQLField,
   GraphQLSchema,
   OperationDefinitionNode,
+  getNamedType,
+  GraphQLOutputType,
+  SelectionSetNode,
+  FragmentSpreadNode,
+  InlineFragmentNode,
+  GraphQLObjectType,
+  GraphQLFieldMap,
 } from "graphql";
 
 setup({
@@ -16,6 +25,9 @@ setup({
         "graphql-field": "#1F61A0",
         "graphql-keyword": "#B11A04",
         "graphql-opname": "#D2054E",
+      },
+      fontFamily: {
+        graphql: "Rubik",
       },
     },
   },
@@ -95,21 +107,6 @@ function Checkbox(props: { checked: boolean }) {
 
 const getFieldIsSelected = atomFamily((id: string) => false);
 
-function RootField({ field }: { field: GraphQLField<any, any> }) {
-  const [isSelected, setIsSelected] = useAtom(getFieldIsSelected(field.name));
-  return (
-    <div
-      onClick={() => {
-        setIsSelected((old) => !old);
-      }}
-      className={bw`cursor-pointer select-none flex flex-row items-center font-mono text-graphql-field text-xs`}
-    >
-      <Arrow isOpen={isSelected} />
-      {field.name}
-    </div>
-  );
-}
-
 import * as gql from "graphql-ast-types";
 
 function useSchema() {
@@ -122,19 +119,191 @@ function useQuery() {
 const getOperationMetadata = atomFamily(
   (id: string) => ({} as OperationDefinitionNode)
 );
+
 const operationNames = atom<string[]>([]);
+
+const getSelectionSetPaths = atomFamily((id: string) => []);
+const getSelection = atomFamily<
+  null | FieldNode | FragmentSpreadNode | InlineFragmentNode
+>((id: string) => null);
+
+const getSelectionSet = atomFamily(
+  (id: string) => (get) => ({
+    selectionSet: { selections: get(getSelectionSetPaths(id)) },
+  }),
+  (parentPath: string) => (get, set, selectionSet: SelectionSetNode) => {
+    const paths = selectionSet.selections.map((sel, i) => {
+      switch (sel.kind) {
+        case "Field": {
+          const path = `${parentPath}.${sel.name.value}.${i}`;
+          set(getSelection(path), sel);
+          if (sel.selectionSet?.selections) {
+            console.log("setting selection set", path);
+            set(getSelectionSet(path), sel.selectionSet as any);
+          }
+          return path;
+        }
+        case "FragmentSpread": {
+          const path = `${parentPath}.${sel.name.value}.${i}`;
+          set(getSelection(path), sel);
+          return path;
+        }
+        case "InlineFragment": {
+          set(
+            getSelection(`${parentPath}.${sel.typeCondition.name.value}.${i}`),
+            sel
+          );
+          return `${parentPath}.${sel.typeCondition.name.value}.${i}`;
+        }
+      }
+    });
+
+    set(getSelectionSetPaths(parentPath), paths);
+  }
+);
 
 const setQuery = atom(null, (get, set, parsedQuery: DocumentNode) => {
   parsedQuery.definitions.map((def, index) => {
     if (def.kind === "OperationDefinition") {
-      set(operationNames, (old) => [
-        ...old,
-        def.name?.value ?? "Operation" + index,
-      ]);
+      const opName = def.name?.value ?? "Operation" + index;
+      set(operationNames, (old) => [...old, opName]);
+      set(getSelectionSet(opName), def.selectionSet as any);
       set(getOperationMetadata(def.name?.value ?? "Operation" + index), def);
     }
   });
 });
+
+const getBasicType = (type: string) => {};
+
+function Field({
+  path,
+  parentPath,
+  field,
+}: {
+  path: string;
+  parentPath: string;
+  field: GraphQLField<any, any>;
+}) {
+  const schema = useSchema();
+  const [{ selectionSet = undefined }] = useAtom(getSelectionSet(parentPath));
+  const [node, setIsSelected] = useAtom(
+    getSelection(
+      selectionSet?.selections?.find((sel) => (sel as any).includes(path)) ??
+        path
+    )
+  );
+
+  const inspectedType = field.type.inspect();
+  const type = getNamedType(field.type);
+  console.log(
+    path,
+    parentPath,
+    type.astNode?.kind,
+    inspectedType,
+    node,
+    selectionSet
+  );
+  if (!type.astNode?.kind) {
+    // switch (inspectedType) {
+    // case "Int": {
+    return (
+      <div
+        className={bw`cursor-pointer select-none flex flex-row items-center font-mono text-graphql-field text-xs`}
+      >
+        <Checkbox checked={!!node} />
+        {field.name}
+      </div>
+    );
+    // }
+    // }/
+    // return null;
+  }
+  switch (type.astNode.kind) {
+    case "EnumTypeDefinition": {
+      return (
+        <div
+          className={bw`cursor-pointer select-none flex flex-row items-center font-mono text-graphql-field text-xs`}
+        >
+          {field.name}
+          {<div></div>}
+        </div>
+      );
+    }
+    case "UnionTypeDefinition": {
+      return null;
+    }
+
+    case "ObjectTypeDefinition": {
+      return (
+        <div className={bw`flex flex-col`}>
+          <div
+            className={bw`cursor-pointer select-none flex flex-row items-center font-mono text-graphql-field text-xs`}
+          >
+            <Arrow isOpen={!!node} />
+            {field.name}
+          </div>
+          <div className={bw`ml-2`}>
+            {!!node && (
+              <Fields
+                fields={(type as GraphQLObjectType).getFields()}
+                parentPath={path}
+              />
+            )}
+          </div>
+        </div>
+      );
+    }
+    case "InterfaceTypeDefinition": {
+      return (
+        <div
+          className={bw`cursor-pointer select-none flex flex-row items-center font-mono text-graphql-field text-xs`}
+        >
+          <Arrow isOpen={!!node} />
+          {field.name}
+        </div>
+      );
+    }
+    case "ScalarTypeDefinition": {
+      return (
+        <div
+          className={bw`cursor-pointer select-none flex flex-row items-center font-mono text-graphql-field text-xs`}
+        >
+          <Arrow isOpen={!!node} />
+          {field.name}
+        </div>
+      );
+    }
+  }
+}
+
+function Fields({
+  fields,
+  parentPath,
+}: {
+  fields: GraphQLFieldMap<any, any>;
+  parentPath: string;
+}) {
+  const [{ selectionSet = undefined }] = useAtom(getSelectionSet(parentPath));
+  console.log(selectionSet);
+
+  const selections = [...selectionSet.selections];
+  return (
+    <div className={bw`flex flex-col gap-0.5 pl-1`}>
+      {Object.keys(fields).map((field) => (
+        <Field
+          parentPath={`${parentPath}`}
+          path={
+            selections.find((sel) =>
+              sel.startsWith(`${parentPath}.${field}`)
+            ) ?? `${parentPath}.${field}`
+          }
+          field={fields[field]}
+          key={field}
+        />
+      ))}
+    </div>
+  );
+}
 
 function OperationDefinition({ operationName }: { operationName: string }) {
   const [schema] = useAtom(ide.schema);
@@ -142,7 +311,6 @@ function OperationDefinition({ operationName }: { operationName: string }) {
 
   switch (operation.operation) {
     case "query": {
-      const fields = schema.getQueryType().getFields();
       return (
         <div className={bw`flex flex-col gap-0.5`}>
           <div className={bw`flex flex-row gap-1`}>
@@ -153,11 +321,10 @@ function OperationDefinition({ operationName }: { operationName: string }) {
               {operation.name?.value}
             </div>
           </div>
-          <div className={bw`flex flex-col gap-0.5 pl-1`}>
-            {Object.keys(fields).map((field) => (
-              <RootField field={fields[field]} key={field} />
-            ))}
-          </div>
+          <Fields
+            fields={schema.getQueryType().getFields()}
+            parentPath={operationName}
+          />
         </div>
       );
     }
@@ -166,23 +333,21 @@ function OperationDefinition({ operationName }: { operationName: string }) {
   return null;
 }
 
-export function SchemaExplorer({
-  query,
-}: {
-  schema: GraphQLSchema;
-  query: DocumentNode;
-}) {
+function Document({ document }) {
   const setter = useUpdateAtom(setQuery);
+
   React.useEffect(() => {
-    setter(query);
-  }, [query]);
+    setter(document);
+  }, [document]);
   return (
     <>
-      {query.definitions.map((def, i) => {
+      {document.definitions.map((def, i) => {
         if (gql.isOperationDefinition(def)) {
           return (
             <OperationDefinition
-              operationName={(def as OperationDefinitionNode).name?.value}
+              operationName={
+                (def as OperationDefinitionNode).name?.value ?? `Operation${i}`
+              }
               key={i}
             />
           );
@@ -191,5 +356,24 @@ export function SchemaExplorer({
         }
       })}
     </>
+  );
+}
+
+
+
+export function SchemaExplorer() {
+  const [query] = useAtom(ide.parsedQuery);
+  const [schema] = useAtom(ide.schema);
+  return (
+    <div className={bw`h-full overflow-scroll bg-white rounded-xl`}>
+      <div
+        className={bw`font-graphql rounded-t-xl font-400 bg-gray-200 text-gray-400 pt-2 pb-2 px-4`}
+      >
+        Explorer
+      </div>
+      <div className={bw`px-4 py-3`}>
+        {query && schema && <Document document={query} />}
+      </div>
+    </div>
   );
 }

@@ -2,9 +2,15 @@ import { atom } from "./atom";
 import { parse, GraphQLSchema } from "graphql";
 
 const query = atom(localStorage.getItem("use-monaco:query.graphql") ?? "");
+
 const parsedQuery = atom((get) => {
-  return parse(get(query));
+  try {
+    return parse(get(query));
+  } catch (e) {
+    return null;
+  }
 });
+
 export const ide = {
   query,
   parsedQuery,

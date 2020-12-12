@@ -19,6 +19,7 @@ setup({
   init(insert, theme) {
     insert(`body{margin:0}`);
   },
+  extends: {},
 });
 
 const [IDE, useIDE] = createContext(({}: {}) => {
@@ -37,25 +38,32 @@ function QueryEditor() {
   }, [query]);
 
   return (
-    <div className={bw`rounded-xl shadow-xl px-2 py-2 bg-white`}>
-      <Editor
-        options={{
-          scrollbar: { vertical: "hidden" },
-          minimap: { enabled: false },
-          renderValidationDecorations: "off" as const,
-          renderIndentGuides: false,
-          lineNumbers: "off",
-        }}
-        path="query.graphql"
-        language="graphql"
-        editorDidMount={(editor) => {
-          editors.queryEditorRef.current = editor;
-        }}
-        contents={query}
-        onChange={(text) => {
-          setQuery(text);
-        }}
-      />
+    <div className={bw`flex flex-col rounded-xl shadow-xl pb-2 bg-white`}>
+      <div
+        className={bw`font-graphql rounded-t-xl font-400 bg-gray-200 text-gray-400 pt-2 pb-2 px-7`}
+      >
+        Editor
+      </div>
+      <div className={bw`flex-1 pt-2`}>
+        <Editor
+          options={{
+            scrollbar: { vertical: "hidden" },
+            minimap: { enabled: false },
+            renderValidationDecorations: "off" as const,
+            renderIndentGuides: false,
+            lineNumbers: "off",
+          }}
+          path="query.graphql"
+          language="graphql"
+          editorDidMount={(editor) => {
+            editors.queryEditorRef.current = editor;
+          }}
+          contents={query}
+          onChange={(text) => {
+            setQuery(text);
+          }}
+        />
+      </div>
     </div>
   );
 }
@@ -140,15 +148,10 @@ async function loadSchema(monaco: typeof monacoApi) {
 }
 
 function Explorer() {
-  const [schema] = useAtom(ide.schema);
-  const [query] = useAtom(ide.parsedQuery);
-
-  return schema ? (
+  return (
     <div>
-      <SchemaExplorer schema={schema} query={query} />
+      <SchemaExplorer />
     </div>
-  ) : (
-    <div>Schema not found</div>
   );
 }
 
@@ -175,10 +178,12 @@ function App() {
   // const [variablesEditor] = useAtom(ide.variablesEditor);
   // const [resultsEditor] = useAtom(ide.resultsEditor);
   return (
-    <div className={bw`h-screen w-screen bg-gray-200 flex flex-row px-3 py-3`}>
+    <div
+      className={bw`h-screen w-screen bg-gray-300 flex flex-row px-3 py-3 overflow-hidden`}
+    >
       <Split
         direction="horizontal"
-        sizes={[25, 50, 25]}
+        sizes={[30, 40, 30]}
         className={bw`flex flex-row flex-1`}
         onDrag={() => {
           editors.queryEditorRef.current?.layout();
