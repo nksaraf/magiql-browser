@@ -13,7 +13,7 @@ import { parse, buildASTSchema } from "graphql";
 
 import { createContext } from "create-hook-context";
 import { ide } from "./ide";
-import { SchemaExplorer } from "./SchemaExplorer";
+import { Header, SchemaExplorer } from "./SchemaExplorer";
 
 setup({
   init(insert, theme) {
@@ -39,11 +39,7 @@ function QueryEditor() {
 
   return (
     <div className={bw`flex flex-col rounded-xl shadow-xl pb-2 bg-white`}>
-      <div
-        className={bw`font-graphql rounded-t-xl font-400 bg-gray-200 text-gray-400 pt-2 pb-2 px-7`}
-      >
-        Editor
-      </div>
+      <Header className={`px-6`}>Editor</Header>
       <div className={bw`flex-1 pt-2`}>
         <Editor
           options={{
@@ -73,25 +69,28 @@ function VariablesEditor() {
   const [variables, setVariables] = useAtom(ide.variables);
 
   return (
-    <div className={bw`rounded-xl shadow-xl px-1 py-2 bg-white`}>
-      <Editor
-        options={{
-          scrollbar: { vertical: "hidden" },
-          minimap: { enabled: false },
-          renderValidationDecorations: "off" as const,
-          renderIndentGuides: false,
-          lineNumbers: "off",
-          selectionHighlight: false,
-        }}
-        contents={variables}
-        onChange={(text) => {
-          setVariables(text);
-        }}
-        path="variables.json"
-        editorDidMount={(editor) => {
-          editors.variablesEditorRef.current = editor;
-        }}
-      />
+    <div className={bw`flex flex-col rounded-xl shadow-xl pb-2 bg-white`}>
+      <Header className={`px-6`}>Variables</Header>
+      <div className={bw`flex-1 pt-2`}>
+        <Editor
+          options={{
+            scrollbar: { vertical: "hidden" },
+            minimap: { enabled: false },
+            renderValidationDecorations: "off" as const,
+            renderIndentGuides: false,
+            lineNumbers: "off",
+            selectionHighlight: false,
+          }}
+          contents={variables}
+          onChange={(text) => {
+            setVariables(text);
+          }}
+          path="variables.json"
+          editorDidMount={(editor) => {
+            editors.variablesEditorRef.current = editor;
+          }}
+        />
+      </div>
     </div>
   );
 }
@@ -101,22 +100,25 @@ function ResultsEditor() {
   const [results] = useAtom(ide.results);
 
   return (
-    <div className={bw`rounded-xl shadow-xl px-2 py-2 bg-white`}>
-      <Editor
-        options={{
-          scrollbar: { vertical: "hidden" },
-          minimap: { enabled: false },
-          renderValidationDecorations: "off" as const,
-          renderIndentGuides: false,
-          lineNumbers: "off",
-          readOnly: true,
-        }}
-        path="results.json"
-        contents={JSON.stringify(results, null, 2)}
-        editorDidMount={(editor) => {
-          editors.resultsEditorRef.current = editor;
-        }}
-      />
+    <div className={bw`flex flex-col rounded-xl shadow-xl pb-2 bg-white`}>
+      <Header className={`px-6`}>Response</Header>
+      <div className={bw`flex-1 pt-2`}>
+        <Editor
+          options={{
+            scrollbar: { vertical: "hidden" },
+            minimap: { enabled: false },
+            renderValidationDecorations: "off" as const,
+            renderIndentGuides: false,
+            lineNumbers: "off",
+            readOnly: true,
+          }}
+          path="results.json"
+          contents={JSON.stringify(results, null, 2)}
+          editorDidMount={(editor) => {
+            editors.resultsEditorRef.current = editor;
+          }}
+        />
+      </div>
     </div>
   );
 }

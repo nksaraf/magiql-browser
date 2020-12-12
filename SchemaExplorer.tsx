@@ -359,18 +359,23 @@ function Document({ document }) {
   );
 }
 
-
+export function Header({ className = "", children, ...props }) {
+  return (
+    <div
+      className={bw`font-graphql rounded-t-xl font-400 bg-gray-100 text-gray-400 py-2 ${className}`}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
 
 export function SchemaExplorer() {
   const [query] = useAtom(ide.parsedQuery);
   const [schema] = useAtom(ide.schema);
   return (
     <div className={bw`h-full overflow-scroll bg-white rounded-xl`}>
-      <div
-        className={bw`font-graphql rounded-t-xl font-400 bg-gray-200 text-gray-400 pt-2 pb-2 px-4`}
-      >
-        Explorer
-      </div>
+      <Header className={`px-4`}>Explorer</Header>
       <div className={bw`px-4 py-3`}>
         {query && schema && <Document document={query} />}
       </div>
