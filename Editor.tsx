@@ -1,22 +1,40 @@
 import React from "react";
 import { bw } from "beamwind";
-import { useEditor, useFile } from "use-monaco";
+import { useEditor, UseEditorOptions, useFile } from "use-monaco";
 
 export function Editor({
   path = "index.ts",
   language = undefined,
   defaultContents = "",
-  width = "500px",
-  height = "500px"
+  height = "100%",
+  contents = undefined,
+  onChange = null,
+  width = "100%",
+  options = {} as UseEditorOptions["options"],
+  editorDidMount = (() => {}) as UseEditorOptions["editorDidMount"],
+  ...props
 }) {
   const model = useFile({
     path,
     defaultContents,
-    language
+    contents,
+    language,
   });
   const editor = useEditor({
-    model
+    options: {
+      automaticLayout: true,
+      ...options,
+    },
+    model,
+    onChange,
+    editorDidMount,
   });
 
-  return <div ref={editor.containerRef} style={{ width, height }} />;
+  return (
+    <div
+      ref={editor.containerRef}
+      {...props}
+      style={{ height, width, ...props.style }}
+    />
+  );
 }
