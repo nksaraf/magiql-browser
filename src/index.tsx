@@ -3,7 +3,7 @@ import { render } from "react-dom";
 import { MonacoProvider, useLocalStorage, useMonaco } from "use-monaco";
 import * as monacoApi from "monaco-editor";
 import themes from "use-monaco/themes";
-import { bw, setup } from "beamwind";
+import { bw, setup } from "@beamwind/play";
 import { Editor } from "./Editor";
 // @ts-ignore
 import Split from "react-split";
@@ -38,28 +38,28 @@ function QueryEditor() {
   }, [query]);
 
   return (
-    <div className={bw`flex flex-col rounded-xl shadow-xl pb-2 bg-white`}>
-      <Header className={`px-6`}>Editor</Header>
-      <div className={bw`flex-1 pt-2`}>
-        <Editor
-          options={{
-            scrollbar: { vertical: "hidden" },
-            minimap: { enabled: false },
-            renderValidationDecorations: "off" as const,
-            renderIndentGuides: false,
-            lineNumbers: "off",
-          }}
-          path="query.graphql"
-          language="graphql"
-          editorDidMount={(editor) => {
-            editors.queryEditorRef.current = editor;
-          }}
-          contents={query}
-          onChange={(text) => {
-            setQuery(text);
-          }}
-        />
-      </div>
+    <div className={bw`rounded-xl shadow-xl pb-2  pt-12 relative bg-white`}>
+      <Header className={`px-6 absolute top-0 w-full`}>Editor</Header>
+      {/* <div className={bw`pt-2 h-9/10`}> */}
+      <Editor
+        options={{
+          scrollbar: { vertical: "hidden" },
+          minimap: { enabled: false },
+          renderValidationDecorations: "off" as const,
+          renderIndentGuides: false,
+          lineNumbers: "off",
+        }}
+        path="query.graphql"
+        language="graphql"
+        editorDidMount={(editor) => {
+          editors.queryEditorRef.current = editor;
+        }}
+        contents={query}
+        onChange={(text) => {
+          setQuery(text);
+        }}
+      />
+      {/* </div> */}
     </div>
   );
 }
@@ -69,28 +69,26 @@ function VariablesEditor() {
   const [variables, setVariables] = useAtom(ide.variables);
 
   return (
-    <div className={bw`flex flex-col rounded-xl shadow-xl pb-2 bg-white`}>
-      <Header className={`px-6`}>Variables</Header>
-      <div className={bw`flex-1 pt-2`}>
-        <Editor
-          options={{
-            scrollbar: { vertical: "hidden" },
-            minimap: { enabled: false },
-            renderValidationDecorations: "off" as const,
-            renderIndentGuides: false,
-            lineNumbers: "off",
-            selectionHighlight: false,
-          }}
-          contents={variables}
-          onChange={(text) => {
-            setVariables(text);
-          }}
-          path="variables.json"
-          editorDidMount={(editor) => {
-            editors.variablesEditorRef.current = editor;
-          }}
-        />
-      </div>
+    <div className={bw`rounded-xl shadow-xl pb-2  pt-12 relative bg-white`}>
+      <Header className={`px-6 absolute top-0 w-full`}>Variables</Header>
+      <Editor
+        options={{
+          scrollbar: { vertical: "hidden" },
+          minimap: { enabled: false },
+          renderValidationDecorations: "off" as const,
+          renderIndentGuides: false,
+          lineNumbers: "off",
+          selectionHighlight: false,
+        }}
+        contents={variables}
+        onChange={(text) => {
+          setVariables(text);
+        }}
+        path="variables.json"
+        editorDidMount={(editor) => {
+          editors.variablesEditorRef.current = editor;
+        }}
+      />
     </div>
   );
 }
@@ -100,25 +98,23 @@ function ResultsEditor() {
   const [results] = useAtom(ide.results);
 
   return (
-    <div className={bw`flex flex-col rounded-xl shadow-xl pb-2 bg-white`}>
-      <Header className={`px-6`}>Response</Header>
-      <div className={bw`flex-1 pt-2`}>
-        <Editor
-          options={{
-            scrollbar: { vertical: "hidden" },
-            minimap: { enabled: false },
-            renderValidationDecorations: "off" as const,
-            renderIndentGuides: false,
-            lineNumbers: "off",
-            readOnly: true,
-          }}
-          path="results.json"
-          contents={JSON.stringify(results, null, 2)}
-          editorDidMount={(editor) => {
-            editors.resultsEditorRef.current = editor;
-          }}
-        />
-      </div>
+    <div className={bw`rounded-xl shadow-xl pb-2  pt-12 relative bg-white`}>
+      <Header className={`px-6 absolute top-0 w-full`}>Response</Header>
+      <Editor
+        options={{
+          scrollbar: { vertical: "hidden" },
+          minimap: { enabled: false },
+          renderValidationDecorations: "off" as const,
+          renderIndentGuides: false,
+          lineNumbers: "off",
+          readOnly: true,
+        }}
+        path="results.json"
+        contents={JSON.stringify(results, null, 2)}
+        editorDidMount={(editor) => {
+          editors.resultsEditorRef.current = editor;
+        }}
+      />
     </div>
   );
 }
