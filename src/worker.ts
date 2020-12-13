@@ -33,6 +33,7 @@ initialize(
 
     // Monaco will only make methods available from client (not properties)
     async doValidation(uri) {
+      console.log(uri);
       return await this.worker.doValidation(uri);
     }
 

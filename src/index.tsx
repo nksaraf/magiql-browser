@@ -1,6 +1,6 @@
 import React from "react";
 import { render } from "react-dom";
-import { MonacoProvider, useLocalStorage, useMonaco } from "use-monaco";
+import { MonacoProvider, useMonaco } from "use-monaco";
 import * as monacoApi from "monaco-editor";
 import themes from "use-monaco/themes";
 import { bw, setup } from "@beamwind/play";
@@ -11,7 +11,7 @@ import { parse, buildASTSchema } from "graphql";
 
 import { createContext } from "create-hook-context";
 import { ide } from "./ide";
-import { SchemaExplorer } from "./SchemaExplorer";
+import { SchemaExplorer } from "./Explorer";
 import { EditorPanel, header } from "./components";
 
 setup({
@@ -56,6 +56,10 @@ function QueryEditor() {
 function VariablesEditor() {
   const { editors } = useIDE();
   const [variables, setVariables] = useAtom(ide.variables);
+
+  React.useEffect(() => {
+    localStorage.setItem("use-monaco:variables.json", variables);
+  }, [variables]);
 
   return (
     <EditorPanel
@@ -153,7 +157,7 @@ function App() {
       <div className={bw``}></div>
       <Split
         direction="horizontal"
-        sizes={[30, 40, 30]}
+        sizes={[40, 40, 20]}
         className={bw`flex flex-row flex-1`}
         onDrag={() => {
           editors.queryEditorRef.current?.layout();
@@ -163,7 +167,7 @@ function App() {
       >
         <Explorer />
         <QueryVariablesPanel />
-        <ResultsEditor />
+        {/* <ResultsEditor /> */}
       </Split>
     </div>
   );

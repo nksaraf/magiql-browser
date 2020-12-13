@@ -4,7 +4,7 @@ import { Editor } from "./Editor";
 
 export const header = `font-graphql rounded-t-xl font-400 bg-gray-100 text-gray-400 py-2`;
 
-export const panel = `h-full overflow-scroll bg-white shadow-xl rounded-xl`;
+export const panel = `h-full bg-white shadow-xl rounded-xl`;
 
 export function EditorPanel({
   options = {},
@@ -23,7 +23,6 @@ export function EditorPanel({
         options={{
           scrollbar: { vertical: "hidden" },
           minimap: { enabled: false },
-          renderValidationDecorations: "off" as const,
           renderIndentGuides: false,
           lineNumbers: "off",
           ...options,
