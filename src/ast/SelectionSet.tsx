@@ -1,5 +1,5 @@
 import { bw } from "@beamwind/play";
-import { useAtom } from "../atom";
+import { useAtom } from "../lib/atom";
 import React from "react";
 import {
   FragmentSpreadNode,
@@ -92,6 +92,65 @@ function Selection({ parentPath, path, type }) {
   }
   return <>{path}</>;
 }
+
+function UnselectedFields({
+  parentPath,
+  type,
+}: {
+  type: GraphQLObjectType | GraphQLInterfaceType | GraphQLUnionType;
+  parentPath: string;
+}) {
+  const [selectionSet] = useAtom(ast.getSelectionSet(parentPath));
+  const schema = useSchema();
+
+  let unselectedFields = removeSelections(
+    getFields({ type, schema }),
+    selectionSet?.selections ?? [],
+    (item) => `${parentPath}.${item.name}`
+  );
+
+  return (
+    <>
+      {unselectedFields.map((field) => (
+        <Field
+          key={`${parentPath}.${field.name}`}
+          field={field}
+          path={`${parentPath}.${field.name}`}
+        />
+      ))}
+    </>
+  );
+}
+
+function UnselectedTypes({
+  parentPath,
+  type,
+}: {
+  type: GraphQLObjectType | GraphQLInterfaceType | GraphQLUnionType;
+  parentPath: string;
+}) {
+  const [selectionSet] = useAtom(ast.getSelectionSet(parentPath));
+  const schema = useSchema();
+
+  let unselectedTypes = removeSelections(
+    [...getTypes({ type, schema })],
+    selectionSet?.selections ?? [],
+    (item) => `${parentPath}.${item.name}`
+  );
+
+  return (
+    <>
+      {unselectedTypes.map((type) => (
+        <InlineFragment
+          key={`${parentPath}.${type.name}`}
+          type={type}
+          path={`${parentPath}.${type.name}`}
+        />
+      ))}
+    </>
+  );
+}
+
 export function SelectionSet({
   parentPath,
   type,
@@ -116,14 +175,10 @@ export function SelectionSet({
   return (
     <Lines>
       {selectionSet?.selections.map((sel) => (
-        <Selection path={sel} parentPath={sel} type={type} />
+        <Selection key={sel} path={sel} parentPath={sel} type={type} />
       ))}
-      {unselectedFields.map((field) => (
-        <Field field={field} path={`${parentPath}.${field.name}`} />
-      ))}
-      {unselectedTypes.map((type) => (
-        <InlineFragment type={type} path={`${parentPath}.${type.name}`} />
-      ))}
+      <UnselectedFields parentPath={parentPath} type={type} />
+      <UnselectedTypes parentPath={parentPath} type={type} />
     </Lines>
   );
 }

@@ -1,5 +1,5 @@
 import { bw } from "@beamwind/play";
-import { useAtom } from "../atom";
+import { useAtom } from "../lib/atom";
 import React from "react";
 import {
   GraphQLField,
@@ -65,6 +65,7 @@ function ObjectTypeField({ field, path }) {
   ) : (
     aliasedField
   );
+
   return (
     <Lines>
       <Tokens>
@@ -77,7 +78,7 @@ function ObjectTypeField({ field, path }) {
         </Indented>
       )}
       {hasArgs && isSelected && (
-        <Tokens>
+        <Tokens className={bw`pl-1`}>
           <Punctuation>{") {"}</Punctuation>
         </Tokens>
       )}
@@ -99,67 +100,38 @@ function InterfaceTypeField({ path, field }) {
   const type = getNamedType(field.type) as GraphQLInterfaceType;
   const hasArgs = isSelected && node.arguments && node.arguments.length > 0;
 
-  return (
-    <Lines>
-      <Tokens>
-        <Arrow className={bw`text-graphql-field`} isOpen={isSelected} />
-        {node?.alias ? (
-          <>
-            <FieldName>{node.alias?.value}: </FieldName>
-            <Qualifier>{field.name}</Qualifier>
-          </>
-        ) : (
-          <>
-            <FieldName>{field.name}</FieldName>
-          </>
-        )}
-        {hasArgs && isSelected && <Punctuation>(</Punctuation>}
-        {!hasArgs && isSelected && <Punctuation>{"{"}</Punctuation>}
-      </Tokens>
-      {hasArgs && isSelected && (
-        <Indented>
-          <Arguments args={node.arguments} />
-        </Indented>
-      )}
-      {hasArgs && isSelected && (
-        <Tokens>
-          <Punctuation>{") {"}</Punctuation>
-        </Tokens>
-      )}
-      {isSelected && (
-        <Indented>
-          <SelectionSet parentPath={path} type={type} />
-        </Indented>
-      )}
-      {isSelected && (
-        <Tokens>
-          <Punctuation>{"}"}</Punctuation>
-        </Tokens>
-      )}
-    </Lines>
+  const aliasedField = node?.alias ? (
+    <>
+      <FieldName>{node.alias?.value}: </FieldName>
+      <Qualifier>{field.name}</Qualifier>
+    </>
+  ) : (
+    <>
+      <FieldName>{field.name}</FieldName>
+    </>
   );
-}
-function UnionTypeField({ path, field }) {
-  const [{ node, isSelected }] = useAtom(ast.getField(path));
-  const type = getNamedType(field.type) as GraphQLUnionType;
-  const hasArgs = isSelected && node.arguments && node.arguments.length > 0;
+
+  const header = isSelected ? (
+    hasArgs ? (
+      <Tokens gap={0.75}>
+        {aliasedField}
+        <Punctuation>{"("}</Punctuation>
+      </Tokens>
+    ) : (
+      <>
+        {aliasedField}
+        <Punctuation>{"{"}</Punctuation>
+      </>
+    )
+  ) : (
+    aliasedField
+  );
 
   return (
     <Lines>
       <Tokens>
         <Arrow className={bw`text-graphql-field`} isOpen={isSelected} />
-        {node?.alias ? (
-          <>
-            <FieldName>{node.alias?.value}: </FieldName>
-            <Qualifier>{field.name}</Qualifier>
-          </>
-        ) : (
-          <>
-            <FieldName>{field.name}</FieldName>
-          </>
-        )}
-        {hasArgs && isSelected && <Punctuation>(</Punctuation>}
-        {!hasArgs && isSelected && <Punctuation>{"{"}</Punctuation>}
+        {header}
       </Tokens>
       {hasArgs && isSelected && (
         <Indented>
@@ -167,7 +139,7 @@ function UnionTypeField({ path, field }) {
         </Indented>
       )}
       {hasArgs && isSelected && (
-        <Tokens>
+        <Tokens className={bw`pl-1`}>
           <Punctuation>{") {"}</Punctuation>
         </Tokens>
       )}
@@ -184,6 +156,68 @@ function UnionTypeField({ path, field }) {
     </Lines>
   );
 }
+
+function UnionTypeField({ path, field }) {
+  const [{ node, isSelected }] = useAtom(ast.getField(path));
+  const type = getNamedType(field.type) as GraphQLUnionType;
+  const hasArgs = isSelected && node.arguments && node.arguments.length > 0;
+
+  const aliasedField = node?.alias ? (
+    <>
+      <FieldName>{node.alias?.value}: </FieldName>
+      <Qualifier>{field.name}</Qualifier>
+    </>
+  ) : (
+    <>
+      <FieldName>{field.name}</FieldName>
+    </>
+  );
+
+  const header = isSelected ? (
+    hasArgs ? (
+      <Tokens gap={0.75}>
+        {aliasedField}
+        <Punctuation>{"("}</Punctuation>
+      </Tokens>
+    ) : (
+      <>
+        {aliasedField}
+        <Punctuation>{"{"}</Punctuation>
+      </>
+    )
+  ) : (
+    aliasedField
+  );
+  return (
+    <Lines>
+      <Tokens>
+        <Arrow className={bw`text-graphql-field`} isOpen={isSelected} />
+        {header}
+      </Tokens>
+      {hasArgs && isSelected && (
+        <Indented>
+          <Arguments args={node.arguments} />
+        </Indented>
+      )}
+      {hasArgs && isSelected && (
+        <Tokens className={bw`pl-1`}>
+          <Punctuation>{") {"}</Punctuation>
+        </Tokens>
+      )}
+      {isSelected && (
+        <Indented>
+          <SelectionSet parentPath={path} type={type} />
+        </Indented>
+      )}
+      {isSelected && (
+        <Tokens>
+          <Punctuation>{"}"}</Punctuation>
+        </Tokens>
+      )}
+    </Lines>
+  );
+}
+
 function ScalarField({
   field,
   path,
@@ -194,21 +228,34 @@ function ScalarField({
   const [{ node, isSelected }] = useAtom(ast.getField(path));
   const hasArgs = isSelected && node.arguments && node.arguments.length > 0;
 
+  const aliasedField = node?.alias ? (
+    <>
+      <FieldName>{node.alias?.value}: </FieldName>
+      <Qualifier>{field.name}</Qualifier>
+    </>
+  ) : (
+    <>
+      <FieldName>{field.name}</FieldName>
+    </>
+  );
+
+  const header = isSelected ? (
+    hasArgs ? (
+      <Tokens gap={0.75}>
+        {aliasedField}
+        <Punctuation>{"("}</Punctuation>
+      </Tokens>
+    ) : (
+      <>{aliasedField}</>
+    )
+  ) : (
+    aliasedField
+  );
   return (
     <Lines>
       <Tokens>
         <Checkbox checked={isSelected} />
-        {node?.alias ? (
-          <>
-            <FieldName>{node.alias?.value}: </FieldName>
-            <Qualifier>{field.name}</Qualifier>
-          </>
-        ) : (
-          <>
-            <FieldName>{field.name}</FieldName>
-          </>
-        )}
-        {hasArgs && <Punctuation>(</Punctuation>}
+        {header}
       </Tokens>
       {hasArgs && (
         <>
@@ -223,6 +270,7 @@ function ScalarField({
     </Lines>
   );
 }
+
 function Value({ value }: { value: ValueNode }) {
   // let labelId = `taco-label--${useId()}`;
   if (gql.isVariable(value)) {
@@ -294,11 +342,12 @@ function Value({ value }: { value: ValueNode }) {
     );
   } else return null;
 }
+
 function Arguments({ args }) {
   return (
     <Lines>
       {args?.map((arg) => (
-        <Tokens>
+        <Tokens key={arg.name.value}>
           <ArgumentName>{arg.name.value}:</ArgumentName>
           <Value value={arg.value} />
         </Tokens>
@@ -318,21 +367,34 @@ function BuiltInField({
 
   const hasArgs = isSelected && node.arguments && node.arguments.length > 0;
 
+  const aliasedField = node?.alias ? (
+    <>
+      <FieldName>{node.alias?.value}: </FieldName>
+      <Qualifier>{field.name}</Qualifier>
+    </>
+  ) : (
+    <>
+      <FieldName>{field.name}</FieldName>
+    </>
+  );
+
+  const header = isSelected ? (
+    hasArgs ? (
+      <Tokens gap={0.75}>
+        {aliasedField}
+        <Punctuation>{"("}</Punctuation>
+      </Tokens>
+    ) : (
+      <>{aliasedField}</>
+    )
+  ) : (
+    aliasedField
+  );
   return (
     <Lines>
       <Tokens>
         <Checkbox checked={isSelected} />
-        {node?.alias ? (
-          <>
-            <FieldName>{node.alias?.value}: </FieldName>
-            <Qualifier>{field.name}</Qualifier>
-          </>
-        ) : (
-          <>
-            <FieldName>{field.name}</FieldName>
-          </>
-        )}
-        {hasArgs && <Punctuation>(</Punctuation>}
+        {header}
       </Tokens>
       {hasArgs && (
         <>
@@ -347,6 +409,7 @@ function BuiltInField({
     </Lines>
   );
 }
+
 function EnumField({
   field,
   path,
@@ -386,6 +449,7 @@ function EnumField({
     </Lines>
   );
 }
+
 export function Field({
   path,
   field,

@@ -1,7 +1,7 @@
 import { bw } from "@beamwind/play";
 import React from "react";
 
-export const graphqlNode = `cursor-pointer gap-1.5 select-none flex flex-row items-center font-mono text-xs`;
+export const graphqlNode = `cursor-pointer select-none flex flex-row items-center font-mono text-xs`;
 
 export function FieldName({ children }) {
   return <div className={bw`text-graphql-field`}>{children}</div>;
@@ -33,8 +33,12 @@ export function Qualifier({ children }) {
 export function Lines({ children }) {
   return <div className={bw`flex flex-col gap-0.5`}>{children}</div>;
 }
-export function Tokens({ children }) {
-  return <div className={`${bw`${graphqlNode}`}`}>{children}</div>;
+export function Tokens({ children, gap = 1.5, className = "" }) {
+  return (
+    <div className={`${bw`${graphqlNode} ${"gap" + "-" + gap} `} ${className}`}>
+      {children}
+    </div>
+  );
 }
 
 const defaultArrowOpen = ({ className, ...props }) => (
@@ -80,35 +84,39 @@ const defaultArrowClosed = ({ className, ...props }) => (
 );
 
 const defaultCheckboxChecked = (props) => (
-  <svg
-    className={bw`w-3 h-3`}
-    viewBox="0 0 18 18"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M16 0H2C0.9 0 0 0.9 0 2V16C0 17.1 0.9 18 2 18H16C17.1 18 18 17.1 18 16V2C18 0.9 17.1 0 16 0ZM16 16H2V2H16V16ZM14.99 6L13.58 4.58L6.99 11.17L4.41 8.6L2.99 10.01L6.99 14L14.99 6Z"
-      fill="#666"
-    />
-  </svg>
+  <div>
+    <svg
+      className={bw`w-3 h-3`}
+      viewBox="0 0 18 18"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M16 0H2C0.9 0 0 0.9 0 2V16C0 17.1 0.9 18 2 18H16C17.1 18 18 17.1 18 16V2C18 0.9 17.1 0 16 0ZM16 16H2V2H16V16ZM14.99 6L13.58 4.58L6.99 11.17L4.41 8.6L2.99 10.01L6.99 14L14.99 6Z"
+        fill="#666"
+      />
+    </svg>
+  </div>
 );
 
 const defaultCheckboxUnchecked = (props) => (
-  <svg
-    className={bw`w-3 h-3`}
-    viewBox="0 0 18 18"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M16 2V16H2V2H16ZM16 0H2C0.9 0 0 0.9 0 2V16C0 17.1 0.9 18 2 18H16C17.1 18 18 17.1 18 16V2C18 0.9 17.1 0 16 0Z"
-      fill="#CCC"
-    />
-  </svg>
+  <div>
+    <svg
+      className={bw`w-3 h-3`}
+      viewBox="0 0 18 18"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M16 2V16H2V2H16ZM16 0H2C0.9 0 0 0.9 0 2V16C0 17.1 0.9 18 2 18H16C17.1 18 18 17.1 18 16V2C18 0.9 17.1 0 16 0Z"
+        fill="#CCC"
+      />
+    </svg>
+  </div>
 );
 
-export function Arrow(props) {
-  return props.isOpen ? defaultArrowOpen(props) : defaultArrowClosed(props);
+export function Arrow({ isOpen, ...props }: any) {
+  return isOpen ? defaultArrowOpen(props) : defaultArrowClosed(props);
 }
 
 export function Checkbox(props: { checked: boolean }) {

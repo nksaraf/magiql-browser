@@ -1,6 +1,6 @@
 import { initialize, MonacoWorker } from "use-monaco/worker";
 import { GraphQLWorker } from "monaco-graphql/dist/GraphQLWorker";
-import { printSchema } from "graphql";
+import { printSchema } from "graphql/utilities/printSchema";
 
 initialize(
   "graphql",

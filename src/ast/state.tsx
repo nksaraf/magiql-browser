@@ -1,13 +1,15 @@
-import { atom, atomFamily, useAtom } from "../atom";
-import { ide } from "../ide";
+import { atom, atomFamily, useAtom } from "../lib/atom";
+import { ide } from "../lib/ide";
 import {
   DocumentNode,
   FieldNode,
   OperationDefinitionNode,
   SelectionSetNode,
   FragmentSpreadNode,
+  print,
   InlineFragmentNode,
   FragmentDefinitionNode,
+  parse,
 } from "graphql";
 
 export function useSchema() {
@@ -62,21 +64,32 @@ const getSelectionSet = atomFamily(
     set(getSelectionSetPaths(parentPath), paths);
   }
 );
-const write = atom(null, (get, set, parsedQuery: DocumentNode) => {
-  parsedQuery.definitions.map((def, index) => {
-    if (def.kind === "OperationDefinition") {
-      const opName = def.name?.value ?? "Operation" + index;
-      set(operationNames, (old) => [...old, opName]);
-      set(getSelectionSet(opName), def.selectionSet as any);
-      set(getOperationNode(def.name?.value ?? "Operation" + index), def);
-    } else if (def.kind === "FragmentDefinition") {
-      const fragName = def.name.value;
-      set(fragmentNames, (old) => [...old, fragName]);
-      set(getSelectionSet(fragName), def.selectionSet as any);
-      set(getFragmentNode(fragName), def);
+
+const documentNode = atom<DocumentNode | null>(null);
+const currentDocument = atom(
+  (get) => print(get(documentNode)),
+  (get, set, query: string) => {
+    try {
+      const parsedQuery = parse(query);
+      parsedQuery.definitions.map((def, index) => {
+        if (def.kind === "OperationDefinition") {
+          const opName = def.name?.value ?? "Operation" + index;
+          set(operationNames, (old) => [...old, opName]);
+          set(getSelectionSet(opName), def.selectionSet as any);
+          set(getOperationNode(def.name?.value ?? "Operation" + index), def);
+        } else if (def.kind === "FragmentDefinition") {
+          const fragName = def.name.value;
+          set(fragmentNames, (old) => [...old, fragName]);
+          set(getSelectionSet(fragName), def.selectionSet as any);
+          set(getFragmentNode(fragName), def);
+        }
+      });
+      set(documentNode, parsedQuery);
+    } catch (e) {
+      console.error(e);
     }
-  });
-});
+  }
+);
 
 const getField = atomFamily((id: string) => (get) => ({
   node: get(getSelection(id)) as FieldNode,
@@ -86,9 +99,10 @@ const getField = atomFamily((id: string) => (get) => ({
 export const ast = {
   operationNames,
   getIsSelected,
-  write,
+  currentDocument,
   getField,
   getSelection,
+  documentNode,
   getSelectionSet,
   getSelectionSetPaths,
   getOperationNode,

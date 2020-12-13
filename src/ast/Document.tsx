@@ -1,30 +1,14 @@
 import { bw } from "@beamwind/play";
-import { useAtom, useUpdateAtom } from "../atom";
-import { ide } from "../ide";
+import { useAtom } from "../lib/atom";
 import React from "react";
 import {
-  DocumentNode,
-  FieldDefinitionNode,
-  GraphQLSchema,
   OperationDefinitionNode,
-  GraphQLOutputType,
   GraphQLObjectType,
-  GraphQLFieldMap,
-  GraphQLAbstractType,
-  validate,
-  GraphQLNamedType,
-  GraphQLInputObjectType,
-  assertAbstractType,
-  VariableNode,
-  printType,
-  typeFromAST,
   print,
   VariableDefinitionNode,
 } from "graphql";
 import * as gql from "graphql-ast-types";
-import { header, panel } from "../components";
 import { Arrow, Variable } from "./tokens";
-import { ErrorBoundary } from "react-error-boundary";
 import { ast, useSchema, getOperationNode, getFragmentNode } from "./state";
 import "./theme";
 import {
@@ -36,19 +20,23 @@ import {
   Type,
   Name,
 } from "./tokens";
-import {
-  Combobox,
-  ComboboxInput,
-  ComboboxPopover,
-  ComboboxList,
-  ComboboxOption,
-} from "@reach/combobox";
-import { Listbox } from "@reach/listbox";
 import "@reach/listbox/styles.css";
 import { SelectionSet } from "./SelectionSet";
 
+function VariableDefinition({ variable }) {
+  return (
+    <Tokens>
+      <Variable key={(variable as VariableDefinitionNode).variable.name.value}>
+        {(variable as VariableDefinitionNode).variable.name.value}:
+      </Variable>
+      <Type key={print((variable as VariableDefinitionNode).type)}>
+        {print((variable as VariableDefinitionNode).type)}
+      </Type>
+    </Tokens>
+  );
+}
+
 function VariableDefinitions({ vars }) {
-  const schema = useSchema();
   return (
     <Lines>
       {vars?.map((variable) => {
@@ -57,12 +45,10 @@ function VariableDefinitions({ vars }) {
         //   (variable as VariableDefinitionNode).type as any
         // );
         return (
-          <Tokens>
-            <Variable>
-              {(variable as VariableDefinitionNode).variable.name.value}:
-            </Variable>
-            <Type>{print((variable as VariableDefinitionNode).type)}</Type>
-          </Tokens>
+          <VariableDefinition
+            key={(variable as VariableDefinitionNode).variable.name.value}
+            variable={variable}
+          />
         );
       })}
     </Lines>
@@ -97,14 +83,28 @@ function OperationDefinition({ operationName }: { operationName: string }) {
     return null;
   }
 
+  const name = isSelected ? (
+    hasVars ? (
+      <Tokens gap={0.75}>
+        <Name>{operation.name?.value}</Name>
+        <Punctuation>{"("}</Punctuation>
+      </Tokens>
+    ) : (
+      <>
+        <Name>{operation.name?.value}</Name>
+        <Punctuation>{"{"}</Punctuation>
+      </>
+    )
+  ) : (
+    <Name>{operation.name?.value}</Name>
+  );
+
   return (
     <Lines>
       <Tokens>
         <Arrow className={bw`text-graphql-opname`} isOpen={isSelected} />
         <Keyword>{operation.operation}</Keyword>
-        <Name>{operation.name?.value}</Name>
-        {hasVars && isSelected && <Punctuation>{"("}</Punctuation>}
-        {!hasVars && isSelected && <Punctuation>{"{"}</Punctuation>}
+        {name}
       </Tokens>
       {hasVars && isSelected && (
         <Indented>
@@ -170,12 +170,13 @@ function FragmentDefinition({ fragmentName }: { fragmentName: string }) {
   );
 }
 
-export function Document({ document }: { document: DocumentNode }) {
-  const setter = useUpdateAtom(ast.write);
-  const schema = useSchema();
-  React.useEffect(() => {
-    setter(document);
-  }, [document, schema]);
+export function Document() {
+  const [document] = useAtom(ast.documentNode);
+
+  if (!document) {
+    return null;
+  }
+
   return (
     <div className={bw`flex flex-col gap-6`}>
       {document.definitions.map((def, i) => {
