@@ -11,8 +11,8 @@ import { parse, buildASTSchema } from "graphql";
 
 import { createContext } from "create-hook-context";
 import { ide } from "./ide";
-import { Explorer } from "./ast/Explorer";
-import { EditorPanel, header } from "./components";
+import { Document } from "./ast/Document";
+import { EditorPanel, header, panel } from "./components";
 
 setup({
   init(insert, theme) {
@@ -140,33 +140,66 @@ function LoadSchema() {
   return null;
 }
 
+export function Explorer() {
+  const [query] = useAtom(ide.parsedQuery);
+  const [schema] = useAtom(ide.schema);
+  return (
+    <div className={bw`${panel} relative`}>
+      <div className={bw`${header} absolute top-0 px-4 w-full z-100`}>
+        Explorer
+      </div>
+      <div className={bw`pt-12 pb-3 overflow-scroll w-full h-full`}>
+        <div className={bw`px-4`}>
+          <ErrorBoundary
+            fallbackRender={({ error }) => (
+              <pre className={bw`font-mono text-xs text-red-400`}>
+                {error.stack}
+              </pre>
+            )}
+          >
+            {query && schema && <Document document={query} />}
+          </ErrorBoundary>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   const { editors } = useIDE();
   return (
     <div
-      className={bw`h-screen w-screen bg-gray-300 flex flex-row px-3 py-3 overflow-hidden`}
+      className={bw`h-screen w-screen pt-3 gap-1 bg-gray-300 w-full flex flex-col`}
     >
-      <div className={bw``}></div>
-      <Split
-        direction="horizontal"
-        sizes={[50, 50]}
-        className={bw`flex flex-row flex-1 w-full`}
-        onDrag={() => {
-          editors.queryEditorRef.current?.layout();
-          editors.variablesEditorRef.current?.layout();
-          editors.resultsEditorRef.current?.layout();
-        }}
+      <div>Hello</div>
+      <div
+        className={bw`flex-1 w-full px-3 pb-3 bg-gray-300 flex flex-row overflow-hidden`}
       >
-        <Explorer />
-        <QueryVariablesPanel />
-        {/* <ResultsEditor /> */}
-      </Split>
+        {/* <div className={bw``}>Hello world</div> */}
+        {/* <div className={bw`flex flex-row flex-1`}> */}
+        <Split
+          direction="horizontal"
+          sizes={[40, 40, 20]}
+          className={bw`flex flex-row flex-1 h-full w-full`}
+          onDrag={() => {
+            editors.queryEditorRef.current?.layout();
+            editors.variablesEditorRef.current?.layout();
+            editors.resultsEditorRef.current?.layout();
+          }}
+        >
+          <Explorer />
+          <QueryVariablesPanel />
+          <ResultsEditor />
+        </Split>
+        {/* </div> */}
+      </div>
     </div>
   );
 }
 
 import lightTheme from "./theme";
 import * as config from "./graphql.config";
+import { ErrorBoundary } from "react-error-boundary";
 
 const rootElement = document.getElementById("root");
 render(
