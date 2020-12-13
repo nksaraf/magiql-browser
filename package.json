@@ -2,6 +2,7 @@
   "dependencies": {
     "@beamwind/play": "^2.1.1",
     "@reach/combobox": "^0.12.1",
+    "@reach/listbox": "^0.12.1",
     "@types/graphql-ast-types": "https://gist.github.com/nksaraf/3f16ca3dc7fef555e05982aa31a4b9f0.git",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
@@ -16,7 +17,7 @@
     "react-error-boundary": "^3.1.0",
     "react-split": "^2.0.9",
     "recoil": "^0.1.2",
-    "use-monaco": "^0.0.20",
+    "use-monaco": "file:.yalc/use-monaco",
     "valtio": "^0.4.7"
   },
   "devDependencies": {

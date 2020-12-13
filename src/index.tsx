@@ -11,7 +11,7 @@ import { parse, buildASTSchema } from "graphql";
 
 import { createContext } from "create-hook-context";
 import { ide } from "./ide";
-import { SchemaExplorer } from "./Explorer";
+import { Explorer } from "./ast/Explorer";
 import { EditorPanel, header } from "./components";
 
 setup({
@@ -124,14 +124,6 @@ async function loadSchema(monaco: typeof monacoApi) {
   return buildASTSchema(parse(await worker.getSchema()));
 }
 
-function Explorer() {
-  return (
-    <div>
-      <SchemaExplorer />
-    </div>
-  );
-}
-
 function LoadSchema() {
   const [schema, setSchema] = useAtom(ide.schema);
 
@@ -157,8 +149,8 @@ function App() {
       <div className={bw``}></div>
       <Split
         direction="horizontal"
-        sizes={[40, 40, 20]}
-        className={bw`flex flex-row flex-1`}
+        sizes={[50, 50]}
+        className={bw`flex flex-row flex-1 w-full`}
         onDrag={() => {
           editors.queryEditorRef.current?.layout();
           editors.variablesEditorRef.current?.layout();
@@ -173,30 +165,44 @@ function App() {
   );
 }
 
+import lightTheme from "./theme";
+import * as config from "./graphql.config";
+
 const rootElement = document.getElementById("root");
 render(
   <MonacoProvider
-    theme={themes["ayu-light"] as any}
+    theme={lightTheme}
     plugins={{
       "magiql-ide": (monaco) => {
-        return monaco.worker.register({
-          label: "graphql",
-          languageId: "graphql",
-          options: {
-            languageConfig: {
-              schemaConfig: {
-                uri:
-                  "https://swapi-graphql.netlify.app/.netlify/functions/index",
+        const lang = monaco.languages
+          .getLanguages()
+          .find((l) => l.id === "graphql");
+        lang.loader = async () => config;
+
+        return monaco.languages.register({
+          id: "graphql",
+          worker: {
+            label: "graphql",
+            options: {
+              languageConfig: {
+                schemaConfig: {
+                  uri:
+                    "https://swapi-graphql.netlify.app/.netlify/functions/index",
+                },
               },
             },
+            src: () => new Worker("./worker.ts"),
+            providers: {
+              hover: true,
+              documentFormattingEdit: true,
+              completionItem: true,
+              diagnostics: true,
+            },
           },
-          src: () => new Worker("./worker.ts"),
-          providers: {
-            hover: true,
-            documentFormattingEdit: true,
-            completionItem: true,
-            diagnostics: true,
-          },
+          extensions: [".graphql", ".gql"],
+          aliases: ["graphql"],
+          mimetypes: ["application/graphql", "text/graphql"],
+          loader: async () => config,
         });
       },
     }}
