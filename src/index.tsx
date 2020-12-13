@@ -4,8 +4,6 @@ import { MonacoProvider, useLocalStorage, useMonaco } from "use-monaco";
 import * as monacoApi from "monaco-editor";
 import themes from "use-monaco/themes";
 import { bw, setup } from "@beamwind/play";
-import { Editor } from "./Editor";
-// @ts-ignore
 import Split from "react-split";
 import { RecoilRoot } from "recoil";
 import { useAtom } from "./atom";
@@ -13,7 +11,8 @@ import { parse, buildASTSchema } from "graphql";
 
 import { createContext } from "create-hook-context";
 import { ide } from "./ide";
-import { Header, SchemaExplorer } from "./SchemaExplorer";
+import { SchemaExplorer } from "./SchemaExplorer";
+import { EditorPanel, header } from "./components";
 
 setup({
   init(insert, theme) {
@@ -38,29 +37,19 @@ function QueryEditor() {
   }, [query]);
 
   return (
-    <div className={bw`rounded-xl shadow-xl pb-2  pt-12 relative bg-white`}>
-      <Header className={`px-6 absolute top-0 w-full`}>Editor</Header>
-      {/* <div className={bw`pt-2 h-9/10`}> */}
-      <Editor
-        options={{
-          scrollbar: { vertical: "hidden" },
-          minimap: { enabled: false },
-          renderValidationDecorations: "off" as const,
-          renderIndentGuides: false,
-          lineNumbers: "off",
-        }}
-        path="query.graphql"
-        language="graphql"
-        editorDidMount={(editor) => {
-          editors.queryEditorRef.current = editor;
-        }}
-        contents={query}
-        onChange={(text) => {
-          setQuery(text);
-        }}
-      />
-      {/* </div> */}
-    </div>
+    <EditorPanel
+      path="query.graphql"
+      language="graphql"
+      editorDidMount={(editor) => {
+        editors.queryEditorRef.current = editor;
+      }}
+      contents={query}
+      onChange={(text) => {
+        setQuery(text);
+      }}
+    >
+      <div className={bw`${header} px-6 absolute top-0 w-full`}>Editor</div>
+    </EditorPanel>
   );
 }
 
@@ -69,27 +58,18 @@ function VariablesEditor() {
   const [variables, setVariables] = useAtom(ide.variables);
 
   return (
-    <div className={bw`rounded-xl shadow-xl pb-2  pt-12 relative bg-white`}>
-      <Header className={`px-6 absolute top-0 w-full`}>Variables</Header>
-      <Editor
-        options={{
-          scrollbar: { vertical: "hidden" },
-          minimap: { enabled: false },
-          renderValidationDecorations: "off" as const,
-          renderIndentGuides: false,
-          lineNumbers: "off",
-          selectionHighlight: false,
-        }}
-        contents={variables}
-        onChange={(text) => {
-          setVariables(text);
-        }}
-        path="variables.json"
-        editorDidMount={(editor) => {
-          editors.variablesEditorRef.current = editor;
-        }}
-      />
-    </div>
+    <EditorPanel
+      contents={variables}
+      onChange={(text) => {
+        setVariables(text);
+      }}
+      path="variables.json"
+      editorDidMount={(editor) => {
+        editors.variablesEditorRef.current = editor;
+      }}
+    >
+      <div className={bw`${header} px-6 absolute top-0 w-full`}>Variables</div>
+    </EditorPanel>
   );
 }
 
@@ -98,24 +78,19 @@ function ResultsEditor() {
   const [results] = useAtom(ide.results);
 
   return (
-    <div className={bw`rounded-xl shadow-xl pb-2  pt-12 relative bg-white`}>
-      <Header className={`px-6 absolute top-0 w-full`}>Response</Header>
-      <Editor
-        options={{
-          scrollbar: { vertical: "hidden" },
-          minimap: { enabled: false },
-          renderValidationDecorations: "off" as const,
-          renderIndentGuides: false,
-          lineNumbers: "off",
-          readOnly: true,
-        }}
-        path="results.json"
-        contents={JSON.stringify(results, null, 2)}
-        editorDidMount={(editor) => {
-          editors.resultsEditorRef.current = editor;
-        }}
-      />
-    </div>
+    <EditorPanel
+      header="Response"
+      options={{
+        readOnly: true,
+      }}
+      path="results.json"
+      contents={JSON.stringify(results, null, 2)}
+      editorDidMount={(editor) => {
+        editors.resultsEditorRef.current = editor;
+      }}
+    >
+      <div className={bw`${header} px-6 absolute top-0 w-full`}>Response</div>
+    </EditorPanel>
   );
 }
 
@@ -171,14 +146,11 @@ function LoadSchema() {
 
 function App() {
   const { editors } = useIDE();
-
-  // const [queryEditor] = useAtom(ide.queryEditor);
-  // const [variablesEditor] = useAtom(ide.variablesEditor);
-  // const [resultsEditor] = useAtom(ide.resultsEditor);
   return (
     <div
       className={bw`h-screen w-screen bg-gray-300 flex flex-row px-3 py-3 overflow-hidden`}
     >
+      <div className={bw``}></div>
       <Split
         direction="horizontal"
         sizes={[30, 40, 30]}
@@ -196,30 +168,6 @@ function App() {
     </div>
   );
 }
-
-// const { containerRef } = useMonacoEditor({
-//     themes: themes,
-//     path: "model.graphql",
-//     plugins: {
-//         graphql: {
-//             uri: 'https://swapi-graphql.netlify.app/.netlify/functions/index'
-//         }
-//     },
-//     options: {
-//         minimap: {
-//             enabled: false
-//         }
-//     },
-//     defaultContents: `
-
-// query { allFilms { edges { node { id }}} }`,
-//     theme: "github"
-// });
-// return (
-//     <>
-//         <div ref={containerRef} style={{ width: 500, height: 500 }} />
-//     </>
-// );
 
 const rootElement = document.getElementById("root");
 render(

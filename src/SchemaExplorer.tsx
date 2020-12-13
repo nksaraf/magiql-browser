@@ -16,6 +16,8 @@ import {
   InlineFragmentNode,
   GraphQLObjectType,
   GraphQLFieldMap,
+  GraphQLAbstractType,
+  GraphQLInterfaceType,
 } from "graphql";
 
 setup({
@@ -25,9 +27,15 @@ setup({
         "graphql-field": "#1F61A0",
         "graphql-keyword": "#B11A04",
         "graphql-opname": "#D2054E",
+        "graphql-typename": "#CA9800",
       },
       fontFamily: {
         graphql: "Rubik",
+      },
+      spacing: {
+        "0.25": "1px",
+        "0.75": "1.5px",
+        "9px": "9px",
       },
     },
   },
@@ -53,23 +61,51 @@ const defaultColors = {
   atom: "#CA9800",
 };
 
-const defaultArrowOpen = (
-  <svg width="12px" height="9px">
-    <path fill="#666" d="M 0 2 L 9 2 L 4.5 7.5 z" />
-  </svg>
+const defaultArrowOpen = (props) => (
+  <div className={bw`p-0.75`}>
+    <svg
+      className={bw`w-9px h-9px`}
+      viewBox="0 0 481.721 481.721"
+      fill="currentColor"
+      // style={{
+      //   // enableBackground: "new 0 0 481.721 481.721",
+      // }}
+      // xmlSpace="preserve"
+      // {...props}
+    >
+      <g>
+        <g>
+          <path d="M10.467,146.589l198.857,252.903c17.418,30.532,45.661,30.532,63.079,0l198.839-252.866 c3.88-5.533,8.072-15.41,8.923-22.118c2.735-21.738,4.908-65.178-21.444-65.178H23.013c-26.353,0-24.192,43.416-21.463,65.147 C2.395,131.185,6.587,141.051,10.467,146.589z" />
+        </g>
+      </g>
+    </svg>
+  </div>
 );
 
-const defaultArrowClosed = (
-  <svg width="12px" height="9px">
-    <path fill="#666" d="M 0 0 L 0 9 L 5.5 4.5 z" />
-  </svg>
+const defaultArrowClosed = (props) => (
+  <div className={bw`p-0.75`}>
+    <svg
+      viewBox="0 0 481.721 481.721"
+      fill="currentColor"
+      className={bw`-rotate-90 w-9px h-9px`}
+      // style={{
+      //   // enableBackground: "new 0 0 481.721 481.721",
+      // }}
+      // xmlSpace="preserve"
+      // {...props}
+    >
+      <g>
+        <g>
+          <path d="M10.467,146.589l198.857,252.903c17.418,30.532,45.661,30.532,63.079,0l198.839-252.866 c3.88-5.533,8.072-15.41,8.923-22.118c2.735-21.738,4.908-65.178-21.444-65.178H23.013c-26.353,0-24.192,43.416-21.463,65.147 C2.395,131.185,6.587,141.051,10.467,146.589z" />
+        </g>
+      </g>
+    </svg>
+  </div>
 );
 
 const defaultCheckboxChecked = (
   <svg
-    style={{ marginRight: "3px", marginLeft: "-3px" }}
-    width="12px"
-    height="12px"
+    className={bw`w-3 h-3`}
     viewBox="0 0 18 18"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -83,9 +119,7 @@ const defaultCheckboxChecked = (
 
 const defaultCheckboxUnchecked = (
   <svg
-    style={{ marginRight: "3px", marginLeft: "-3px" }}
-    width="12px"
-    height="12px"
+    className={bw`w-3 h-3`}
     viewBox="0 0 18 18"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -98,7 +132,7 @@ const defaultCheckboxUnchecked = (
 );
 
 function Arrow(props) {
-  return props.isOpen ? defaultArrowOpen : defaultArrowClosed;
+  return props.isOpen ? defaultArrowOpen(props) : defaultArrowClosed(props);
 }
 
 function Checkbox(props: { checked: boolean }) {
@@ -108,6 +142,7 @@ function Checkbox(props: { checked: boolean }) {
 const getFieldIsSelected = atomFamily((id: string) => false);
 
 import * as gql from "graphql-ast-types";
+import { header, panel } from "./components";
 
 function useSchema() {
   return useAtom(ide.schema)[0];
@@ -138,7 +173,6 @@ const getSelectionSet = atomFamily(
           const path = `${parentPath}.${sel.name.value}.${i}`;
           set(getSelection(path), sel);
           if (sel.selectionSet?.selections) {
-            console.log("setting selection set", path);
             set(getSelectionSet(path), sel.selectionSet as any);
           }
           return path;
@@ -175,6 +209,8 @@ const setQuery = atom(null, (get, set, parsedQuery: DocumentNode) => {
 
 const getBasicType = (type: string) => {};
 
+const graphqlNode = `cursor-pointer gap-1.5 select-none flex flex-row items-center py-0.25 font-mono text-xs`;
+
 function Field({
   path,
   parentPath,
@@ -195,21 +231,12 @@ function Field({
 
   const inspectedType = field.type.inspect();
   const type = getNamedType(field.type);
-  console.log(
-    path,
-    parentPath,
-    type.astNode?.kind,
-    inspectedType,
-    node,
-    selectionSet
-  );
+
   if (!type.astNode?.kind) {
     // switch (inspectedType) {
     // case "Int": {
     return (
-      <div
-        className={bw`cursor-pointer select-none flex flex-row items-center font-mono text-graphql-field text-xs`}
-      >
+      <div className={bw`${graphqlNode} text-graphql-field `}>
         <Checkbox checked={!!node} />
         {field.name}
       </div>
@@ -221,9 +248,7 @@ function Field({
   switch (type.astNode.kind) {
     case "EnumTypeDefinition": {
       return (
-        <div
-          className={bw`cursor-pointer select-none flex flex-row items-center font-mono text-graphql-field text-xs`}
-        >
+        <div className={bw`${graphqlNode} text-graphql-field text-xs`}>
           {field.name}
           {<div></div>}
         </div>
@@ -236,13 +261,11 @@ function Field({
     case "ObjectTypeDefinition": {
       return (
         <div className={bw`flex flex-col`}>
-          <div
-            className={bw`cursor-pointer select-none flex flex-row items-center font-mono text-graphql-field text-xs`}
-          >
+          <div className={bw`${graphqlNode} text-graphql-field text-xs`}>
             <Arrow isOpen={!!node} />
             {field.name}
           </div>
-          <div className={bw`ml-2`}>
+          <div className={bw`ml-3`}>
             {!!node && (
               <Fields
                 fields={(type as GraphQLObjectType).getFields()}
@@ -254,20 +277,35 @@ function Field({
       );
     }
     case "InterfaceTypeDefinition": {
+      // console.log(schema.getPossibleTypes(field.type));
+
       return (
-        <div
-          className={bw`cursor-pointer select-none flex flex-row items-center font-mono text-graphql-field text-xs`}
-        >
-          <Arrow isOpen={!!node} />
-          {field.name}
+        <div className={bw`flex flex-col`}>
+          <div className={bw`${graphqlNode} text-graphql-field text-xs`}>
+            <Arrow isOpen={!!node} />
+            {field.name}
+          </div>
+          <div className={bw`ml-3`}>
+            {!!node &&
+              schema
+                .getPossibleTypes(field.type as GraphQLInterfaceType)
+                .map((type) => {
+                  return (
+                    <div
+                      className={bw`${graphqlNode} text-graphql-typename text-xs`}
+                    >
+                      <Arrow isOpen={!!node} />
+                      {type.name}
+                    </div>
+                  );
+                })}
+          </div>
         </div>
       );
     }
     case "ScalarTypeDefinition": {
       return (
-        <div
-          className={bw`cursor-pointer select-none flex flex-row items-center font-mono text-graphql-field text-xs`}
-        >
+        <div className={bw`${graphqlNode} text-graphql-field`}>
           <Arrow isOpen={!!node} />
           {field.name}
         </div>
@@ -284,7 +322,6 @@ function Fields({
   parentPath: string;
 }) {
   const [{ selectionSet = undefined }] = useAtom(getSelectionSet(parentPath));
-  console.log(selectionSet);
 
   const selections = [...selectionSet.selections];
   return (
@@ -359,23 +396,12 @@ function Document({ document }) {
   );
 }
 
-export function Header({ className = "", children, ...props }) {
-  return (
-    <div
-      className={bw`font-graphql rounded-t-xl font-400 bg-gray-100 text-gray-400 py-2 ${className}`}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-}
-
 export function SchemaExplorer() {
   const [query] = useAtom(ide.parsedQuery);
   const [schema] = useAtom(ide.schema);
   return (
-    <div className={bw`h-full overflow-scroll bg-white rounded-xl`}>
-      <Header className={`px-4`}>Explorer</Header>
+    <div className={bw`${panel}`}>
+      <div className={bw`${header} px-4`}>Explorer</div>
       <div className={bw`px-4 py-3`}>
         {query && schema && <Document document={query} />}
       </div>

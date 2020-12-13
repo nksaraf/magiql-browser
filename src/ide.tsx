@@ -17,4 +17,6 @@ export const ide = {
   variables: atom(localStorage.getItem("use-monaco:variables.json") ?? ""),
   results: atom({}),
   schema: atom<GraphQLSchema | null>(null),
-};
+}; 
+
+
