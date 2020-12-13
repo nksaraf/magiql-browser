@@ -39,22 +39,37 @@ function ObjectTypeField({ field, path }) {
   const type = getNamedType(field.type) as GraphQLObjectType;
   const hasArgs = isSelected && node.arguments && node.arguments.length > 0;
 
+  const aliasedField = node?.alias ? (
+    <>
+      <FieldName>{node.alias?.value}: </FieldName>
+      <Qualifier>{field.name}</Qualifier>
+    </>
+  ) : (
+    <>
+      <FieldName>{field.name}</FieldName>
+    </>
+  );
+
+  const header = isSelected ? (
+    hasArgs ? (
+      <Tokens gap={0.75}>
+        {aliasedField}
+        <Punctuation>{"("}</Punctuation>
+      </Tokens>
+    ) : (
+      <>
+        {aliasedField}
+        <Punctuation>{"{"}</Punctuation>
+      </>
+    )
+  ) : (
+    aliasedField
+  );
   return (
     <Lines>
       <Tokens>
         <Arrow className={bw`text-graphql-field`} isOpen={isSelected} />
-        {node?.alias ? (
-          <>
-            <FieldName>{node.alias?.value}: </FieldName>
-            <Qualifier>{field.name}</Qualifier>
-          </>
-        ) : (
-          <>
-            <FieldName>{field.name}</FieldName>
-          </>
-        )}
-        {hasArgs && isSelected && <Punctuation>(</Punctuation>}
-        {!hasArgs && isSelected && <Punctuation>{"{"}</Punctuation>}
+        {header}
       </Tokens>
       {hasArgs && isSelected && (
         <Indented>
