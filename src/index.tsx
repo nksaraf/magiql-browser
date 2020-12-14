@@ -12,8 +12,10 @@ import { createContext } from "create-hook-context";
 import { ide, Persist } from "./lib/ide";
 import { Document } from "./ast/Document";
 import { EditorPanel, header, panel } from "./lib/components";
-import { PaperPlaneIcon } from "@modulz/radix-icons";
+// import { PaperPlaneIcon } from "@modulz/radix-icons";
 import SplitGrid from "react-split-grid";
+import { useLayoutEffect } from "preact/compat";
+
 setup({
   init(insert, theme) {
     insert(`body{margin:0}`);
@@ -348,7 +350,7 @@ function Header() {
         <div>https://swapi-graphql.netlify.app/.netlify/functions/index</div>
       </div>
       <div className={bw`py-1 w-10 flex flex-row items-center rounded-md`}>
-        <PaperPlaneIcon
+        <PlayButton
           onClick={async () => {
             setPanels((props) =>
               props[2].includes("response")
@@ -370,7 +372,7 @@ function Header() {
               .then((res) => res.json())
               .then(({ data, ...others }) => setResults({ data, ...others }));
           }}
-          className={bw`h-5.5 w-5.5 hover:(mb-0.5) cursor-pointer transition-all mb-0 text-green-600`}
+          className={bw`h-5.5 w-5.5 hover:(mb-0.5) cursor-pointer transition-all mb-0 text-blue-600`}
         />
       </div>
     </div>
