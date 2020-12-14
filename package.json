@@ -12,7 +12,6 @@
     "graphql-ast-types": "^1.0.2",
     "monaco-graphql": "^0.3.3",
     "preact": "^10.5.7",
-    "preact-compat": "^3.19.0",
     "react": "https://gist.github.com/nksaraf/83e9155eaf183742af74db309869f007.git",
     "react-dom": "https://gist.github.com/nksaraf/83e9155eaf183742af74db309869f007.git",
     "react-error-boundary": "^3.1.0",

@@ -23,7 +23,7 @@ function useResizingEditor() {
 
 export function EditorPanel({
   options = {},
-  children,
+  children = undefined as React.ReactNode,
   className = "",
   containerProps = {},
   ...props
