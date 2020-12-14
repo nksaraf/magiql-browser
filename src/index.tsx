@@ -300,6 +300,7 @@ export function GraphQLIDE({ schemaConfig }) {
       <MonacoProvider
         theme={lightTheme}
         plugins={{
+          prettier: ["graphql", "json"],
           "magiql-ide": (monaco) => {
             monaco.plugin.install(plugins.prettier(["graphql", "json"]));
             return monaco.languages.register({
@@ -314,7 +315,6 @@ export function GraphQLIDE({ schemaConfig }) {
                 src: monaco.worker.baseWorkerPath + "graphql.monaco.worker.js",
                 providers: {
                   hover: true,
-                  documentFormattingEdit: true,
                   completionItem: true,
                   diagnostics: true,
                 },
