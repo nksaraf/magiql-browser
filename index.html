@@ -1,27 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
     <meta name="theme-color" content="#000000" />
     <style>
-        /* * {
-            border: solid 1px red !important;
-        } */
-        </style>
-    <link rel="icon" 
-      href="/favicon.ico">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-<link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&display=swap" rel="stylesheet">
-</head>
+      #MAGIQL_IDE_CONFIG {
+        display: none;
+      }
+    </style>
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&display=swap"
+      rel="stylesheet"
+    />
+  </head>
 
-<body>
-    <noscript>
-        You need to enable JavaScript to run this app.
-    </noscript>
+  <body>
+    <noscript> You need to enable JavaScript to run this app. </noscript>
     <div id="root"></div>
-    <script type="module" src="./src/index.tsx"></script>
-</body>
-
+    <div id="MAGIQL_IDE_CONFIG">
+      { "uri": "https://poke-api-delta.vercel.app/api/graphql" }
+    </div>
+    <script type="module">
+      import React from "react";
+      import { render } from "react-dom";
+      import GraphQLIDE from "./src/index";
+      render(
+        React.createElement(GraphQLIDE, {
+          schemaConfig: JSON.parse(
+            document.getElementById("MAGIQL_IDE_CONFIG").innerText
+          ),
+        }),
+        document.getElementById("root")
+      );
+    </script>
+  </body>
 </html>

@@ -5,6 +5,8 @@ import preactRefresh from "@prefresh/vite";
 const config: UserConfig = {
   jsx: "react",
   plugins: [preactRefresh()],
+  cors: true,
+  emitManifest: true,
   // plugins: [reactPlugin]
 };
 

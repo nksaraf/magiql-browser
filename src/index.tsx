@@ -1,21 +1,19 @@
 import React from "react";
-import { render } from "react-dom";
 import { MonacoProvider, useMonaco } from "use-monaco";
-import * as monacoApi from "monaco-editor";
+import type * as monacoApi from "monaco-editor";
 import { bw, setup } from "@beamwind/play";
-import Split from "react-split";
 import { RecoilRoot } from "recoil";
 import { useAtom, useUpdateAtom } from "./lib/atom";
-import { parse, buildASTSchema } from "graphql";
 import { Graphql, PlayButton } from "./lib/Icons";
-import { createContext } from "create-hook-context";
 import { ide, Persist } from "./lib/ide";
 import { Document } from "./ast/Document";
 import { EditorPanel, header, panel } from "./lib/components";
-// import { PaperPlaneIcon } from "@modulz/radix-icons";
-// 
 import SplitGrid from "react-split-grid";
-import { useLayoutEffect } from "preact/compat";
+
+import lightTheme from "./editor/theme";
+import * as config from "./editor/graphql.config";
+import { ErrorBoundary } from "react-error-boundary";
+import { ast, useSchema } from "./ast/state";
 
 setup({
   init(insert, theme) {
@@ -116,7 +114,7 @@ function LoadSchema() {
   return null;
 }
 
-export function Explorer() {
+function Explorer() {
   const [query] = useAtom(ide.queryText);
   const setQuery = useUpdateAtom(ast.currentDocument);
 
@@ -147,32 +145,7 @@ export function Explorer() {
   );
 }
 
-function Panels({ children, direction, initialSizes, onSizeChange }) {
-  return (
-    <Split
-      direction={direction}
-      sizes={initialSizes}
-      className={
-        direction === "horizontal"
-          ? bw`flex flex-row flex-1 h-full w-full`
-          : bw`flex flex-col flex-1`
-      }
-      onDrag={(e) => {
-        onSizeChange(e);
-      }}
-    >
-      {children}
-    </Split>
-  );
-}
-
-function wrap(Component) {
-  return () => {
-    return <div className={bw`w-full h-full bg-white`} />;
-  };
-}
-
-const MainPanels = {
+const IDEPanels = {
   editor: <QueryEditor />,
   variables: <VariablesEditor />,
   response: <ResultsEditor />,
@@ -180,149 +153,11 @@ const MainPanels = {
   explorer: <Explorer />,
 };
 
-function VerticalPanel({ index, panels }) {
-  const [sizes, setSizes] = useAtom(ide.verticalRatio);
-  if (panels.length === 1) {
-    const Comp = MainPanels[panels[0]];
-    return Comp;
-  }
-
-  return (
-    <SplitGrid
-      direction="column"
-      gridTemplateRows={sizes[index]}
-      onDrag={(a, b, s, d) => {
-        setSizes((old) => {
-          const n = [...old];
-          n[index] = s;
-          return n;
-        });
-      }}
-      render={({ getGridProps, getGutterProps }) => {
-        return (
-          <div className={bw`w-full h-full grid`} {...getGridProps()}>
-            {panels.map((panel, i) => (
-              <React.Fragment key={panel}>
-                <div className={bw`h-full w-full overflow-scroll`}>
-                  {MainPanels[panel]}
-                </div>
-                {i < panels.length - 1 && (
-                  <div {...getGutterProps("row", i + 1)} />
-                )}
-              </React.Fragment>
-            ))}
-          </div>
-        );
-      }}
-    />
-  );
-}
-
-function HorizontalPanels() {
-  const [sizes, setSizes] = useAtom(ide.horizontalRatio);
-  const [panels] = useAtom(ide.panels);
-
-  return (
-    <SplitGrid
-      direction="row"
-      gridTemplateColumns={sizes}
-      onDrag={(a, b, s, d) => {
-        setSizes(s);
-      }}
-      render={({ getGridProps, getGutterProps }) => (
-        <div className={bw`flex-1 grid`} {...getGridProps()}>
-          <div className={bw`h-full w-full overflow-scroll`}>
-            <VerticalPanel panels={panels[0]} index={0} />
-          </div>
-          <div {...getGutterProps("column", 1)} />
-          <div className={bw`h-full w-full overflow-scroll`}>
-            <VerticalPanel panels={panels[1]} index={1} />
-          </div>
-          <div {...getGutterProps("column", 3)} />
-          <div className={bw`h-full w-full overflow-scroll`}>
-            <VerticalPanel panels={panels[2]} index={2} />
-          </div>
-        </div>
-      )}
-    />
-  );
-}
-
-function App() {
-  return (
-    <div
-      className={bw`h-screen w-screen pt-3 gap-2 bg-gray-300 w-full flex flex-col`}
-    >
-      <div className={bw`px-3`}>
-        <Header />
-      </div>
-      <div
-        className={bw`flex-1 w-full px-3 pb-3 bg-gray-300 flex flex-row overflow-hidden`}
-      >
-        <HorizontalPanels />
-      </div>
-    </div>
-  );
-}
-
-import lightTheme from "./editor/theme";
-import * as config from "./editor/graphql.config";
-import { ErrorBoundary } from "react-error-boundary";
-import { ast, useSchema } from "./ast/state";
-
-const rootElement = document.getElementById("root");
-
-render(
-  <MonacoProvider
-    theme={lightTheme}
-    plugins={{
-      "magiql-ide": (monaco) => {
-        const lang = monaco.languages
-          .getLanguages()
-          .find((l) => l.id === "graphql");
-        lang.loader = async () => config as any;
-
-        return monaco.languages.register({
-          id: "graphql",
-          worker: {
-            label: "graphql",
-            options: {
-              languageConfig: {
-                schemaConfig: {
-                  uri:
-                    "https://swapi-graphql.netlify.app/.netlify/functions/index",
-                },
-              },
-            },
-            src: monaco.worker.baseWorkerPath + "graphql.monaco.worker.js",
-            // src: () => new Worker("./worker.ts"),
-            providers: {
-              hover: true,
-              documentFormattingEdit: true,
-              completionItem: true,
-              diagnostics: true,
-            },
-          },
-          extensions: [".graphql", ".gql"],
-          aliases: ["graphql"],
-          mimetypes: ["application/graphql", "text/graphql"],
-          loader: async () => config as any,
-        });
-      },
-    }}
-  >
-    <RecoilRoot>
-      <Persist />
-      <LoadSchema />
-      <App />
-    </RecoilRoot>
-  </MonacoProvider>,
-  rootElement
-);
 function Header() {
   const [result, setResults] = useAtom(ide.results);
   const [query] = useAtom(ide.queryText);
   const [panels, setPanels] = useAtom(ide.panels);
+  const [config] = useAtom(ide.schemaConfig);
   const schema = useSchema();
   return (
     <div
@@ -348,7 +183,7 @@ function Header() {
             schema ? `bg-green-400` : `bg-gray-400`
           } w-2 h-2`}
         ></div>
-        <div>https://swapi-graphql.netlify.app/.netlify/functions/index</div>
+        <div>{config?.uri}</div>
       </div>
       <div className={bw`py-1 w-10 flex flex-row items-center rounded-md`}>
         <PlayButton
@@ -358,18 +193,15 @@ function Header() {
                 ? props
                 : [props[0], props[1], ["response"]]
             );
-            fetch(
-              "https://swapi-graphql.netlify.app/.netlify/functions/index",
-              {
-                method: "POST",
-                body: JSON.stringify({
-                  query: query,
-                }),
-                headers: {
-                  ["Content-type"]: "application/json",
-                },
-              }
-            )
+            fetch(config?.uri, {
+              method: "POST",
+              body: JSON.stringify({
+                query: query,
+              }),
+              headers: {
+                ["Content-type"]: "application/json",
+              },
+            })
               .then((res) => res.json())
               .then(({ data, ...others }) => setResults({ data, ...others }));
           }}
@@ -379,3 +211,140 @@ function Header() {
     </div>
   );
 }
+
+function VerticalPanels({ index, panels }) {
+  const [sizes, setSizes] = useAtom(ide.verticalRatio);
+  if (panels.length === 1) {
+    const Comp = IDEPanels[panels[0]];
+    return Comp;
+  }
+
+  return (
+    <SplitGrid
+      direction="column"
+      gridTemplateRows={sizes[index]}
+      onDrag={(a, b, s, d) => {
+        setSizes((old) => {
+          const n = [...old];
+          n[index] = s;
+          return n;
+        });
+      }}
+      render={({ getGridProps, getGutterProps }) => {
+        return (
+          <div className={bw`w-full h-full grid`} {...getGridProps()}>
+            {panels.map((panel, i) => (
+              <React.Fragment key={panel}>
+                <div className={bw`h-full w-full overflow-scroll`}>
+                  {IDEPanels[panel]}
+                </div>
+                {i < panels.length - 1 && (
+                  <div {...getGutterProps("row", i + 1)} />
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        );
+      }}
+    />
+  );
+}
+
+function HorizontalPanels() {
+  const [sizes, setSizes] = useAtom(ide.horizontalRatio);
+  const [panels] = useAtom(ide.panels);
+
+  return (
+    <SplitGrid
+      direction="row"
+      gridTemplateColumns={sizes}
+      onDrag={(a, b, s, d) => {
+        setSizes(s);
+      }}
+      render={({ getGridProps, getGutterProps }) => (
+        <div className={bw`w-full h-full grid`} {...getGridProps()}>
+          {panels.map((panel, i) => (
+            <React.Fragment key={JSON.stringify(panel)}>
+              <div className={bw`h-full w-full overflow-scroll`}>
+                <VerticalPanels panels={panel} index={i} />
+              </div>
+              {i < panels.length - 1 && (
+                <div {...getGutterProps("column", i + i + 1)} />
+              )}
+            </React.Fragment>
+          ))}
+        </div>
+      )}
+    />
+  );
+}
+
+function App() {
+  return (
+    <div
+      className={bw`h-screen w-screen pt-3 gap-2 bg-gray-300 w-full flex flex-col`}
+    >
+      <div className={bw`px-3`}>
+        <Header />
+      </div>
+      <div
+        className={bw`flex-1 w-full px-3 pb-3 bg-gray-300 flex flex-row overflow-hidden`}
+      >
+        <HorizontalPanels />
+      </div>
+    </div>
+  );
+}
+
+export function GraphQLIDE({ schemaConfig }) {
+  return (
+    <RecoilRoot
+      initializeState={(snapshpt) => {
+        snapshpt.set(ide.schemaConfig, schemaConfig);
+      }}
+    >
+      <MonacoProvider
+        theme={lightTheme}
+        plugins={{
+          "magiql-ide": (monaco) => {
+            const lang = monaco.languages
+              .getLanguages()
+              .find((l) => l.id === "graphql");
+            lang.loader = async () => config as any;
+
+            return monaco.languages.register({
+              id: "graphql",
+              worker: {
+                label: "graphql",
+                options: {
+                  languageConfig: {
+                    schemaConfig: schemaConfig,
+                  },
+                },
+                src: monaco.worker.baseWorkerPath + "graphql.monaco.worker.js",
+                providers: {
+                  hover: true,
+                  documentFormattingEdit: true,
+                  completionItem: true,
+                  diagnostics: true,
+                },
+              },
+              extensions: [".graphql", ".gql"],
+              aliases: ["graphql"],
+              mimetypes: ["application/graphql", "text/graphql"],
+              loader: async () => config as any,
+            });
+          },
+        }}
+      >
+        <Persist />
+        <LoadSchema />
+        <App />
+      </MonacoProvider>
+    </RecoilRoot>
+  );
+}
+
+export * from "./render";
+
+export default GraphQLIDE;

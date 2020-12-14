@@ -159,22 +159,10 @@ export function SelectionSet({
   parentPath: string;
 }) {
   const [selectionSet] = useAtom(ast.getSelectionSet(parentPath));
-  const schema = useSchema();
-
-  let unselectedFields = removeSelections(
-    getFields({ type, schema }),
-    selectionSet?.selections ?? [],
-    (item) => `${parentPath}.${item.name}`
-  );
-  let unselectedTypes = removeSelections(
-    [...getTypes({ type, schema })],
-    selectionSet?.selections ?? [],
-    (item) => `${parentPath}.${item.name}`
-  );
 
   return (
     <Lines>
-      {selectionSet?.selections.map((sel) => (
+      {selectionSet?.selections?.map?.((sel) => (
         <Selection key={sel} path={sel} parentPath={sel} type={type} />
       ))}
       <UnselectedFields parentPath={parentPath} type={type} />

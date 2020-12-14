@@ -9,13 +9,15 @@
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "strict": false,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "outDir": "dist/types",
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
     "noImplicitAny": false,
     "moduleResolution": "Node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
     "jsx": "react"
   },
   "include": ["src"]

@@ -1,6 +1,7 @@
 import { atom, useAtom } from "./atom";
 import { parse, GraphQLSchema, DocumentNode, buildASTSchema } from "graphql";
 import React from "react";
+import type { SchemaConfig } from "monaco-graphql";
 
 function localStorageAtom({
   key,
@@ -43,15 +44,19 @@ function jsonLocalStorageAtom({ key, defaultValue }) {
   });
 }
 
+const schemaConfig = atom<SchemaConfig | null>(null);
+
 const [queryText, SaveQuery] = localStorageAtom({
   key: "use-monaco:query.graphql",
   defaultValue: "",
 });
 
-const [schemaText, SaveSchemaText] = localStorageAtom({
-  key: "use-moanco:schema.graphql",
-  defaultValue: null,
-});
+// const [schemaText, SaveSchemaText] = localStorageAtom({
+//   key: "use-moanco:schema.graphql",
+//   defaultValue: null,
+// });
+
+const schemaText = atom<string | null>(null);
 
 const [variablesText, SaveVariables] = localStorageAtom({
   key: "use-monaco:variables.json",
@@ -79,7 +84,7 @@ export function Persist() {
       <SaveVerticalRatio />
       <SaveHorizontalRatio />
       <SaveQuery />
-      <SaveSchemaText />
+      {/* <SaveSchemaText /> */}
       <SaveVariables />
       <SavePanels />
     </>
@@ -93,6 +98,7 @@ export const ide = {
   horizontalRatio,
   verticalRatio,
   Persist,
+  schemaConfig,
   panels,
   results: atom({}),
   schema: atom<GraphQLSchema | null>((get) => {
