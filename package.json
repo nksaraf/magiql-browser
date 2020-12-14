@@ -10,19 +10,19 @@
     "create-hook-context": "^1.0.0",
     "graphql-ast-types": "^1.0.2",
     "monaco-graphql": "^0.3.3",
+    "react": "https://gist.github.com/nksaraf/83e9155eaf183742af74db309869f007.git",
+    "react-dom": "https://gist.github.com/nksaraf/83e9155eaf183742af74db309869f007.git",
     "react-error-boundary": "^3.1.0",
     "react-split-grid": "^1.0.3",
     "recoil": "^0.1.2",
-    "use-monaco": "^0.0.22",
-    "react": "https://gist.github.com/nksaraf/83e9155eaf183742af74db309869f007.git",
-    "react-dom": "https://gist.github.com/nksaraf/83e9155eaf183742af74db309869f007.git"
+    "use-monaco": "^0.0.22"
   },
   "files": [
     "dist"
   ],
   "name": "@magiql/ide",
   "types": "dist/types",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",
