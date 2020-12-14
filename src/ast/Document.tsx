@@ -20,7 +20,6 @@ import {
   Type,
   Name,
 } from "./tokens";
-import "@reach/listbox/styles.css";
 import { SelectionSet } from "./SelectionSet";
 
 function VariableDefinition({ variable }) {

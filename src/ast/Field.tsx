@@ -299,40 +299,29 @@ function Value({ value }: { value: ValueNode }) {
     );
   } else if (gql.isBooleanValue(value)) {
     return (
-      <Tokens>
-        <div>
-          <ListboxInput
-            className={bw`font-mono`}
-            // aria-labelledby={labelId}
-            value={JSON.stringify(value.value)}
-          >
-            <ListboxButton
-              className={bw`text-graphql-boolean px-1 rounded-xs`}
-              arrow={<span className={bw`pl-2`}>↕</span>}
-            />
-            <ListboxPopover
-              className={bw`bg-gray-100 rounded-sm shadow-xl z-1000`}
+      <ListboxInput
+        className={bw`font-mono  rounded-sm`}
+        // aria-labelledby={labelId}
+        value={JSON.stringify(value.value)}
+      >
+        <ListboxButton
+          className={bw`text-graphql-boolean px-1`}
+          arrow={<span className={bw`pl-2`}>↕</span>}
+        />
+        <ListboxPopover className={bw`bg-gray-100 rounded-sm shadow-xl z-1000`}>
+          <ListboxList className={bw`font-mono text-xs text-graphql-boolean`}>
+            <ListboxOption className={bw`px-2 py-1 text-gray-800`} value="true">
+              {"true"}
+            </ListboxOption>
+            <ListboxOption
+              className={bw`px-2 py-1 text-gray-800`}
+              value="false"
             >
-              <ListboxList
-                className={bw`font-mono text-xs text-graphql-boolean`}
-              >
-                <ListboxOption
-                  className={bw`px-2 py-1 text-gray-800`}
-                  value="true"
-                >
-                  {"true"}
-                </ListboxOption>
-                <ListboxOption
-                  className={bw`px-2 py-1 text-gray-800`}
-                  value="false"
-                >
-                  {"false"}
-                </ListboxOption>
-              </ListboxList>
-            </ListboxPopover>
-          </ListboxInput>
-        </div>
-      </Tokens>
+              {"false"}
+            </ListboxOption>
+          </ListboxList>
+        </ListboxPopover>
+      </ListboxInput>
     );
   } else if (gql.isNullValue(value)) {
     return (

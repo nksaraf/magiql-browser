@@ -2,6 +2,7 @@ import React from "react";
 import { MonacoProvider, useMonaco } from "use-monaco";
 import type * as monacoApi from "monaco-editor";
 import { bw, setup } from "@beamwind/play";
+import "./styles";
 import { RecoilRoot } from "recoil";
 import { useAtom, useUpdateAtom } from "./lib/atom";
 import { Graphql, PlayButton } from "./lib/Icons";
@@ -14,13 +15,6 @@ import lightTheme from "./editor/theme";
 import * as config from "./editor/graphql.config";
 import { ErrorBoundary } from "react-error-boundary";
 import { ast, useSchema } from "./ast/state";
-
-setup({
-  init(insert, theme) {
-    insert(`body{margin:0}`);
-  },
-  extends: {},
-});
 
 function QueryEditor() {
   const [query, setQuery] = useAtom(ide.queryText);
@@ -137,7 +131,7 @@ function Explorer() {
               </pre>
             )}
           >
-            {document && schema && <Document />}
+            {schema && <Document />}
           </ErrorBoundary>
         </div>
       </div>

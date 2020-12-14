@@ -1,5 +1,5 @@
 import { atom, useAtom } from "./atom";
-import { parse, GraphQLSchema, DocumentNode, buildASTSchema } from "graphql";
+import { parse, GraphQLSchema, buildASTSchema } from "graphql";
 import React from "react";
 import type { SchemaConfig } from "monaco-graphql";
 
@@ -9,7 +9,10 @@ function localStorageAtom({
   parse = (s) => s,
   serialize = (s) => s,
 }) {
-  const val = parse(localStorage.getItem(key)) ?? defaultValue;
+  const val =
+    typeof window === "undefined"
+      ? defaultValue
+      : parse(localStorage.getItem(key)) ?? defaultValue;
 
   const atomic = atom(val);
 
