@@ -16,7 +16,12 @@
     "react-error-boundary": "^3.1.0",
     "react-split-grid": "^1.0.3",
     "recoil": "^0.1.2",
-    "use-monaco": "^0.0.22"
+    "use-monaco": "^0.0.24"
+  },
+  "peerDependencies": {
+    "graphql": "*",
+    "react": "*",
+    "react-dom": "*"
   },
   "files": [
     "dist"

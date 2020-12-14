@@ -1,13 +1,14 @@
 {
-  "version": "0.0.20+87fac5f3",
+  "version": "0.0.22+cdef1da6",
   "license": "MIT",
   "main": "./dist/cjs/production/use-monaco.js",
   "scripts": {
     "start": "next",
     "pkg": "pkger build && node copy-workers.js",
     "build": "next build",
+    "prepublishOnly": "yarn build && yarn compile",
     "clean": "rm -rf dist",
-    "compile": "yarn clean && tsup src/monaco.ts src/index.ts src/themes.ts src/worker.ts --format esm,cjs --legacy-output && tsc --build tsconfig.build.json"
+    "compile": "yarn clean && tsup src/monaco.ts src/index.ts src/themes.ts src/worker.ts --format esm,cjs --legacy-output && tsc --build tsconfig.build.json && node copy-workers.js"
   },
   "peerDependencies": {
     "react": ">=16"
@@ -39,6 +40,8 @@
   ],
   "dependencies": {
     "create-hook-context": "^1.0.0",
+    "graphql-language-service": "^3.0.4",
+    "graphql-language-service-types": "^1.6.3",
     "monaco-editor": "0.20.0",
     "monaco-graphql": "^0.3.3",
     "use-debounce": "^3.4.2",
@@ -87,5 +90,5 @@
     "monaco",
     "dist/types"
   ],
-  "yalcSig": "87fac5f31f570ced277181e4df55a008"
+  "yalcSig": "cdef1da6aa6b75752d040fc6720dde63"
 }

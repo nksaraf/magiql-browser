@@ -1,5 +1,5 @@
 import React from "react";
-import { MonacoProvider, useMonaco } from "use-monaco";
+import { MonacoProvider, plugins, useMonaco } from "use-monaco";
 import type * as monacoApi from "monaco-editor";
 import { bw, setup } from "@beamwind/play";
 import "./styles";
@@ -301,11 +301,7 @@ export function GraphQLIDE({ schemaConfig }) {
         theme={lightTheme}
         plugins={{
           "magiql-ide": (monaco) => {
-            const lang = monaco.languages
-              .getLanguages()
-              .find((l) => l.id === "graphql");
-            lang.loader = async () => config as any;
-
+            monaco.plugin.install(plugins.prettier(["graphql", "json"]));
             return monaco.languages.register({
               id: "graphql",
               worker: {
