@@ -1,0 +1,10 @@
+{
+  "version": "v1",
+  "packages": {
+    "use-monaco": {
+      "signature": "87fac5f31f570ced277181e4df55a008",
+      "file": true,
+      "replaced": "^0.0.20"
+    }
+  }
+}

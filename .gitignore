@@ -2,5 +2,3 @@ node_modules
 dist
 .cache
 yarn.lock
-yalc.lock
-.yalc
