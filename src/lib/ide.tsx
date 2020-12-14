@@ -1,5 +1,5 @@
 import { atom, useAtom } from "./atom";
-import { parse, GraphQLSchema, buildASTSchema } from "graphql";
+import { GraphQLSchema, buildASTSchema, parse } from "graphql";
 import React from "react";
 import type { SchemaConfig } from "monaco-graphql";
 

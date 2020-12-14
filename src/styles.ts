@@ -1,8 +1,32 @@
 import { setup } from "@beamwind/play";
+import { cssomInjector, noOpInjector } from "beamwind";
+
+const getStyleElement = (nonce?: string): HTMLStyleElement => {
+  // Hydrate existing style element if available
+  // eslint-disable-next-line unicorn/prefer-query-selector
+  let element = document.getElementById("__font") as HTMLStyleElement | null;
+
+  if (!element) {
+    // Create a new one otherwise
+    element = document.createElement("style");
+
+    element.id = "__font";
+    nonce && (element.nonce = nonce);
+
+    // eslint-disable-next-line unicorn/prefer-node-append
+    document.head.appendChild(element);
+  }
+
+  return element;
+};
+
+const fontInjector =
+  typeof window === "undefined"
+    ? noOpInjector()
+    : cssomInjector({ target: getStyleElement().sheet });
 
 setup({
   init(insert, theme) {
-    insert(`body{margin:0}`);
     `:root {
   --reach-listbox: 1;
 }
@@ -114,6 +138,11 @@ setup({
 }`
       .split("\n\n")
       .forEach(insert);
+    insert(`body{margin:0}`);
+    fontInjector.insert(
+      `@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&display=swap');`,
+      0
+    );
   },
   extends: {},
 });
