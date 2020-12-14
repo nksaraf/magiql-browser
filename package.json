@@ -13,14 +13,14 @@
     "react-error-boundary": "^3.1.0",
     "react-split-grid": "^1.0.3",
     "recoil": "^0.1.2",
-    "use-monaco": "^0.0.21"
+    "use-monaco": "^0.0.22"
   },
   "files": [
     "dist"
   ],
   "name": "@magiql/ide",
   "types": "dist/types",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",
@@ -51,7 +51,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "prepublishOnly": "yarn build && yarn pkg",
+    "prepublishOnly": "yarn build && yarn pkg && yarn tsc",
     "pkg": "yarn tsup src/index.tsx --format cjs,esm --legacy-output --external react --external react-dom"
   },
   "prettier": {
