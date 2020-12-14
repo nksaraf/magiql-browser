@@ -11,7 +11,7 @@
     "strict": false,
     "emitDeclarationOnly": true,
     "declaration": true,
-    "outDir": "dist/types",
+    "outDir": "pkg/dist/types",
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
     "noImplicitAny": false,
