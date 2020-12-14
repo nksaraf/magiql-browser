@@ -10,7 +10,6 @@
     "create-hook-context": "^1.0.0",
     "graphql-ast-types": "^1.0.2",
     "monaco-graphql": "^0.3.3",
-    "preact": "^10.5.7",
     "react-error-boundary": "^3.1.0",
     "react-split-grid": "^1.0.3",
     "recoil": "^0.1.2",
@@ -20,7 +19,8 @@
     "dist"
   ],
   "name": "@magiql/ide",
-  "version": "0.0.4",
+  "types": "dist/types",
+  "version": "0.0.5",
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",
@@ -28,13 +28,6 @@
       "require": "./dist/index.js",
       "node": "./dist/index.js",
       "default": "./dist/esm/index.js"
-    },
-    "./render": {
-      "import": "./dist/esm/render.js",
-      "browser": "./dist/esm/render.js",
-      "require": "./dist/render.js",
-      "node": "./dist/render.js",
-      "default": "./dist/esm/render.js"
     },
     "./package.json": "./package.json",
     "./": "./"
@@ -45,6 +38,7 @@
     "@prefresh/vite": "^1.2.2",
     "@types/node": "^14.14.13",
     "graphql": "^15.4.0",
+    "preact": "^10.5.7",
     "prettier": "^2.2.1",
     "react": "https://gist.github.com/nksaraf/83e9155eaf183742af74db309869f007.git",
     "react-dom": "https://gist.github.com/nksaraf/83e9155eaf183742af74db309869f007.git",
@@ -58,7 +52,7 @@
     "dev": "vite",
     "build": "vite build",
     "prepublishOnly": "yarn build && yarn pkg",
-    "pkg": "yarn tsup src/index.tsx src/render.ts --format cjs,esm --legacy-output --external react --external react-dom"
+    "pkg": "yarn tsup src/index.tsx --format cjs,esm --legacy-output --external react --external react-dom"
   },
   "prettier": {
     "tabWidth": 2

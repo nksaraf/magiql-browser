@@ -345,6 +345,4 @@ export function GraphQLIDE({ schemaConfig }) {
   );
 }
 
-export * from "./render";
-
 export default GraphQLIDE;
