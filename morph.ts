@@ -147,6 +147,8 @@ ${["string", "boolean", "number"]
        }`,
       set: `(get, set, node: gql.${astNodeInterfaceName}) => {
         if (!node) {
+          console.log(!node);
+          set(getNodeMetadata(path),(old) => ({ ...old, parentPath: "", isSelected: false }));
           return;
         }
 
@@ -181,12 +183,18 @@ ${["string", "boolean", "number"]
           return get(get${astKind}Paths(path)).map(subPath => get(get${astKind}(subPath)))
   
          }`,
-              set: `(get, set, nodes: gql.${astNodeInterfaceName}[] = []) => {
-          set(get${astKind}Paths(path), nodes.map((node, index) => path + '.' + index));
+              set: `(get, set, nodes: gql.${astNodeInterfaceName}[]) => {
           
-          (nodes ?? []).forEach((node, index) => {
+              console.log(nodes);
+          if (!nodes) {
+           set(get${astKind}Paths(path), []);
+          }
+          else { 
+            set(get${astKind}Paths(path), nodes.map((node, index) => path + '.' + index));
+            nodes.forEach((node, index) => {
             set(get${astKind}(path + '.' + index), node);
           })
+        }
         }`,
             })
           : ""
@@ -233,7 +241,13 @@ ${source
   
          }`,
         set: `(get, set, node: gql.${nodeTypeAliasName}) => {
-          set(getNodeMetadata(path), { path, parentPath: "", kind: node.kind, isSelected: true })
+          if (!node) {
+            console.log(node);
+            set(getNodeMetadata(path), (old) => ({ parentPath: "", isSelected: false  }))
+          } else {
+            set(getNodeMetadata(path), { path, parentPath: "", kind: node.kind, isSelected: true })
+          }
+
           switch (node.kind) {
             ${subTypes
               .map((type) => {
@@ -267,8 +281,13 @@ ${source
         return get(get${astKind}Paths(path)).map(subPath => get(get${astKind}(subPath)))
 
        }`,
-            set: `(get, set, nodes: gql.${nodeTypeAliasName}[] = []) => {
-        set(get${astKind}Paths(path), nodes.map((node, index) => path + '.' + index));
+            set: `(get, set, nodes: gql.${nodeTypeAliasName}[]) => {
+        
+        if (!nodes) {
+          set(get${astKind}Paths(path), []);
+          return;
+        }
+        set(get${astKind}Paths(path), nodes.map((node, index) => path +'.' + index));
 
         nodes.forEach((node, index) => {
           set(get${astKind}(path + '.' + index), node);

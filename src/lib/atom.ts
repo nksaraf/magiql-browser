@@ -99,8 +99,8 @@ export function atomFamily<Value>(
     id: any
   ) => (get: Getter, set: Setter, update: any) => void | Promise<void>
 ): (param: any) => RecoilState<Value> {
-  const cache = {};
-  return (id: any) => {
+  let cache = {};
+  const func = (id: any) => {
     if (cache[id]) {
       return cache[id];
     } else {
@@ -111,6 +111,8 @@ export function atomFamily<Value>(
       return cache[id];
     }
   };
+
+  return func;
 }
 
 export function useAtom<Value>(atom: RecoilState<Value>) {

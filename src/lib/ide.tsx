@@ -102,6 +102,7 @@ export const ide = {
   verticalRatio,
   Persist,
   schemaConfig,
+  lastEditedBy: atom<string | null>(null),
   panels,
   results: atom({}),
   schema: atom<GraphQLSchema | null>((get) => {

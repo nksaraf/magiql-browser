@@ -35,6 +35,12 @@ export const getName = atomFamily<gql.NameNode>(
   },
   (path: string) => (get, set, node: gql.NameNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -69,6 +75,12 @@ export const getDocument = atomFamily<gql.DocumentNode>(
   },
   (path: string) => (get, set, node: gql.DocumentNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -145,6 +157,12 @@ export const getOperationDefinition = atomFamily<gql.OperationDefinitionNode>(
   },
   (path: string) => (get, set, node: gql.OperationDefinitionNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -216,6 +234,12 @@ export const getVariableDefinition = atomFamily<gql.VariableDefinitionNode>(
   },
   (path: string) => (get, set, node: gql.VariableDefinitionNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -242,15 +266,19 @@ export const getVariableDefinitions = atomFamily<gql.VariableDefinitionNode[]>(
       get(getVariableDefinition(subPath))
     );
   },
-  (path: string) => (get, set, nodes: gql.VariableDefinitionNode[] = []) => {
-    set(
-      getVariableDefinitionPaths(path),
-      nodes.map((node, index) => path + "." + index)
-    );
-
-    (nodes ?? []).forEach((node, index) => {
-      set(getVariableDefinition(path + "." + index), node);
-    });
+  (path: string) => (get, set, nodes: gql.VariableDefinitionNode[]) => {
+    console.log(nodes);
+    if (!nodes) {
+      set(getVariableDefinitionPaths(path), []);
+    } else {
+      set(
+        getVariableDefinitionPaths(path),
+        nodes.map((node, index) => path + "." + index)
+      );
+      nodes.forEach((node, index) => {
+        set(getVariableDefinition(path + "." + index), node);
+      });
+    }
   }
 );
 
@@ -275,6 +303,12 @@ export const getVariable = atomFamily<gql.VariableNode>(
   },
   (path: string) => (get, set, node: gql.VariableNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -309,6 +343,12 @@ export const getSelectionSet = atomFamily<gql.SelectionSetNode>(
   },
   (path: string) => (get, set, node: gql.SelectionSetNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -383,6 +423,12 @@ export const getField = atomFamily<gql.FieldNode>(
   },
   (path: string) => (get, set, node: gql.FieldNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -406,15 +452,19 @@ export const getFields = atomFamily<gql.FieldNode[]>(
   (path: string) => (get) => {
     return get(getFieldPaths(path)).map((subPath) => get(getField(subPath)));
   },
-  (path: string) => (get, set, nodes: gql.FieldNode[] = []) => {
-    set(
-      getFieldPaths(path),
-      nodes.map((node, index) => path + "." + index)
-    );
-
-    (nodes ?? []).forEach((node, index) => {
-      set(getField(path + "." + index), node);
-    });
+  (path: string) => (get, set, nodes: gql.FieldNode[]) => {
+    console.log(nodes);
+    if (!nodes) {
+      set(getFieldPaths(path), []);
+    } else {
+      set(
+        getFieldPaths(path),
+        nodes.map((node, index) => path + "." + index)
+      );
+      nodes.forEach((node, index) => {
+        set(getField(path + "." + index), node);
+      });
+    }
   }
 );
 
@@ -449,6 +499,12 @@ export const getArgument = atomFamily<gql.ArgumentNode>(
   },
   (path: string) => (get, set, node: gql.ArgumentNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -471,15 +527,19 @@ export const getArguments = atomFamily<gql.ArgumentNode[]>(
       get(getArgument(subPath))
     );
   },
-  (path: string) => (get, set, nodes: gql.ArgumentNode[] = []) => {
-    set(
-      getArgumentPaths(path),
-      nodes.map((node, index) => path + "." + index)
-    );
-
-    (nodes ?? []).forEach((node, index) => {
-      set(getArgument(path + "." + index), node);
-    });
+  (path: string) => (get, set, nodes: gql.ArgumentNode[]) => {
+    console.log(nodes);
+    if (!nodes) {
+      set(getArgumentPaths(path), []);
+    } else {
+      set(
+        getArgumentPaths(path),
+        nodes.map((node, index) => path + "." + index)
+      );
+      nodes.forEach((node, index) => {
+        set(getArgument(path + "." + index), node);
+      });
+    }
   }
 );
 
@@ -514,6 +574,12 @@ export const getFragmentSpread = atomFamily<gql.FragmentSpreadNode>(
   },
   (path: string) => (get, set, node: gql.FragmentSpreadNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -569,6 +635,12 @@ export const getInlineFragment = atomFamily<gql.InlineFragmentNode>(
   },
   (path: string) => (get, set, node: gql.InlineFragmentNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -647,6 +719,12 @@ export const getFragmentDefinition = atomFamily<gql.FragmentDefinitionNode>(
   },
   (path: string) => (get, set, node: gql.FragmentDefinitionNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -688,6 +766,12 @@ export const getIntValue = atomFamily<gql.IntValueNode>(
   },
   (path: string) => (get, set, node: gql.IntValueNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -722,6 +806,12 @@ export const getFloatValue = atomFamily<gql.FloatValueNode>(
   },
   (path: string) => (get, set, node: gql.FloatValueNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -766,6 +856,12 @@ export const getStringValue = atomFamily<gql.StringValueNode>(
   },
   (path: string) => (get, set, node: gql.StringValueNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -801,6 +897,12 @@ export const getBooleanValue = atomFamily<gql.BooleanValueNode>(
   },
   (path: string) => (get, set, node: gql.BooleanValueNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -825,6 +927,12 @@ export const getNullValue = atomFamily<gql.NullValueNode>(
   },
   (path: string) => (get, set, node: gql.NullValueNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -858,6 +966,12 @@ export const getEnumValue = atomFamily<gql.EnumValueNode>(
   },
   (path: string) => (get, set, node: gql.EnumValueNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -892,6 +1006,12 @@ export const getListValue = atomFamily<gql.ListValueNode>(
   },
   (path: string) => (get, set, node: gql.ListValueNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -926,6 +1046,12 @@ export const getObjectValue = atomFamily<gql.ObjectValueNode>(
   },
   (path: string) => (get, set, node: gql.ObjectValueNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -970,6 +1096,12 @@ export const getObjectField = atomFamily<gql.ObjectFieldNode>(
   },
   (path: string) => (get, set, node: gql.ObjectFieldNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -992,15 +1124,19 @@ export const getObjectFields = atomFamily<gql.ObjectFieldNode[]>(
       get(getObjectField(subPath))
     );
   },
-  (path: string) => (get, set, nodes: gql.ObjectFieldNode[] = []) => {
-    set(
-      getObjectFieldPaths(path),
-      nodes.map((node, index) => path + "." + index)
-    );
-
-    (nodes ?? []).forEach((node, index) => {
-      set(getObjectField(path + "." + index), node);
-    });
+  (path: string) => (get, set, nodes: gql.ObjectFieldNode[]) => {
+    console.log(nodes);
+    if (!nodes) {
+      set(getObjectFieldPaths(path), []);
+    } else {
+      set(
+        getObjectFieldPaths(path),
+        nodes.map((node, index) => path + "." + index)
+      );
+      nodes.forEach((node, index) => {
+        set(getObjectField(path + "." + index), node);
+      });
+    }
   }
 );
 
@@ -1035,6 +1171,12 @@ export const getDirective = atomFamily<gql.DirectiveNode>(
   },
   (path: string) => (get, set, node: gql.DirectiveNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -1057,15 +1199,19 @@ export const getDirectives = atomFamily<gql.DirectiveNode[]>(
       get(getDirective(subPath))
     );
   },
-  (path: string) => (get, set, nodes: gql.DirectiveNode[] = []) => {
-    set(
-      getDirectivePaths(path),
-      nodes.map((node, index) => path + "." + index)
-    );
-
-    (nodes ?? []).forEach((node, index) => {
-      set(getDirective(path + "." + index), node);
-    });
+  (path: string) => (get, set, nodes: gql.DirectiveNode[]) => {
+    console.log(nodes);
+    if (!nodes) {
+      set(getDirectivePaths(path), []);
+    } else {
+      set(
+        getDirectivePaths(path),
+        nodes.map((node, index) => path + "." + index)
+      );
+      nodes.forEach((node, index) => {
+        set(getDirective(path + "." + index), node);
+      });
+    }
   }
 );
 
@@ -1090,6 +1236,12 @@ export const getNamedType = atomFamily<gql.NamedTypeNode>(
   },
   (path: string) => (get, set, node: gql.NamedTypeNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -1124,6 +1276,12 @@ export const getListType = atomFamily<gql.ListTypeNode>(
   },
   (path: string) => (get, set, node: gql.ListTypeNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -1158,6 +1316,12 @@ export const getNonNullType = atomFamily<gql.NonNullTypeNode>(
   },
   (path: string) => (get, set, node: gql.NonNullTypeNode) => {
     if (!node) {
+      console.log(!node);
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
       return;
     }
 
@@ -1184,12 +1348,21 @@ export const getAbstract = atomFamily<gql.AbstractNode>(
     }
   },
   (path: string) => (get, set, node: gql.AbstractNode) => {
-    set(getNodeMetadata(path), {
-      path,
-      parentPath: "",
-      kind: node.kind,
-      isSelected: true,
-    });
+    if (!node) {
+      console.log(node);
+      set(getNodeMetadata(path), (old) => ({
+        parentPath: "",
+        isSelected: false,
+      }));
+    } else {
+      set(getNodeMetadata(path), {
+        path,
+        parentPath: "",
+        kind: node.kind,
+        isSelected: true,
+      });
+    }
+
     switch (node.kind) {
       case "NamedType": {
         return set(getNamedType(path), node);
@@ -1214,12 +1387,21 @@ export const getDefinition = atomFamily<gql.DefinitionNode>(
     }
   },
   (path: string) => (get, set, node: gql.DefinitionNode) => {
-    set(getNodeMetadata(path), {
-      path,
-      parentPath: "",
-      kind: node.kind,
-      isSelected: true,
-    });
+    if (!node) {
+      console.log(node);
+      set(getNodeMetadata(path), (old) => ({
+        parentPath: "",
+        isSelected: false,
+      }));
+    } else {
+      set(getNodeMetadata(path), {
+        path,
+        parentPath: "",
+        kind: node.kind,
+        isSelected: true,
+      });
+    }
+
     switch (node.kind) {
       case "OperationDefinition": {
         return set(getOperationDefinition(path), node);
@@ -1239,7 +1421,11 @@ export const getDefinitions = atomFamily<gql.DefinitionNode[]>(
       get(getDefinition(subPath))
     );
   },
-  (path: string) => (get, set, nodes: gql.DefinitionNode[] = []) => {
+  (path: string) => (get, set, nodes: gql.DefinitionNode[]) => {
+    if (!nodes) {
+      set(getDefinitionPaths(path), []);
+      return;
+    }
     set(
       getDefinitionPaths(path),
       nodes.map((node, index) => path + "." + index)
@@ -1267,12 +1453,21 @@ export const getSelection = atomFamily<gql.SelectionNode>(
     }
   },
   (path: string) => (get, set, node: gql.SelectionNode) => {
-    set(getNodeMetadata(path), {
-      path,
-      parentPath: "",
-      kind: node.kind,
-      isSelected: true,
-    });
+    if (!node) {
+      console.log(node);
+      set(getNodeMetadata(path), (old) => ({
+        parentPath: "",
+        isSelected: false,
+      }));
+    } else {
+      set(getNodeMetadata(path), {
+        path,
+        parentPath: "",
+        kind: node.kind,
+        isSelected: true,
+      });
+    }
+
     switch (node.kind) {
       case "Field": {
         return set(getField(path), node);
@@ -1295,7 +1490,11 @@ export const getSelections = atomFamily<gql.SelectionNode[]>(
       get(getSelection(subPath))
     );
   },
-  (path: string) => (get, set, nodes: gql.SelectionNode[] = []) => {
+  (path: string) => (get, set, nodes: gql.SelectionNode[]) => {
+    if (!nodes) {
+      set(getSelectionPaths(path), []);
+      return;
+    }
     set(
       getSelectionPaths(path),
       nodes.map((node, index) => path + "." + index)
@@ -1341,12 +1540,21 @@ export const getValue = atomFamily<gql.ValueNode>(
     }
   },
   (path: string) => (get, set, node: gql.ValueNode) => {
-    set(getNodeMetadata(path), {
-      path,
-      parentPath: "",
-      kind: node.kind,
-      isSelected: true,
-    });
+    if (!node) {
+      console.log(node);
+      set(getNodeMetadata(path), (old) => ({
+        parentPath: "",
+        isSelected: false,
+      }));
+    } else {
+      set(getNodeMetadata(path), {
+        path,
+        parentPath: "",
+        kind: node.kind,
+        isSelected: true,
+      });
+    }
+
     switch (node.kind) {
       case "Variable": {
         return set(getVariable(path), node);
@@ -1385,7 +1593,11 @@ export const getValues = atomFamily<gql.ValueNode[]>(
   (path: string) => (get) => {
     return get(getValuePaths(path)).map((subPath) => get(getValue(subPath)));
   },
-  (path: string) => (get, set, nodes: gql.ValueNode[] = []) => {
+  (path: string) => (get, set, nodes: gql.ValueNode[]) => {
+    if (!nodes) {
+      set(getValuePaths(path), []);
+      return;
+    }
     set(
       getValuePaths(path),
       nodes.map((node, index) => path + "." + index)
@@ -1413,12 +1625,21 @@ export const getType = atomFamily<gql.TypeNode>(
     }
   },
   (path: string) => (get, set, node: gql.TypeNode) => {
-    set(getNodeMetadata(path), {
-      path,
-      parentPath: "",
-      kind: node.kind,
-      isSelected: true,
-    });
+    if (!node) {
+      console.log(node);
+      set(getNodeMetadata(path), (old) => ({
+        parentPath: "",
+        isSelected: false,
+      }));
+    } else {
+      set(getNodeMetadata(path), {
+        path,
+        parentPath: "",
+        kind: node.kind,
+        isSelected: true,
+      });
+    }
+
     switch (node.kind) {
       case "NamedType": {
         return set(getNamedType(path), node);

@@ -1,6 +1,6 @@
 import React from "react";
 import * as gql from "../ast-types";
-import { atom, atomFamily } from "../lib/atom";
+import { atom, atomFamily, useAtom } from "../lib/atom";
 import "./theme";
 import { bw } from "@beamwind/play";
 import {
@@ -15,7 +15,6 @@ import {
   Qualifier,
   Tokens,
 } from "./tokens";
-import { useSchema } from "./state";
 import {
   getNamedType,
   GraphQLInterfaceType,
@@ -24,6 +23,14 @@ import {
   GraphQLUnionType,
 } from "graphql";
 import { getTypes } from "./utils";
+import { ide } from "../lib/ide";
+import {
+  ListboxInput,
+  ListboxButton,
+  ListboxPopover,
+  ListboxList,
+  ListboxOption,
+} from "@reach/listbox";
 
 function createAstComponent<T>(
   Component: React.FC<{ node: T; [key: string]: any }>
@@ -49,7 +56,7 @@ Document.displayName = "Document";
 
 export const OperationDefinition = createAstComponent<gql.OperationDefinitionNode>(
   ({ node }) => {
-    const schema = useSchema();
+    const [schema] = useAtom(ide.schema);
 
     const getOperationType = (operation: gql.OperationDefinitionNode) => {
       if (operation.operation === "query") {
@@ -168,7 +175,7 @@ Variable.displayName = "Variable";
 //   parentPath: string;
 // }) {
 //   const [selectionSet] = useAtom(ast.getSelectionSet(parentPath));
-//   const schema = useSchema();
+//   const [schema] = useAtom(ide.schema);
 
 //   let unselectedFields = removeSelections(
 //     getFields({ type, schema }),
@@ -212,7 +219,7 @@ Variable.displayName = "Variable";
 //   type: GraphQLObjectType | GraphQLInterfaceType | GraphQLUnionType;
 //   node: gql.SelectionSetNode;
 // }) {
-//   const schema = useSchema();
+//   const [schema] = useAtom(ide.schema);
 
 //   let unselectedTypes = removeSelections(
 //     [...getTypes({ type, schema })],
@@ -235,13 +242,13 @@ Variable.displayName = "Variable";
 
 export const SelectionSet = createAstComponent<gql.SelectionSetNode>(
   ({ node, type }) => {
-    return (
+    return node.metadata.isSelected ? (
       <Lines>
         <Selections node={node.selections} type={type} />
         {/* <UnselectedFields parentPath={parentPath} type={type} /> */}
         {/* <UnselectedTypes parentPath={parentPath} type={type} /> */}
       </Lines>
-    );
+    ) : null;
   }
 );
 
@@ -317,6 +324,9 @@ const ExpandableField = createAstComponent<gql.FieldNode>(
 export const Field = createAstComponent<gql.FieldNode>(({ node, type }) => {
   if (type) {
     const field = type.getFields()[node.name.value];
+    if (!field?.type) {
+      return null;
+    }
 
     const fieldType = getNamedType(field.type);
 
@@ -446,7 +456,7 @@ FragmentSpread.displayName = "FragmentSpread";
 
 export const InlineFragment = createAstComponent<gql.InlineFragmentNode>(
   ({ node }) => {
-    const schema = useSchema();
+    const [schema] = useAtom(ide.schema);
 
     const type = schema.getType(node.typeCondition.name.value);
 
@@ -485,14 +495,35 @@ InlineFragment.displayName = "InlineFragment";
 
 export const FragmentDefinition = createAstComponent<gql.FragmentDefinitionNode>(
   ({ node }) => {
+    const [schema] = useAtom(ide.schema);
+    const type = schema.getType(
+      node.typeCondition.name.value
+    ) as GraphQLObjectType;
+
     return (
-      <div className={bw``}>
-        <Name node={node.name} />
-        <VariableDefinitions node={node.variableDefinitions} />
-        <NamedType node={node.typeCondition} />
-        <Directives node={node.directives} />
-        <SelectionSet node={node.selectionSet} />
-      </div>
+      <Lines>
+        <Tokens>
+          <Arrow
+            className={bw`text-graphql-field`}
+            isOpen={node.metadata.isSelected}
+          />
+          <Keyword>fragment</Keyword>
+          <Name node={node.name} />
+          <Keyword>on</Keyword>
+          <NamedType node={node.typeCondition} />
+          {node.metadata.isSelected && <Punctuation>{"{"}</Punctuation>}
+        </Tokens>
+        {node.metadata.isSelected && (
+          <Indented>
+            <SelectionSet node={node.selectionSet} type={type} />
+          </Indented>
+        )}
+        {node.metadata.isSelected && (
+          <Tokens>
+            <Punctuation>{"}"}</Punctuation>
+          </Tokens>
+        )}
+      </Lines>
     );
   }
 );
@@ -536,11 +567,29 @@ StringValue.displayName = "StringValue";
 export const BooleanValue = createAstComponent<gql.BooleanValueNode>(
   ({ node }) => {
     return (
-      <Tokens>
-        <div className={bw`text-graphql-boolean`}>
-          {JSON.stringify(node.value)}
-        </div>
-      </Tokens>
+      <ListboxInput
+        className={bw`font-mono  rounded-sm`}
+        // aria-labelledby={labelId}
+        value={JSON.stringify(node.value)}
+      >
+        <ListboxButton
+          className={bw`text-graphql-boolean px-1`}
+          arrow={<span className={bw`pl-2`}>↕</span>}
+        />
+        <ListboxPopover className={bw`bg-gray-100 rounded-sm shadow-xl z-1000`}>
+          <ListboxList className={bw`font-mono text-xs text-graphql-boolean`}>
+            <ListboxOption className={bw`px-2 py-1 text-gray-800`} value="true">
+              {"true"}
+            </ListboxOption>
+            <ListboxOption
+              className={bw`px-2 py-1 text-gray-800`}
+              value="false"
+            >
+              {"false"}
+            </ListboxOption>
+          </ListboxList>
+        </ListboxPopover>
+      </ListboxInput>
     );
   }
 );

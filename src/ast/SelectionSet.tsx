@@ -24,7 +24,7 @@ import {
 import { Field } from "./Field";
 
 function InlineFragment({ path, type }) {
-  const schema = useSchema();
+  const [schema] = useAtom(ide.schema);
   const [node] = useAtom<InlineFragmentNode>(ast.getSelection(path) as any);
   const [isSelected] = useAtom(ast.getIsSelected(path));
 
@@ -70,7 +70,7 @@ function FragmentSpread({ path }) {
 }
 function Selection({ parentPath, path, type }) {
   const [node] = useAtom(ast.getSelection(path));
-  const schema = useSchema();
+  const [schema] = useAtom(ide.schema);
 
   if (gql.isField(node)) {
     if (type.getFields()[node.name.value]) {
@@ -101,7 +101,7 @@ function UnselectedFields({
   parentPath: string;
 }) {
   const [selectionSet] = useAtom(ast.getSelectionSet(parentPath));
-  const schema = useSchema();
+  const [schema] = useAtom(ide.schema);
 
   let unselectedFields = removeSelections(
     getFields({ type, schema }),
@@ -130,7 +130,7 @@ function UnselectedTypes({
   parentPath: string;
 }) {
   const [selectionSet] = useAtom(ast.getSelectionSet(parentPath));
-  const schema = useSchema();
+  const [schema] = useAtom(ide.schema);
 
   let unselectedTypes = removeSelections(
     [...getTypes({ type, schema })],
