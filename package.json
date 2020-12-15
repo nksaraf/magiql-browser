@@ -2,6 +2,7 @@
   "dependencies": {
     "@beamwind/colors": "^2.0.3",
     "@beamwind/play": "^2.1.1",
+    "@modulz/radix-icons": "^3.3.0",
     "@reach/combobox": "^0.12.1",
     "@reach/listbox": "^0.12.1",
     "@types/react": "^17.0.0",

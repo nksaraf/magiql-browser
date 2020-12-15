@@ -1,5 +1,5 @@
 import type { GraphQLObjectType, GraphQLInterfaceType } from "graphql";
-import * as gql from "graphql-ast-types";
+import * as gql from "../ast-types";
 
 export const removeSelections = (list, selections, getPath) => {
   let unselected = [...list];

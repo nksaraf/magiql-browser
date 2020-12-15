@@ -1,1 +1,1 @@
-export * from "graphql-ast-types";
+export {};

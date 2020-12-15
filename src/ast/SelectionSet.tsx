@@ -7,7 +7,7 @@ import {
   GraphQLInterfaceType,
   GraphQLUnionType,
 } from "graphql";
-import * as gql from "graphql-ast-types";
+import * as gql from "../ast-types";
 import { Arrow, Checkbox } from "./tokens";
 import { ast, useSchema } from "./state";
 import { removeSelections, getFields, getTypes } from "./utils";

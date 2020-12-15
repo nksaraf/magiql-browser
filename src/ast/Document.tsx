@@ -7,7 +7,7 @@ import {
   print,
   VariableDefinitionNode,
 } from "graphql";
-import * as gql from "graphql-ast-types";
+import * as gql from "../ast-types";
 import { Arrow, Variable } from "./tokens";
 import { ast, useSchema, getOperationNode, getFragmentNode } from "./state";
 import "./theme";
@@ -131,7 +131,7 @@ function OperationDefinition({ operationName }: { operationName: string }) {
   );
 }
 
-function FragmentDefinition({ fragmentName }: { fragmentName: string }) {
+function FragmentDefinition({ node }: { node: FragmentDefinitionNode }) {
   const schema = useSchema();
   const [fragment] = useAtom(getFragmentNode(fragmentName));
 
@@ -169,8 +169,10 @@ function FragmentDefinition({ fragmentName }: { fragmentName: string }) {
   );
 }
 
+import * as gqlAst from "../../atoms.raw";
+
 export function Document() {
-  const [document] = useAtom(ast.documentNode);
+  const [document] = useAtom(gqlAst.getDocument(""));
 
   if (!document) {
     return null;
@@ -178,19 +180,19 @@ export function Document() {
 
   return (
     <div className={bw`flex flex-col gap-6`}>
-      {document.definitions.map((def, i) => {
-        if (gql.isOperationDefinition(def)) {
+      {document.definitions.map((definition, i) => {
+        if (definition.kind === "OperationDefinition") {
           return (
             <OperationDefinition
-              operationName={def.name?.value ?? `Operation${i}`}
-              key={def.name?.value ?? `Operation${i}`}
+              node={definition}
+              key={definition.name?.value ?? `Operation${i}`}
             />
           );
-        } else if (gql.isFragmentDefinition(def)) {
+        } else if (definition.kind === "FragmentDefinition") {
           return (
             <FragmentDefinition
-              fragmentName={def.name.value}
-              key={def.name.value}
+              fragmentName={definition.name.value}
+              key={definition.name.value}
             />
           );
         }

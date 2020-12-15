@@ -46,9 +46,9 @@ import {
   TypeNode,
   TypeSystemDefinitionNode,
   TypeDefinitionNode,
-} from "./types";
+} from "./_types";
 
-export * from "./types";
+export * from "./_types";
 
 export function name(value: string): NameNode;
 export function isName(node: any): node is NameNode;

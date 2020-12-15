@@ -7,14 +7,22 @@ import { RecoilRoot } from "recoil";
 import { useAtom, useUpdateAtom } from "./lib/atom";
 import { Graphql, PlayButton } from "./lib/Icons";
 import { ide, Persist } from "./lib/ide";
-import { Document } from "./ast/Document";
 import { EditorPanel, header, panel } from "./lib/components";
 import SplitGrid from "react-split-grid";
+import * as comps from "./ast/components";
+import * as icons from "@modulz/radix-icons";
+
+function Doc() {
+  const [doc] = useAtom(gqlAst.getDocument(""));
+
+  return <comps.Document node={doc} />;
+}
 
 import lightTheme from "./editor/theme";
 import * as config from "./editor/graphql.config";
 import { ErrorBoundary } from "react-error-boundary";
 import { ast, useSchema } from "./ast/state";
+import * as gql from "./ast-types";
 
 function QueryEditor() {
   const [query, setQuery] = useAtom(ide.queryText);
@@ -108,17 +116,31 @@ function LoadSchema() {
   return null;
 }
 
+import * as gqlAst from "../atoms.raw";
+
 function Explorer() {
   const [query, setQueryText] = useAtom(ide.queryText);
   const [document, setDocument] = useAtom(ast.currentDocument);
+  const [doc, setDoc] = useAtom(gqlAst.getDocument(""));
 
+  console.log(doc);
   React.useEffect(() => {
-    setDocument(query);
-  }, [query, setDocument]);
+    try {
+      console.log(query, parse(query));
+
+      const parsedQuery = parse(query) as gql.DocumentNode;
+      setDoc(parsedQuery);
+    } catch (e) {
+      console.error(e);
+    }
+    // setDocument(query);
+  }, [query, setDoc]);
 
   React.useEffect(() => {
     console.log(document);
-    setQueryText(document);
+    if (document) {
+      setQueryText(document);
+    }
   }, [document, setQueryText]);
 
   const [schema] = useAtom(ide.schema);
@@ -136,11 +158,38 @@ function Explorer() {
               </pre>
             )}
           >
-            {schema && <Document />}
+            {schema && <Doc />}
           </ErrorBoundary>
         </div>
       </div>
     </div>
+  );
+}
+
+function replacer(key, value) {
+  // Filtering out properties
+  if (key === "metadata") {
+    return undefined;
+  }
+  return value;
+}
+
+function ASTViewer() {
+  const doc = useAtom(gqlAst.getDocument(""));
+
+  return (
+    <EditorPanel
+      header="AST"
+      options={{
+        readOnly: true,
+        fontSize: "10",
+      }}
+      onChange={() => {}}
+      path="ast.json"
+      contents={JSON.stringify(doc, replacer, 2)}
+    >
+      <div className={bw`${header} px-6 absolute top-0 w-full`}>AST</div>
+    </EditorPanel>
   );
 }
 
@@ -150,6 +199,7 @@ const IDEPanels = {
   response: <ResultsEditor />,
   schema: <SchemaEditor />,
   explorer: <Explorer />,
+  ast: <ASTViewer />,
 };
 
 function Header() {
@@ -203,6 +253,14 @@ function Header() {
             })
               .then((res) => res.json())
               .then(({ data, ...others }) => setResults({ data, ...others }));
+          }}
+          className={bw`h-5.5 w-5.5 hover:(mb-0.5) cursor-pointer transition-all mb-0 text-blue-600`}
+        />
+        <icons.Share1Icon
+          onClick={async () => {
+            setPanels((props) =>
+              props[2].includes("ast") ? props : [props[0], props[1], ["ast"]]
+            );
           }}
           className={bw`h-5.5 w-5.5 hover:(mb-0.5) cursor-pointer transition-all mb-0 text-blue-600`}
         />
@@ -295,6 +353,7 @@ function App() {
   );
 }
 import RecoilizeDebugger from "./debug";
+import { parse } from "graphql";
 
 const root = document.getElementById("root");
 export function GraphQLIDE({ schemaConfig }) {
@@ -334,7 +393,7 @@ export function GraphQLIDE({ schemaConfig }) {
           },
         }}
       >
-        <RecoilizeDebugger root={root} />
+        {/* <RecoilizeDebugger root={root} /> */}
         <Persist />
         <LoadSchema />
         <App />

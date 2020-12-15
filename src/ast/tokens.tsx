@@ -84,7 +84,7 @@ const defaultArrowClosed = ({ className, ...props }) => (
 );
 
 const defaultCheckboxChecked = (props) => (
-  <div>
+  <div {...props}>
     <svg
       className={bw`w-3 h-3`}
       viewBox="0 0 18 18"
@@ -100,7 +100,7 @@ const defaultCheckboxChecked = (props) => (
 );
 
 const defaultCheckboxUnchecked = (props) => (
-  <div>
+  <div {...props}>
     <svg
       className={bw`w-3 h-3`}
       viewBox="0 0 18 18"
@@ -119,7 +119,7 @@ export function Arrow({ isOpen, ...props }: any) {
   return isOpen ? defaultArrowOpen(props) : defaultArrowClosed(props);
 }
 
-export function Checkbox(props: { checked: boolean }) {
+export function Checkbox(props: { checked: boolean; className?: string }) {
   return props.checked
     ? defaultCheckboxChecked(props)
     : defaultCheckboxUnchecked(props);

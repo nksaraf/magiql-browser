@@ -34,3 +34,16 @@ export const Graphql = (props) => {
     </svg>
   );
 };
+
+export function ASTButton(props) {
+  return (
+    <svg width={15} height={15} viewBox="0 0 15 15" fill="none" {...props}>
+      <path
+        d="M5 7.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm.713 1.164a2.5 2.5 0 110-2.328l3.391-2.12A2.5 2.5 0 1114 3.5a2.5 2.5 0 01-4.484 1.52l-3.53 2.207a2.526 2.526 0 010 .546l3.53 2.206a2.5 2.5 0 11-.411.804l-3.392-2.12zM11.5 5a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm1.5 6.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"
+        fill="currentColor"
+        fillRule="evenodd"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}
