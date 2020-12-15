@@ -12,20 +12,25 @@
         display: none;
       }
     </style>
-    <link rel="icon" href="/favicon.ico" />
+    <title>GraphQL Sandbox</title>
+    <link rel="icon" href="./public/favicon.ico" />
     <link rel="preconnect" href="https://fonts.gstatic.com" />
   </head>
 
   <body>
     <noscript> You need to enable JavaScript to run this app. </noscript>
     <div id="root"></div>
-    <div id="MAGIQL_IDE_CONFIG">
+    <!-- <div id="MAGIQL_IDE_CONFIG">
       { "uri": "https://swapi-graphql.netlify.app/.netlify/functions/index" }
+    </div> -->
+    <div id="MAGIQL_IDE_CONFIG">
+      { "uri": "https://poke-api-delta.vercel.app/api/graphql" }
     </div>
     <script type="module">
       import React from "react";
       import { render } from "react-dom";
       import GraphQLIDE from "./src/index.tsx";
+
       render(
         React.createElement(GraphQLIDE, {
           schemaConfig: JSON.parse(

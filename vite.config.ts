@@ -4,10 +4,10 @@ import preactRefresh from "@prefresh/vite";
 
 const config: UserConfig = {
   jsx: "react",
-  plugins: [preactRefresh()],
+  // plugins: [preactRefresh()],
   cors: true,
   emitManifest: true,
-  // plugins: [reactPlugin]
+  plugins: [reactPlugin],
 };
 
 export default config;

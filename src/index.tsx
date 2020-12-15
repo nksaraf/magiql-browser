@@ -109,12 +109,17 @@ function LoadSchema() {
 }
 
 function Explorer() {
-  const [query] = useAtom(ide.queryText);
-  const setQuery = useUpdateAtom(ast.currentDocument);
+  const [query, setQueryText] = useAtom(ide.queryText);
+  const [document, setDocument] = useAtom(ast.currentDocument);
 
   React.useEffect(() => {
-    setQuery(query);
-  }, [query, setQuery]);
+    setDocument(query);
+  }, [query, setDocument]);
+
+  React.useEffect(() => {
+    console.log(document);
+    setQueryText(document);
+  }, [document, setQueryText]);
 
   const [schema] = useAtom(ide.schema);
   return (
@@ -174,7 +179,7 @@ function Header() {
       >
         <div
           className={bw`rounded-full ${
-            schema ? `bg-green-400` : `bg-gray-400`
+            schema ? `bg-green-500` : `bg-gray-400`
           } w-2 h-2`}
         ></div>
         <div>{config?.uri}</div>
@@ -289,7 +294,9 @@ function App() {
     </div>
   );
 }
+import RecoilizeDebugger from "./debug";
 
+const root = document.getElementById("root");
 export function GraphQLIDE({ schemaConfig }) {
   return (
     <RecoilRoot
@@ -327,6 +334,7 @@ export function GraphQLIDE({ schemaConfig }) {
           },
         }}
       >
+        <RecoilizeDebugger root={root} />
         <Persist />
         <LoadSchema />
         <App />

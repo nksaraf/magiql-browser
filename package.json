@@ -1,9 +1,9 @@
 {
   "dependencies": {
+    "@beamwind/colors": "^2.0.3",
     "@beamwind/play": "^2.1.1",
     "@reach/combobox": "^0.12.1",
     "@reach/listbox": "^0.12.1",
-    "@types/graphql-ast-types": "https://gist.github.com/nksaraf/3f16ca3dc7fef555e05982aa31a4b9f0.git",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "beamwind": "^2.0.2",
@@ -11,12 +11,14 @@
     "graphql": "^15.4.0",
     "graphql-ast-types": "^1.0.2",
     "monaco-graphql": "^0.3.3",
-    "react": "https://gist.github.com/nksaraf/83e9155eaf183742af74db309869f007.git",
-    "react-dom": "https://gist.github.com/nksaraf/83e9155eaf183742af74db309869f007.git",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
     "react-error-boundary": "^3.1.0",
     "react-split-grid": "^1.0.3",
     "recoil": "^0.1.2",
-    "use-monaco": "^0.0.24"
+    "recoilize": "^1.0.0",
+    "use-monaco": "^0.0.26",
+    "valtio": "^0.4.8"
   },
   "peerDependencies": {
     "graphql": "*",
@@ -45,9 +47,11 @@
   "devDependencies": {
     "@prefresh/vite": "^1.2.2",
     "@types/node": "^14.14.13",
+    "pluralize": "^8.0.0",
     "preact": "^10.5.7",
     "prettier": "^2.2.1",
     "shellac": "^0.4.0",
+    "ts-morph": "^9.1.0",
     "tsup": "^3.10.1",
     "typescript": "^4.1.3",
     "vite": "^1.0.0-rc.13",
