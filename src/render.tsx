@@ -1,7 +1,10 @@
 import manifest from "@magiql/ide/dist/_assets/manifest.json";
 import pkg from "@magiql/ide/package.json";
 
-const html = ({ uri, cdn = "https://unpkg.com", version = pkg.version }) => `
+const html = ({
+  uri,
+  cdn = `https://unpkg.com/@magiql/ide@${pkg.version}/dist`,
+}) => `
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -16,7 +19,7 @@ const html = ({ uri, cdn = "https://unpkg.com", version = pkg.version }) => `
         display: none;
       }
     </style>
-    <link rel="icon" href="${cdn}/@magiql/ide/dist/icon.svg" />
+    <link rel="icon" href="${cdn}/logo.svg" />
   </head>
   <body>
     <noscript> You need to enable JavaScript to run this app. </noscript>
@@ -27,14 +30,12 @@ const html = ({ uri, cdn = "https://unpkg.com", version = pkg.version }) => `
         uri.startsWith("/") ? `window.location.origin + "${uri}"` : `"${uri}"`
       } });
     </script>
-    <script type="module" src="${cdn}/@magiql/ide@${version}/dist/_assets/${
-  manifest["index.js"]
-}"></script>
+    <script type="module" src="${cdn}/_assets/${manifest["index.js"]}"></script>
   </body>
 </html>
 `;
 
-export function renderGraphiQL(props) {
+export function renderGraphiQL(props: { uri: string; cdn?: string }) {
   return html(props);
 }
 

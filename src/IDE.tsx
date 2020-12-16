@@ -150,8 +150,6 @@ function HeadersEditor() {
   const [headersText, setHeaders] = useAtom(ide.getTabHeadersFile(currentTab));
   const [focused, setFocused] = useAtom(ide.focused);
 
-  console.log(headersText);
-
   return (
     <EditorPanel
       contents={headersText}

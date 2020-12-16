@@ -26,11 +26,12 @@
     "react-dom": "*"
   },
   "files": [
-    "dist"
+    "dist",
+    "render"
   ],
   "name": "@magiql/ide",
   "types": "dist/types",
-  "version": "0.0.11",
+  "version": "0.0.14",
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",

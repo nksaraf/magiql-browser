@@ -4,6 +4,8 @@ import fs from "fs";
 shellac`
   $ vite build --outDir pkg/dist
   $ yarn tsup src/render.tsx src/index.tsx --out-dir pkg/dist --format cjs,esm --legacy-output --external --external @magiql/ide react --external graphql --external react-dom
+  $ cp -r render pkg/
+  $ yarn tsc
   await ${async () => {
     const pkg = JSON.parse(fs.readFileSync("./package.json").toString());
     delete pkg.dependencies["react"];
