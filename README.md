@@ -20,7 +20,7 @@ npm install @magiql/ide
 yarn add @magiql/ide
 ```
 
-## Use it for GraphQL server
+## Usage for GraphQL server
 
 ```typescript
 
@@ -72,7 +72,7 @@ export default allowCors(async (req, res) => {
 
 ```
 
-## Use in React App
+## Usage in React App
 
 ```typescript
 
@@ -90,7 +90,7 @@ export default function App() {
 }
 ```
 
-## Use in server-rendered React App 
+## Usage in server-rendered React App 
 
 As the tool is web-based, in case your app is server-rendered, use the following to skip rendering the IDE on the server
 
