@@ -35,8 +35,8 @@ const html = ({
 </html>
 `;
 
-export function renderGraphiQL(props: { uri: string; cdn?: string }) {
+export function renderPlayround(props: { uri: string; cdn?: string }) {
   return html(props);
 }
 
-export default renderGraphiQL;
+export default renderPlayround;
