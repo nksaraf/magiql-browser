@@ -198,16 +198,4 @@ export const ide = {
   settings,
   lastEditedBy: atom<string | null>(null),
   panels,
-  schema: atom<GraphQLSchema | null>((get) => {
-    const text = get(schemaText);
-    if (text) {
-      try {
-        return buildASTSchema(parse(text));
-      } catch (e) {
-        return null;
-      }
-    } else {
-      return null;
-    }
-  }),
 };

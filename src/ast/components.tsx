@@ -32,9 +32,19 @@ import {
   ListboxOption,
 } from "@reach/listbox";
 import * as ast from "./atoms";
+import { createContext } from "create-hook-context";
 
-function createAstComponent<T>(
-  Component: React.FC<{ node: T; [key: string]: any }>
+export const [SchemaProvider, useSchema] = createContext(
+  ({ schema }: { schema: GraphQLSchema | null }) => {
+    return schema;
+  }
+);
+
+export const [ASTProvider, useAST] = createContext(
+  (options?: { onChange?: () => void }) => {
+    return options;
+  }
+);
 ) {
   return Component;
 }

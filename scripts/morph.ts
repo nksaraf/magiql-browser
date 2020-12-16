@@ -188,9 +188,9 @@ ${["string", "boolean", "number"]
            set(get${astKind}Paths(path), []);
           }
           else { 
-            set(get${astKind}Paths(path), nodes.map((node, index) => path + '.' + index));
+            set(get${astKind}Paths(path), nodes.map((node, index) => node.metadata?.path ?? (path + '.' + index)));
             nodes.forEach((node, index) => {
-            set(get${astKind}(path + '.' + index), node);
+            set(get${astKind}(node.metadata?.path ?? (path + '.' + index)), node);
           })
         }
         }`,
@@ -282,10 +282,10 @@ ${source
           set(get${astKind}Paths(path), []);
           return;
         }
-        set(get${astKind}Paths(path), nodes.map((node, index) => path +'.' + index));
+        set(get${astKind}Paths(path), nodes.map((node, index) => node.metadata?.path ?? (path + '.' + index)));
 
         nodes.forEach((node, index) => {
-          set(get${astKind}(path + '.' + index), node);
+          set(get${astKind}(node.metadata?.path ?? (path + '.' + index)), node);
         })
       }`,
           })

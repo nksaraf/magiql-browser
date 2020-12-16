@@ -10,7 +10,7 @@ import * as GQL from "./ast/components";
 
 import { EditorPanel, header, panel } from "./lib/components";
 import SplitGrid from "react-split-grid";
-import { parse, print } from "graphql";
+import { buildASTSchema, parse, print } from "graphql";
 
 import lightTheme from "./editor/theme";
 import * as config from "./editor/graphql.config";
@@ -30,8 +30,32 @@ import {
 function CurrentDocument() {
   const [currentTab] = useAtom(ide.currentTab);
   const [document] = useAtom(gqlAst.getDocument(currentTab));
+  const [schemaText] = useAtom(ide.schemaText);
+  const [schema, setSchema] = React.useState(null);
+  const setLastEditedBy = useUpdateAtom(ide.lastEditedBy);
+  React.useEffect(() => {
+    if (schemaText) {
+      try {
+        setSchema(buildASTSchema(parse(schemaText)));
+      } catch (e) {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }, [schemaText]);
 
-  return <GQL.Document node={document} />;
+  return (
+    <GQL.ASTProvider
+      onChange={() => {
+        setLastEditedBy("explorer");
+      }}
+    >
+      <GQL.SchemaProvider schema={schema}>
+        <GQL.Document node={document} />
+      </GQL.SchemaProvider>
+    </GQL.ASTProvider>
+  );
 }
 
 function QueryEditor() {
@@ -356,7 +380,7 @@ function ASTViewer() {
       }}
       onChange={() => {}}
       path={`/${currentTab}/ast.json`}
-      contents={JSON.stringify(document, true ? replacer : null, 2)}
+      contents={JSON.stringify(document, false ? replacer : null, 2)}
     >
       <div
         onClick={() => {

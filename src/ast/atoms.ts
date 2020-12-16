@@ -268,10 +268,13 @@ export const getVariableDefinitions = atomFamily<gql.VariableDefinitionNode[]>(
     } else {
       set(
         getVariableDefinitionPaths(path),
-        nodes.map((node, index) => path + "." + index)
+        nodes.map((node, index) => node.metadata?.path ?? path + "." + index)
       );
       nodes.forEach((node, index) => {
-        set(getVariableDefinition(path + "." + index), node);
+        set(
+          getVariableDefinition(node.metadata?.path ?? path + "." + index),
+          node
+        );
       });
     }
   }
@@ -450,10 +453,10 @@ export const getFields = atomFamily<gql.FieldNode[]>(
     } else {
       set(
         getFieldPaths(path),
-        nodes.map((node, index) => path + "." + index)
+        nodes.map((node, index) => node.metadata?.path ?? path + "." + index)
       );
       nodes.forEach((node, index) => {
-        set(getField(path + "." + index), node);
+        set(getField(node.metadata?.path ?? path + "." + index), node);
       });
     }
   }
@@ -523,10 +526,10 @@ export const getArguments = atomFamily<gql.ArgumentNode[]>(
     } else {
       set(
         getArgumentPaths(path),
-        nodes.map((node, index) => path + "." + index)
+        nodes.map((node, index) => node.metadata?.path ?? path + "." + index)
       );
       nodes.forEach((node, index) => {
-        set(getArgument(path + "." + index), node);
+        set(getArgument(node.metadata?.path ?? path + "." + index), node);
       });
     }
   }
@@ -1107,10 +1110,10 @@ export const getObjectFields = atomFamily<gql.ObjectFieldNode[]>(
     } else {
       set(
         getObjectFieldPaths(path),
-        nodes.map((node, index) => path + "." + index)
+        nodes.map((node, index) => node.metadata?.path ?? path + "." + index)
       );
       nodes.forEach((node, index) => {
-        set(getObjectField(path + "." + index), node);
+        set(getObjectField(node.metadata?.path ?? path + "." + index), node);
       });
     }
   }
@@ -1180,10 +1183,10 @@ export const getDirectives = atomFamily<gql.DirectiveNode[]>(
     } else {
       set(
         getDirectivePaths(path),
-        nodes.map((node, index) => path + "." + index)
+        nodes.map((node, index) => node.metadata?.path ?? path + "." + index)
       );
       nodes.forEach((node, index) => {
-        set(getDirective(path + "." + index), node);
+        set(getDirective(node.metadata?.path ?? path + "." + index), node);
       });
     }
   }
@@ -1306,6 +1309,177 @@ export const getNonNullType = atomFamily<gql.NonNullTypeNode>(
   }
 );
 
+export const getAST = atomFamily<gql.ASTNode>(
+  (path: string) => (get) => {
+    const metadata = get(getNodeMetadata(path));
+    switch (metadata.kind) {
+      case "Name": {
+        return get(getName(path));
+      }
+      case "Document": {
+        return get(getDocument(path));
+      }
+      case "OperationDefinition": {
+        return get(getOperationDefinition(path));
+      }
+      case "VariableDefinition": {
+        return get(getVariableDefinition(path));
+      }
+      case "Variable": {
+        return get(getVariable(path));
+      }
+      case "SelectionSet": {
+        return get(getSelectionSet(path));
+      }
+      case "Field": {
+        return get(getField(path));
+      }
+      case "Argument": {
+        return get(getArgument(path));
+      }
+      case "FragmentSpread": {
+        return get(getFragmentSpread(path));
+      }
+      case "InlineFragment": {
+        return get(getInlineFragment(path));
+      }
+      case "FragmentDefinition": {
+        return get(getFragmentDefinition(path));
+      }
+      case "IntValue": {
+        return get(getIntValue(path));
+      }
+      case "FloatValue": {
+        return get(getFloatValue(path));
+      }
+      case "StringValue": {
+        return get(getStringValue(path));
+      }
+      case "BooleanValue": {
+        return get(getBooleanValue(path));
+      }
+      case "NullValue": {
+        return get(getNullValue(path));
+      }
+      case "EnumValue": {
+        return get(getEnumValue(path));
+      }
+      case "ListValue": {
+        return get(getListValue(path));
+      }
+      case "ObjectValue": {
+        return get(getObjectValue(path));
+      }
+      case "ObjectField": {
+        return get(getObjectField(path));
+      }
+      case "Directive": {
+        return get(getDirective(path));
+      }
+      case "NamedType": {
+        return get(getNamedType(path));
+      }
+      case "ListType": {
+        return get(getListType(path));
+      }
+      case "NonNullType": {
+        return get(getNonNullType(path));
+      }
+    }
+  },
+  (path: string) => (get, set, node: gql.ASTNode) => {
+    if (!node) {
+      set(getNodeMetadata(path), (old) => ({
+        ...old,
+        parentPath: "",
+        isSelected: false,
+      }));
+    } else {
+      set(getNodeMetadata(path), {
+        path,
+        parentPath: "",
+        kind: node.kind,
+        isSelected: true,
+      });
+    }
+
+    switch (node.kind) {
+      case "Name": {
+        return set(getName(path), node);
+      }
+      case "Document": {
+        return set(getDocument(path), node);
+      }
+      case "OperationDefinition": {
+        return set(getOperationDefinition(path), node);
+      }
+      case "VariableDefinition": {
+        return set(getVariableDefinition(path), node);
+      }
+      case "Variable": {
+        return set(getVariable(path), node);
+      }
+      case "SelectionSet": {
+        return set(getSelectionSet(path), node);
+      }
+      case "Field": {
+        return set(getField(path), node);
+      }
+      case "Argument": {
+        return set(getArgument(path), node);
+      }
+      case "FragmentSpread": {
+        return set(getFragmentSpread(path), node);
+      }
+      case "InlineFragment": {
+        return set(getInlineFragment(path), node);
+      }
+      case "FragmentDefinition": {
+        return set(getFragmentDefinition(path), node);
+      }
+      case "IntValue": {
+        return set(getIntValue(path), node);
+      }
+      case "FloatValue": {
+        return set(getFloatValue(path), node);
+      }
+      case "StringValue": {
+        return set(getStringValue(path), node);
+      }
+      case "BooleanValue": {
+        return set(getBooleanValue(path), node);
+      }
+      case "NullValue": {
+        return set(getNullValue(path), node);
+      }
+      case "EnumValue": {
+        return set(getEnumValue(path), node);
+      }
+      case "ListValue": {
+        return set(getListValue(path), node);
+      }
+      case "ObjectValue": {
+        return set(getObjectValue(path), node);
+      }
+      case "ObjectField": {
+        return set(getObjectField(path), node);
+      }
+      case "Directive": {
+        return set(getDirective(path), node);
+      }
+      case "NamedType": {
+        return set(getNamedType(path), node);
+      }
+      case "ListType": {
+        return set(getListType(path), node);
+      }
+      case "NonNullType": {
+        return set(getNonNullType(path), node);
+      }
+    }
+  }
+);
+
 export const getAbstract = atomFamily<gql.AbstractNode>(
   (path: string) => (get) => {
     const metadata = get(getNodeMetadata(path));
@@ -1399,11 +1573,11 @@ export const getDefinitions = atomFamily<gql.DefinitionNode[]>(
     }
     set(
       getDefinitionPaths(path),
-      nodes.map((node, index) => path + "." + index)
+      nodes.map((node, index) => node.metadata?.path ?? path + "." + index)
     );
 
     nodes.forEach((node, index) => {
-      set(getDefinition(path + "." + index), node);
+      set(getDefinition(node.metadata?.path ?? path + "." + index), node);
     });
   }
 );
@@ -1468,11 +1642,11 @@ export const getSelections = atomFamily<gql.SelectionNode[]>(
     }
     set(
       getSelectionPaths(path),
-      nodes.map((node, index) => path + "." + index)
+      nodes.map((node, index) => node.metadata?.path ?? path + "." + index)
     );
 
     nodes.forEach((node, index) => {
-      set(getSelection(path + "." + index), node);
+      set(getSelection(node.metadata?.path ?? path + "." + index), node);
     });
   }
 );
@@ -1571,11 +1745,11 @@ export const getValues = atomFamily<gql.ValueNode[]>(
     }
     set(
       getValuePaths(path),
-      nodes.map((node, index) => path + "." + index)
+      nodes.map((node, index) => node.metadata?.path ?? path + "." + index)
     );
 
     nodes.forEach((node, index) => {
-      set(getValue(path + "." + index), node);
+      set(getValue(node.metadata?.path ?? path + "." + index), node);
     });
   }
 );

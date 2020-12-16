@@ -3,8 +3,6 @@ import { bw } from "@beamwind/play";
 import { useAtom } from "./lib/atom";
 import { Graphql, PlayButton, Logo, Tree, Helmet } from "./lib/Icons";
 import { ide } from "./lib/ide";
-import * as icons from "@modulz/radix-icons";
-import fetchProgress from "fetch-progress";
 
 import Tooltip, { useTooltip, TooltipPopup } from "@reach/tooltip";
 
@@ -61,7 +59,7 @@ export function Toolbar() {
   const [panels, setPanels] = useAtom(ide.panels);
   const [config] = useAtom(ide.schemaConfig);
   const [focused, setFocused] = useAtom(ide.focused);
-  const [schema] = useAtom(ide.schema);
+  const [schema] = useAtom(ide.schemaText);
   return (
     <div
       className={bw`w-full flex flex-row items-center gap-4 rounded-md bg-gray-100 h-10 py-1.5 px-3`}
@@ -70,7 +68,7 @@ export function Toolbar() {
         <div>
           <Logo
             className={bw`${
-              schema ? `text-#e10098` : `text-gray-400`
+              schema?.length ? `text-#e10098` : `text-gray-400`
             } hover:(mb-0.5 scale-110) ${iconButton}`}
             onClick={() => {
               setFocused("schema");
@@ -88,7 +86,7 @@ export function Toolbar() {
       >
         <div
           className={bw`rounded-full ${
-            schema ? `bg-green-500` : `bg-gray-400`
+            schema?.length ? `bg-green-500` : `bg-gray-400`
           } w-2 h-2`}
         ></div>
         <div>{config?.uri}</div>

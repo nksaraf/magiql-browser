@@ -5,6 +5,32 @@ export interface NodeMetadata {
   isSelected: boolean;
 }
 
+export type ASTNode =
+  | NameNode
+  | DocumentNode
+  | OperationDefinitionNode
+  | VariableDefinitionNode
+  | VariableNode
+  | SelectionSetNode
+  | FieldNode
+  | ArgumentNode
+  | FragmentSpreadNode
+  | InlineFragmentNode
+  | FragmentDefinitionNode
+  | IntValueNode
+  | FloatValueNode
+  | StringValueNode
+  | BooleanValueNode
+  | NullValueNode
+  | EnumValueNode
+  | ListValueNode
+  | ObjectValueNode
+  | ObjectFieldNode
+  | DirectiveNode
+  | NamedTypeNode
+  | ListTypeNode
+  | NonNullTypeNode;
+
 export interface NameNode {
   kind: "Name";
   metadata: NodeMetadata;
