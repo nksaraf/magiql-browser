@@ -1,42 +1,122 @@
-import { atom, useAtom } from "./atom";
+import { atom, atomFamily, useAtom } from "./atom";
 import { GraphQLSchema, buildASTSchema, parse } from "graphql";
 import React from "react";
 import type { SchemaConfig } from "monaco-graphql";
+import { RecoilState } from "recoil";
 
-function localStorageAtom({
+function SaveAtom({ atom, path, serialize }) {
+  const [val, setQuery] = useAtom(atom);
+
+  React.useEffect(() => {
+    localStorage.setItem(prefix + path, serialize(val));
+  }, [val]);
+  return null;
+}
+
+const prefix = "magiql:/";
+
+function localStorageAtom(
   key,
-  defaultValue,
-  parse = (s) => s,
-  serialize = (s) => s,
-}) {
+  { defaultValue, parse = (s) => s, serialize = (s) => s }
+) {
   const val =
     typeof window === "undefined"
       ? defaultValue
-      : parse(localStorage.getItem(key)) ?? defaultValue;
+      : parse(localStorage.getItem(prefix + key)) ?? defaultValue;
 
   const atomic = atom(val);
-
-  function Store() {
-    const [val, setQuery] = useAtom(atomic);
-
-    React.useEffect(() => {
-      localStorage.setItem(key, serialize(val));
-    }, [val]);
-    return null;
-  }
-  return [atomic, Store] as const;
+  return atomic;
 }
 
-function jsonLocalStorageAtom({ key, defaultValue }) {
-  return localStorageAtom({
-    key,
-    defaultValue,
+type Op = (a: string, b?: any) => any;
+
+function memoize<T extends Op>(func: T): T {
+  const cache = {};
+  const f = (path: string, props) => {
+    if (!cache[path]) {
+      cache[path] = func(path, props);
+    }
+    return cache[path];
+  };
+  f.cache = cache;
+  return (f as unknown) as T;
+}
+
+export const persistedFiles = atom<{ [key: string]: boolean }>({});
+
+export function Persist() {
+  const [files] = useAtom(persistedFiles);
+
+  return (
+    <>
+      {Object.keys(files).map((file) =>
+        files[file] ? (
+          <SaveAtom
+            path={file}
+            atom={getRawFile(file)}
+            serialize={(s) => s}
+            key={file}
+          />
+        ) : null
+      )}
+    </>
+  );
+}
+
+const getRawFile = memoize(
+  (path: string, { persist = false, defaultValue = "" }: any = {}) => {
+    return persist
+      ? localStorageAtom(path, { defaultValue })
+      : atom(defaultValue);
+  }
+);
+
+const getFile = memoize(function <T = string>(
+  path: string,
+  {
+    persist = false,
+    parse = (s) => s,
+    serialize = (s) => s,
+    defaultValue = ("" as unknown) as T,
+  } = {}
+): RecoilState<T> {
+  console.log("[storage] creating file", path);
+  const baseAtom = getRawFile(path, {
+    persist,
+    defaultValue: serialize(defaultValue),
+  });
+
+  return atom(
+    (get) => {
+      return parse(get(baseAtom));
+    },
+    (get, set, contents) => {
+      persist &&
+        set(persistedFiles, (old) =>
+          old[path] ? old : { ...old, [path]: true }
+        );
+      set(baseAtom, serialize(contents));
+    }
+  );
+});
+
+const getJSONFile = function <T>(
+  path,
+  {
+    persist = false,
+    defaultValue = ({} as unknown) as T,
+  }: { defaultValue: T; persist: boolean }
+): RecoilState<T> {
+  return getFile<T>(path, {
+    persist,
+    defaultValue: defaultValue,
     parse: (val) => {
       if (val === undefined) {
         return defaultValue;
       }
+
       try {
-        return JSON.parse(val);
+        return JSON.parse(val as any);
       } catch (e) {
         return defaultValue;
       }
@@ -45,66 +125,72 @@ function jsonLocalStorageAtom({ key, defaultValue }) {
       return JSON.stringify(val, null, 2);
     },
   });
-}
+};
+
+const getTabVariablesFile = (tab: string) =>
+  getFile("/" + tab + "/variables.json", {
+    persist: true,
+    defaultValue: "",
+  });
+
+const getTabResults = atomFamily((path) => "");
+
+const getTabQueryFile = (tab: string) =>
+  getFile("/" + tab + "/query.graphql", {
+    persist: true,
+    defaultValue: "",
+  });
+
+const tabs = atom(["_0_"]);
+
+const currentTab = atom("_0_");
+
+const settings = getJSONFile("/settings.json", {
+  persist: true,
+  defaultValue: {
+    panels: [["explorer"], ["editor", "variables"], ["response"]],
+    horizontalRatio: `35fr 10px 30fr 10px 35fr`,
+    verticalRatio: [`35fr 10px 30fr 10px 35fr`, `75fr 10px 25fr`, ``],
+  },
+});
+
+const panels = atom(
+  (get) => get(settings).panels,
+  (get, set, val) => {
+    set(settings, (old) => ({ ...old, panels: val }));
+  }
+);
 
 const schemaConfig = atom<SchemaConfig | null>(null);
 
-const [queryText, SaveQuery] = localStorageAtom({
-  key: "use-monaco:query.graphql",
-  defaultValue: "",
-});
-
-// const [schemaText, SaveSchemaText] = localStorageAtom({
-//   key: "use-moanco:schema.graphql",
-//   defaultValue: null,
-// });
-
 const schemaText = atom<string | null>(null);
 
-const [variablesText, SaveVariables] = localStorageAtom({
-  key: "use-monaco:variables.json",
-  defaultValue: "",
-});
-
-const [panels, SavePanels] = jsonLocalStorageAtom({
-  key: "magiql-ide:panels",
-  defaultValue: [["explorer"], ["editor", "variables"], ["response"]],
-});
-
-const [horizontalRatio, SaveHorizontalRatio] = jsonLocalStorageAtom({
-  key: "magiql-ide:horizontal_ratio",
-  defaultValue: `35fr 10px 30fr 10px 35fr`,
-});
-
-const [verticalRatio, SaveVerticalRatio] = jsonLocalStorageAtom({
-  key: "magiql-ide:vertical_ratio",
-  defaultValue: [`35fr 10px 30fr 10px 35fr`, `75fr 10px 25fr`, ``],
-});
-
-export function Persist() {
-  return (
-    <>
-      <SaveVerticalRatio />
-      <SaveHorizontalRatio />
-      <SaveQuery />
-      {/* <SaveSchemaText /> */}
-      <SaveVariables />
-      <SavePanels />
-    </>
-  );
-}
-
 export const ide = {
-  queryText,
-  variablesText,
+  getTabVariablesFile,
+  getTabQueryFile,
+  currentTab,
+  persistedFiles,
+  getTabResults,
+  getFile,
+  tabs,
   schemaText,
-  horizontalRatio,
-  verticalRatio,
+  horizontalRatio: atom(
+    (get) => get(settings).horizontalRatio,
+    (get, set, val) => {
+      set(settings, (old) => ({ ...old, horizontalRatio: val }));
+    }
+  ),
+  verticalRatio: atom(
+    (get) => get(settings).verticalRatio,
+    (get, set, val) => {
+      set(settings, (old) => ({ ...old, verticalRatio: val }));
+    }
+  ),
   Persist,
   schemaConfig,
+  settings,
   lastEditedBy: atom<string | null>(null),
   panels,
-  results: atom({}),
   schema: atom<GraphQLSchema | null>((get) => {
     const text = get(schemaText);
     if (text) {

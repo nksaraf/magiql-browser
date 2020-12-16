@@ -1,7 +1,7 @@
 import React from "react";
-import * as gql from "../ast-types";
-import { atom, atomFamily, useAtom } from "../lib/atom";
-import "./theme";
+import * as gql from "./types";
+import { atom, atomFamily, useAtom, useUpdateAtom } from "../lib/atom";
+import "../theme";
 import { bw } from "@beamwind/play";
 import {
   ArgumentName,
@@ -22,7 +22,7 @@ import {
   GraphQLObjectType,
   GraphQLUnionType,
 } from "graphql";
-import { getTypes } from "./utils";
+import { getFields, getTypes } from "./utils";
 import { ide } from "../lib/ide";
 import {
   ListboxInput,
@@ -31,6 +31,7 @@ import {
   ListboxList,
   ListboxOption,
 } from "@reach/listbox";
+import * as ast from "./atoms";
 
 function createAstComponent<T>(
   Component: React.FC<{ node: T; [key: string]: any }>
@@ -45,8 +46,39 @@ export const Name = createAstComponent<gql.NameNode>(({ node }) => {
 Name.displayName = "Name";
 
 export const Document = createAstComponent<gql.DocumentNode>(({ node }) => {
+  const updateDocument = useUpdateAtom(ast.getDocument(node.metadata.path));
+  const setLastEditedBy = useUpdateAtom(ide.lastEditedBy);
+  console.log(node.metadata.path);
+  React.useEffect(() => {
+    if (node.definitions.length === 0) {
+      updateDocument((old) => ({
+        ...old,
+        definitions: [
+          {
+            kind: "OperationDefinition",
+            metadata: {} as any,
+            selectionSet: {
+              metadata: {} as any,
+              selections: [],
+              kind: "SelectionSet",
+            },
+            name: {
+              kind: "Name",
+              metadata: {} as any,
+              value: "MyQuery",
+            },
+            operation: "query",
+          },
+        ],
+      }));
+      setLastEditedBy("explorer");
+    }
+  }, [node.definitions.length, updateDocument]);
+
+  console.log(node);
+
   return (
-    <div className={bw``}>
+    <div className={bw`flex flex-col gap-6`}>
       <Definitions node={node.definitions} />
     </div>
   );
@@ -70,7 +102,7 @@ export const OperationDefinition = createAstComponent<gql.OperationDefinitionNod
 
     const hasVars = !!node.variableDefinitions?.length;
 
-    const type = getOperationType(node);
+    const type = schema ? getOperationType(node) : null;
 
     const name = node.metadata.isSelected ? (
       hasVars ? (
@@ -98,28 +130,24 @@ export const OperationDefinition = createAstComponent<gql.OperationDefinitionNod
           <Keyword>{node.operation}</Keyword>
           {name}
         </Tokens>
-        {hasVars && node.metadata.isSelected && (
+        {hasVars && (
           <Indented>
             <VariableDefinitions node={node.variableDefinitions} />
           </Indented>
         )}
-        {hasVars && node.metadata.isSelected && (
+        {hasVars && (
           <Tokens>
             <Punctuation>
               <span className={bw`pl-1`}>{") {"}</span>
             </Punctuation>
           </Tokens>
         )}
-        {node.metadata.isSelected && (
-          <Indented>
-            <SelectionSet type={type} node={node.selectionSet} />
-          </Indented>
-        )}
-        {node.metadata.isSelected && (
-          <Tokens>
-            <Punctuation>{"}"}</Punctuation>
-          </Tokens>
-        )}
+        <Indented>
+          <SelectionSet type={type} node={node.selectionSet} />
+        </Indented>
+        <Tokens>
+          <Punctuation>{"}"}</Punctuation>
+        </Tokens>
         {/* <Directives node={node.directives} /> */}
       </Lines>
     );
@@ -240,22 +268,118 @@ Variable.displayName = "Variable";
 //   );
 // }
 
+function UnselectedField({ type, path, fieldtype, onAdd }) {
+  const [field] = useAtom(ast.getField(path));
+
+  return (
+    <Field
+      node={{
+        ...(field as any),
+        name: {
+          kind: "Name",
+          metadata: {} as any,
+          value: fieldtype.name,
+        },
+      }}
+      onAdd={onAdd}
+      type={type}
+    />
+  );
+}
+
+function UnselectedType({ type, path, onAdd }) {
+  const [fragment] = useAtom(ast.getInlineFragment(path));
+
+  return (
+    <InlineFragment
+      node={{
+        ...(fragment as any),
+        typeCondition: {
+          kind: "NamedType",
+          metadata: {} as any,
+          name: { kind: "Name", value: type.name, metadata: {} as any },
+        },
+      }}
+      onAdd={onAdd}
+      type={type}
+    />
+  );
+}
+
 export const SelectionSet = createAstComponent<gql.SelectionSetNode>(
   ({ node, type }) => {
-    return node.metadata.isSelected ? (
+    const [schema] = useAtom(ide.schema);
+    const types = schema ? [...getTypes({ type, schema })] : [];
+    const fields = schema ? [...getFields({ type, schema })] : [];
+    const setSelectionSet = useUpdateAtom(
+      ast.getSelectionSet(node.metadata.path)
+    );
+    const setLastEditedBy = useUpdateAtom(ide.lastEditedBy);
+    const unselectedTypes = types.filter(
+      (type) =>
+        !node.selections.find((sel) =>
+          sel.kind === "InlineFragment"
+            ? sel.typeCondition.name.value === type.name
+            : false
+        )
+    );
+    const unselectedFields = fields.filter(
+      (type) =>
+        !node.selections.find((sel) =>
+          sel.kind === "Field" ? sel.name.value === type.name : false
+        )
+    );
+    return (
       <Lines>
-        <Selections node={node.selections} type={type} />
-        {/* <UnselectedFields parentPath={parentPath} type={type} /> */}
-        {/* <UnselectedTypes parentPath={parentPath} type={type} /> */}
+        {node.metadata.isSelected && (
+          <Selections node={node.selections} type={type} />
+        )}
+        {unselectedTypes.map((sel, index) => (
+          <UnselectedType
+            type={sel}
+            onAdd={(field) => {
+              setSelectionSet((old) => ({
+                ...old,
+                selections: [...old.selections, field],
+              }));
+              setLastEditedBy("explorer");
+            }}
+            key={node.metadata.path + "." + (node.selections.length + index)}
+            path={node.metadata.path + "." + (node.selections.length + index)}
+          />
+        ))}
+        {unselectedFields.map((sel, index) => (
+          <UnselectedField
+            type={type}
+            onAdd={(field) => {
+              setSelectionSet((old) => ({
+                ...old,
+                selections: [...old.selections, field],
+              }));
+              setLastEditedBy("explorer");
+            }}
+            fieldtype={sel}
+            key={
+              node.metadata.path +
+              "." +
+              (node.selections.length + unselectedTypes.length + index)
+            }
+            path={
+              node.metadata.path +
+              "." +
+              (node.selections.length + unselectedTypes.length + index)
+            }
+          />
+        ))}
       </Lines>
-    ) : null;
+    );
   }
 );
 
 SelectionSet.displayName = "SelectionSet";
 
 const ExpandableField = createAstComponent<gql.FieldNode>(
-  ({ node, field = null }) => {
+  ({ node, field = null, onAdd }) => {
     const hasArgs = node.arguments && node.arguments.length > 0;
 
     const aliasedField = node?.alias?.value ? (
@@ -286,7 +410,21 @@ const ExpandableField = createAstComponent<gql.FieldNode>(
     );
     return (
       <Lines>
-        <Tokens>
+        <Tokens
+          onClick={() =>
+            !node.metadata.isSelected
+              ? onAdd({
+                  ...node,
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [],
+                    metadata: {} as any,
+                  },
+                })
+              : {}
+          }
+          className={bw`${{ "opacity-40": !node.metadata.isSelected }}`}
+        >
           <Arrow
             className={bw`text-graphql-field`}
             isOpen={node.metadata.isSelected}
@@ -321,85 +459,92 @@ const ExpandableField = createAstComponent<gql.FieldNode>(
   }
 );
 
-export const Field = createAstComponent<gql.FieldNode>(({ node, type }) => {
-  if (type) {
-    const field = type.getFields()[node.name.value];
-    if (!field?.type) {
-      return null;
+ExpandableField.displayName = "ExpandableField";
+
+export const Field = createAstComponent<gql.FieldNode>(
+  ({ node, type, onAdd }) => {
+    if (type) {
+      const field = type.getFields()[node.name.value];
+      if (!field?.type) {
+        return null;
+      }
+
+      const fieldType = getNamedType(field.type);
+
+      if (
+        [
+          "InterfaceTypeDefinition",
+          "UnionTypeDefinition",
+          "ObjectTypeDefinition",
+        ].includes((fieldType as GraphQLNamedType).astNode?.kind)
+      ) {
+        return <ExpandableField node={node} field={field} onAdd={onAdd} />;
+      }
+    } else if ((node.selectionSet?.selections ?? []).length > 0) {
+      return <ExpandableField node={node} />;
     }
 
-    const fieldType = getNamedType(field.type);
+    const hasArgs = node.arguments && node.arguments.length > 0;
 
-    if (
-      [
-        "InterfaceTypeDefinition",
-        "UnionTypeDefinition",
-        "ObjectTypeDefinition",
-      ].includes((fieldType as GraphQLNamedType).astNode?.kind)
-    ) {
-      return <ExpandableField node={node} field={field} />;
-    }
-  } else if ((node.selectionSet?.selections ?? []).length > 0) {
-    return <ExpandableField node={node} />;
-  }
-
-  const hasArgs = node.arguments && node.arguments.length > 0;
-
-  const aliasedField = node?.alias?.value ? (
-    <>
-      <FieldName>{node.alias?.value}: </FieldName>
-      <Qualifier>{node.name.value}</Qualifier>
-    </>
-  ) : (
-    <>
-      <FieldName>{node.name.value}</FieldName>
-    </>
-  );
-
-  const header = node.metadata.isSelected ? (
-    hasArgs ? (
-      <Tokens gap={0.75}>
-        {aliasedField}
-        <Punctuation>{"("}</Punctuation>
-      </Tokens>
+    const aliasedField = node?.alias?.value ? (
+      <>
+        <FieldName>{node.alias?.value}: </FieldName>
+        <Qualifier>{node.name.value}</Qualifier>
+      </>
     ) : (
-      <>{aliasedField}</>
-    )
-  ) : (
-    aliasedField
-  );
-  return (
-    <Lines>
-      <Tokens>
-        <Checkbox
-          className={bw`text-graphql-field`}
-          checked={node.metadata.isSelected}
-        />
-        {header}
-      </Tokens>
-      {node.metadata.isSelected && hasArgs && (
-        <>
-          <Indented>
-            <Arguments node={node.arguments} />
-          </Indented>
-          <Tokens>
-            <Punctuation>)</Punctuation>
-          </Tokens>
-        </>
-      )}
-    </Lines>
-  );
+      <>
+        <FieldName>{node.name.value}</FieldName>
+      </>
+    );
 
-  // return (
-  //   <div className={bw``}>
-  //     <Name node={node.alias} />
-  //     <Name node={node.name} />
-  //     <Arguments node={node.arguments} />
-  //     <Directives node={node.directives} />
-  //     <SelectionSet node={node.selectionSet} />
-  //   </div>
-  // );
-});
+    const header = node.metadata.isSelected ? (
+      hasArgs ? (
+        <Tokens gap={0.75}>
+          {aliasedField}
+          <Punctuation>{"("}</Punctuation>
+        </Tokens>
+      ) : (
+        <>{aliasedField}</>
+      )
+    ) : (
+      aliasedField
+    );
+    return (
+      <Lines>
+        <Tokens
+          onClick={() => onAdd(node)}
+          className={bw`${{ "opacity-40": !node.metadata.isSelected }}`}
+        >
+          <Checkbox
+            className={bw`text-graphql-field`}
+            checked={node.metadata.isSelected}
+          />
+          {header}
+        </Tokens>
+        {node.metadata.isSelected && hasArgs && (
+          <>
+            <Indented>
+              <Arguments node={node.arguments} />
+            </Indented>
+            <Tokens>
+              <Punctuation>)</Punctuation>
+            </Tokens>
+          </>
+        )}
+      </Lines>
+    );
+
+    // return (
+    //   <div className={bw``}>
+    //     <Name node={node.alias} />
+    //     <Name node={node.name} />
+    //     <Arguments node={node.arguments} />
+    //     <Directives node={node.directives} />
+    //     <SelectionSet node={node.selectionSet} />
+    //   </div>
+    // );
+  }
+);
 
 Field.displayName = "Field";
 
@@ -455,14 +600,17 @@ export const FragmentSpread = createAstComponent<gql.FragmentSpreadNode>(
 FragmentSpread.displayName = "FragmentSpread";
 
 export const InlineFragment = createAstComponent<gql.InlineFragmentNode>(
-  ({ node }) => {
+  ({ node, type, onAdd }) => {
     const [schema] = useAtom(ide.schema);
 
-    const type = schema.getType(node.typeCondition.name.value);
+    const fragmentType = type ?? schema.getType(node.typeCondition.name.value);
 
     return (
       <Lines>
-        <Tokens>
+        <Tokens
+          onClick={() => (!node.metadata.isSelected ? onAdd(node) : {})}
+          className={bw`${{ "opacity-40": !node.metadata.isSelected }}`}
+        >
           <Arrow
             className={bw`text-graphql-typename`}
             isOpen={node.metadata.isSelected}
@@ -478,7 +626,7 @@ export const InlineFragment = createAstComponent<gql.InlineFragmentNode>(
         </Tokens>
         {node.metadata.isSelected && (
           <Indented>
-            <SelectionSet node={node.selectionSet} type={type} />
+            <SelectionSet node={node.selectionSet} type={fragmentType} />
           </Indented>
         )}
         {node.metadata.isSelected && (
@@ -513,11 +661,9 @@ export const FragmentDefinition = createAstComponent<gql.FragmentDefinitionNode>
           <NamedType node={node.typeCondition} />
           {node.metadata.isSelected && <Punctuation>{"{"}</Punctuation>}
         </Tokens>
-        {node.metadata.isSelected && (
-          <Indented>
-            <SelectionSet node={node.selectionSet} type={type} />
-          </Indented>
-        )}
+        <Indented>
+          <SelectionSet node={node.selectionSet} type={type} />
+        </Indented>
         {node.metadata.isSelected && (
           <Tokens>
             <Punctuation>{"}"}</Punctuation>
@@ -755,11 +901,11 @@ Definition.displayName = "Definition";
 export const Definitions = createAstComponent<gql.DefinitionNode[]>(
   ({ node }) => {
     return (
-      <div className={bw`flex flex-col gap-6`}>
+      <>
         {node.map((childNode) => (
           <Definition key={childNode.metadata.path} node={childNode} />
         ))}
-      </div>
+      </>
     );
   }
 );
@@ -773,7 +919,7 @@ export const Selection = createAstComponent<gql.SelectionNode>(
         return <Field node={node} type={type} />;
       }
       case "FragmentSpread": {
-        return <FragmentSpread node={node} />;
+        return <FragmentSpread node={node} type={type} />;
       }
       case "InlineFragment": {
         return <InlineFragment node={node} />;

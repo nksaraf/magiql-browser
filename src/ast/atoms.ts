@@ -1,5 +1,5 @@
-import * as gql from "./src/ast-types";
-import { atom, atomFamily } from "./src/lib/atom";
+import * as gql from "./types";
+import { atom, atomFamily } from "../lib/atom";
 
 export const getNodeMetadata = atomFamily<gql.NodeMetadata>((path: string) => ({
   parentPath: "",

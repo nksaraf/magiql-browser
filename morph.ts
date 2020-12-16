@@ -4,8 +4,8 @@ import pluralize from "pluralize";
 import prettier from "prettier";
 
 const project = new Project();
-project.addSourceFileAtPath("src/ast-types/types.ts");
-const source = project.getSourceFile("src/ast-types/types.ts");
+project.addSourceFileAtPath("src/ast/types.ts");
+const source = project.getSourceFile("src/ast/types.ts");
 import fs from "fs";
 function caps(str) {
   return str.charAt(0).toUpperCase() + str.substr(1);
@@ -17,8 +17,8 @@ const atomFamily = ({ name, type, get, set = undefined }) => {
 };
 
 let atoms = `
-import * as gql from './src/ast-types'
-import { atom, atomFamily } from './src/lib/atom'
+import * as gql from './types'
+import { atom, atomFamily } from '../lib/atom'
 
 ${atomFamily({
   name: "getNodeMetadata",
@@ -147,7 +147,6 @@ ${["string", "boolean", "number"]
        }`,
       set: `(get, set, node: gql.${astNodeInterfaceName}) => {
         if (!node) {
-          console.log(!node);
           set(getNodeMetadata(path),(old) => ({ ...old, parentPath: "", isSelected: false }));
           return;
         }
@@ -185,7 +184,6 @@ ${["string", "boolean", "number"]
          }`,
               set: `(get, set, nodes: gql.${astNodeInterfaceName}[]) => {
           
-              console.log(nodes);
           if (!nodes) {
            set(get${astKind}Paths(path), []);
           }
@@ -212,9 +210,7 @@ ${source
       !["ASTKindToNode"].includes(type.compilerNode.name.text)
     ) {
       const nodeTypeAliasName = type.compilerNode.name.text;
-      console.log(nodeTypeAliasName);
       const astKind = type.compilerNode.name.text.replace("Node", "");
-      console.log(astKind);
 
       const subTypes = type.compilerNode.type
         .getText()
@@ -242,8 +238,7 @@ ${source
          }`,
         set: `(get, set, node: gql.${nodeTypeAliasName}) => {
           if (!node) {
-            console.log(node);
-            set(getNodeMetadata(path), (old) => ({ parentPath: "", isSelected: false  }))
+            set(getNodeMetadata(path), (old) => ({ ...old, parentPath: "", isSelected: false  }))
           } else {
             set(getNodeMetadata(path), { path, parentPath: "", kind: node.kind, isSelected: true })
           }
@@ -405,9 +400,7 @@ ${source
       !["ASTKindToNode"].includes(type.compilerNode.name.text)
     ) {
       const nodeTypeAliasName = type.compilerNode.name.text;
-      console.log(nodeTypeAliasName);
       const astKind = type.compilerNode.name.text.replace("Node", "");
-      console.log(astKind);
 
       const subTypes = type.compilerNode.type
         .getText()
@@ -447,25 +440,25 @@ return <div>{node.map(childNode => <${astKind} key={childNode.metadata.path} nod
 
 try {
   fs.writeFileSync(
-    "atoms.raw.ts",
+    "./src/ast/atoms.ts",
     prettier.format(atoms, {
       parser: "babel-ts",
     })
   );
 } catch (e) {
-  fs.writeFileSync("atoms.raw.ts", atoms);
+  fs.writeFileSync("./src/ast/atoms.ts", atoms);
 }
 
-try {
-  fs.writeFileSync(
-    "components.raw.tsx",
-    prettier.format(components, {
-      parser: "babel-ts",
-    })
-  );
-} catch (e) {
-  fs.writeFileSync("components.raw.tsx", components);
-}
+// try {
+//   fs.writeFileSync(
+//     "components.raw.tsx",
+//     prettier.format(components, {
+//       parser: "babel-ts",
+//     })
+//   );
+// } catch (e) {
+//   fs.writeFileSync("components.raw.tsx", components);
+// }
 
 // Replicating types without readonly
 // fs.writeFileSync(

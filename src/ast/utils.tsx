@@ -1,40 +1,37 @@
-import type { GraphQLObjectType, GraphQLInterfaceType } from "graphql";
-import * as gql from "../ast-types";
+import type {
+  GraphQLObjectType,
+  GraphQLInterfaceType,
+  GraphQLUnionType,
+  GraphQLSchema,
+} from "graphql";
 
-export const removeSelections = (list, selections, getPath) => {
-  let unselected = [...list];
-  selections?.forEach((selection) => {
-    const selectedField = unselected.find((item) =>
-      selection.startsWith(getPath(item))
-    );
-
-    if (selectedField) {
-      unselected = unselected.filter(
-        (type) => type.name !== selectedField.name
-      );
-    }
-  });
-  return unselected;
-};
 export function getFields({ type, schema }) {
-  if (gql.isObjectTypeDefinition(type.astNode)) {
+  if (type.astNode.kind === "ObjectTypeDefinition") {
     return Object.values((type as GraphQLObjectType).getFields());
   }
-  if (gql.isInterfaceTypeDefinition(type.astNode)) {
+  if (type.astNode.kind === "InterfaceTypeDefinition") {
     Object.values((type as GraphQLInterfaceType).getFields());
-  } else if (gql.isUnionTypeDefinition(type.astNode)) {
+  } else if (type.astNode.kind === "UnionTypeDefinition") {
     return [];
   }
 
   return [];
 }
-export function getTypes({ type, schema }) {
-  if (gql.isObjectTypeDefinition(type.astNode)) {
+
+export function getTypes({
+  type,
+  schema,
+}: {
+  type: GraphQLInterfaceType | GraphQLObjectType | GraphQLUnionType;
+  schema: GraphQLSchema;
+}) {
+  if (type.astNode.kind === "ObjectTypeDefinition") {
     return [];
   }
-  if (gql.isInterfaceTypeDefinition(type.astNode)) {
-    return schema.getPossibleTypes(type as GraphQLInterfaceType);
-  } else if (gql.isUnionTypeDefinition(type.astNode)) {
+  if (
+    type.astNode.kind === "InterfaceTypeDefinition" ||
+    type.astNode.kind === "UnionTypeDefinition"
+  ) {
     return schema.getPossibleTypes(type as GraphQLInterfaceType);
   }
 

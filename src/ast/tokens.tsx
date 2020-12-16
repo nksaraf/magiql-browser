@@ -33,9 +33,12 @@ export function Qualifier({ children }) {
 export function Lines({ children }) {
   return <div className={bw`flex flex-col gap-0.5`}>{children}</div>;
 }
-export function Tokens({ children, gap = 1.5, className = "" }) {
+export function Tokens({ children, gap = 1.5, className = "", ...props }) {
   return (
-    <div className={`${bw`${graphqlNode} ${"gap" + "-" + gap} `} ${className}`}>
+    <div
+      className={`${bw`${graphqlNode} ${"gap" + "-" + gap} `} ${className}`}
+      {...props}
+    >
       {children}
     </div>
   );
