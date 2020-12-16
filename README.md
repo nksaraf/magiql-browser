@@ -74,7 +74,7 @@ export default allowCors(async (req, res) => {
 
 ## Usage in React App
 
-```typescript
+```tsx
 
 import { GraphQLIDE } from "@magiql/ide";
 export default function App() {
@@ -94,7 +94,7 @@ export default function App() {
 
 As the tool is web-based, in case your app is server-rendered, use the following to skip rendering the IDE on the server
 
-```typescript
+```tsx
 
 import { GraphQLIDE } from "@magiql/ide";
 export default function App() {
