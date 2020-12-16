@@ -76,7 +76,7 @@ export default allowCors(async (req, res) => {
 
 ```tsx
 
-import { GraphQLIDE } from "@magiql/ide";
+import GraphQLIDE from "@magiql/ide";
 export default function App() {
   return (
     <GraphQLIDE
@@ -96,7 +96,7 @@ As the tool is web-based, in case your app is server-rendered, use the following
 
 ```tsx
 
-import { GraphQLIDE } from "@magiql/ide";
+import GraphQLIDE from "@magiql/ide";
 export default function App() {
   return typeof window !== "undefined" ? (
     <GraphQLIDE
