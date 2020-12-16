@@ -1,5 +1,5 @@
 import React from "react";
-import { MonacoProvider, plugins, useMonaco } from "use-monaco";
+import { asDisposable, MonacoProvider, plugins, useMonaco } from "use-monaco";
 import type * as monacoApi from "monaco-editor";
 import { bw, setup } from "@beamwind/play";
 import "./styles";
@@ -16,6 +16,15 @@ import lightTheme from "./editor/theme";
 import * as config from "./editor/graphql.config";
 import { ErrorBoundary } from "react-error-boundary";
 import * as gql from "./ast/types";
+import {
+  Code,
+  ExplorerIcon,
+  Graphql,
+  Helmet,
+  InputIcon,
+  Loading,
+  Tree,
+} from "./lib/Icons";
 
 function CurrentDocument() {
   const [currentTab] = useAtom(ide.currentTab);
@@ -27,19 +36,38 @@ function CurrentDocument() {
 function QueryEditor() {
   const [currentTab] = useAtom(ide.currentTab);
   const [query, setQuery] = useAtom(ide.getTabQueryFile(currentTab));
-  const setLastEditedBy = useUpdateAtom(ide.lastEditedBy);
+  const [edited, setLastEditedBy] = useAtom(ide.lastEditedBy);
+  const [focused, setFocused] = useAtom(ide.focused);
 
   return (
     <EditorPanel
       path={`/${currentTab}/query.graphql`}
       language="graphql"
       contents={query}
+      onFocus={() => {
+        setFocused("editor");
+      }}
+      onBlur={() => {
+        setFocused(null);
+      }}
       onChange={(text) => {
         setQuery(text);
         setLastEditedBy("editor");
       }}
     >
-      <div className={bw`${header} px-6 absolute top-0 w-full`}>Editor</div>
+      <div
+        onClick={() => {
+          setFocused("editor");
+        }}
+        className={bw`${header} ${{
+          "text-gray-800": focused === "editor",
+        }} px-3 flex flex-row items-center gap-1 absolute top-0 w-full`}
+      >
+        <div className={bw`h-4.5 w-4.5 -mt-1`}>
+          <Code className={bw`h-4.5 w-4.5`} />
+        </div>
+        <div>Query Editor</div>
+      </div>
     </EditorPanel>
   );
 }
@@ -47,6 +75,7 @@ function QueryEditor() {
 function SchemaEditor() {
   const [currentTab] = useAtom(ide.currentTab);
   const [schema] = useAtom(ide.schemaText);
+  const [focused, setFocused] = useAtom(ide.focused);
 
   return (
     <EditorPanel
@@ -54,8 +83,26 @@ function SchemaEditor() {
       language="graphql"
       contents={schema}
       onChange={(text) => {}}
+      onFocus={() => {
+        setFocused("schema");
+      }}
+      onBlur={() => {
+        setFocused(null);
+      }}
     >
-      <div className={bw`${header} px-6 absolute top-0 w-full`}>Schema</div>
+      <div
+        onClick={() => {
+          setFocused("schema");
+        }}
+        className={bw`${header} ${{
+          "text-gray-800": focused === "schema",
+        }} px-3  flex flex-row items-center gap-1.5 absolute top-0 w-full`}
+      >
+        <div className={bw`h-4.0 w-4.0 -mt-1`}>
+          <Graphql className={bw`h-4.0 w-4.0`} />
+        </div>
+        <div>Schema</div>
+      </div>
     </EditorPanel>
   );
 }
@@ -65,6 +112,7 @@ function VariablesEditor() {
   const [variablesText, setVariables] = useAtom(
     ide.getTabVariablesFile(currentTab)
   );
+  const [focused, setFocused] = useAtom(ide.focused);
 
   return (
     <EditorPanel
@@ -72,9 +120,65 @@ function VariablesEditor() {
       onChange={(text) => {
         setVariables(text);
       }}
+      onFocus={() => {
+        setFocused("variables");
+      }}
+      onBlur={() => {
+        setFocused(null);
+      }}
       path={`/${currentTab}/variables.json`}
     >
-      <div className={bw`${header} px-6 absolute top-0 w-full`}>Variables</div>
+      <div
+        onClick={() => {
+          setFocused("variables");
+        }}
+        className={bw`${header} ${{
+          "text-gray-800": focused === "variables",
+        }} px-3  flex flex-row items-center gap-1.5 absolute top-0 w-full`}
+      >
+        <div className={bw`h-4.0 w-4.0 -mt-0`}>
+          <InputIcon className={bw`h-4.0 w-4.0`} />
+        </div>
+        <div>Variables</div>
+      </div>
+    </EditorPanel>
+  );
+}
+
+function HeadersEditor() {
+  const [currentTab] = useAtom(ide.currentTab);
+  const [headersText, setHeaders] = useAtom(ide.getTabHeadersFile(currentTab));
+  const [focused, setFocused] = useAtom(ide.focused);
+
+  console.log(headersText);
+
+  return (
+    <EditorPanel
+      contents={headersText}
+      onChange={(text) => {
+        setHeaders(text);
+      }}
+      onFocus={() => {
+        setFocused("headers");
+      }}
+      onBlur={() => {
+        setFocused(null);
+      }}
+      path={`/${currentTab}/headers.json`}
+    >
+      <div
+        onClick={() => {
+          setFocused("headers");
+        }}
+        className={bw`${header} ${{
+          "text-gray-800": focused === "headers",
+        }} flex flex-row items-center gap-1 px-3 absolute top-0 w-full`}
+      >
+        <div className={bw`h-4.5 w-4.5 -mt-1`}>
+          <Helmet className={bw`h-4.5 w-4.5`} />
+        </div>
+        <div>Headers</div>
+      </div>
     </EditorPanel>
   );
 }
@@ -82,6 +186,8 @@ function VariablesEditor() {
 function ResultsEditor() {
   const [currentTab] = useAtom(ide.currentTab);
   const [results] = useAtom(ide.getTabResults(currentTab));
+  const [queryStatus] = useAtom(ide.queryStatus);
+  const [focused, setFocused] = useAtom(ide.focused);
 
   return (
     <EditorPanel
@@ -89,11 +195,42 @@ function ResultsEditor() {
       options={{
         readOnly: true,
       }}
+      onFocus={() => {
+        setFocused("response");
+      }}
+      onBlur={() => {
+        setFocused(null);
+      }}
       onChange={() => {}}
-      path={`${`/${currentTab}/results.json`}`}
-      contents={JSON.stringify(results, null, 2)}
+      path={`${`/${currentTab}/response.json`}`}
+      contents={
+        queryStatus === "loading" ? "" : JSON.stringify(results, null, 2)
+      }
     >
-      <div className={bw`${header} px-6 absolute top-0 w-full`}>Response</div>
+      <div
+        className={bw`${header} ${{
+          "text-gray-800": focused === "response",
+        }} px-3 flex flex-row items-center justify-between gap-1 absolute top-0 w-full`}
+      >
+        <div
+          onClick={() => {
+            setFocused("results");
+          }}
+          className={bw`flex flex-row items-center gap-1`}
+        >
+          <div className={bw`h-4.5 w-4.5 -mt-1`}>
+            <Helmet className={bw`h-4.5 w-4.5`} />
+          </div>
+          <div>Response</div>
+        </div>
+        {queryStatus === "loading" && (
+          <div
+            className={bw`text-xs flex flex-row items-center gap-1 text-gray-800`}
+          >
+            <Loading className={bw`animate-spin h-4 w-4`} />
+          </div>
+        )}
+      </div>
     </EditorPanel>
   );
 }
@@ -129,6 +266,7 @@ import { Toolbar } from "./Toolbar";
 function Explorer() {
   const [currentTab] = useAtom(ide.currentTab);
   const [query, setQueryText] = useAtom(ide.getTabQueryFile(currentTab));
+  const [focused, setFocused] = useAtom(ide.focused);
   const [document, setDocument] = useAtom(gqlAst.getDocument(`${currentTab}`));
   const [lasEditedBy] = useAtom(ide.lastEditedBy);
 
@@ -147,10 +285,28 @@ function Explorer() {
     }
   }, [document, setQueryText, lasEditedBy]);
 
+  React.useEffect(() => {
+    if (lasEditedBy === "explorer") {
+      setFocused("explorer");
+    }
+  }, [lasEditedBy]);
+
   return (
-    <div className={bw`${panel} relative`}>
-      <div className={bw`${header} absolute top-0 px-4 w-full z-100`}>
-        Explorer
+    <div
+      onClick={() => {
+        setFocused("explorer");
+      }}
+      className={bw`${panel} relative`}
+    >
+      <div
+        className={bw`${header} ${{
+          "text-gray-800": focused === "explorer",
+        }} px-3  flex flex-row items-center gap-1 absolute top-0 w-full`}
+      >
+        <div className={bw`h-4.5 w-4.5 -mt-1`}>
+          <ExplorerIcon className={bw`h-4.5 w-4.5`} />
+        </div>
+        <div>Explorer</div>
       </div>
       <div className={bw`pt-12 pb-3 overflow-scroll w-full h-full`}>
         <div className={bw`px-4`}>
@@ -184,6 +340,7 @@ function replacer(key, value) {
 function ASTViewer() {
   const [currentTab] = useAtom(ide.currentTab);
   const [document] = useAtom(gqlAst.getDocument(currentTab));
+  const [focused, setFocused] = useAtom(ide.focused);
 
   return (
     <EditorPanel
@@ -192,11 +349,29 @@ function ASTViewer() {
         readOnly: true,
         fontSize: "10",
       }}
+      onFocus={() => {
+        setFocused("ast");
+      }}
+      onBlur={() => {
+        setFocused(null);
+      }}
       onChange={() => {}}
-      path="ast.json"
+      path={`/${currentTab}/ast.json`}
       contents={JSON.stringify(document, true ? replacer : null, 2)}
     >
-      <div className={bw`${header} px-6 absolute top-0 w-full`}>AST</div>
+      <div
+        onClick={() => {
+          setFocused("ast");
+        }}
+        className={bw`${header} ${{
+          "text-gray-800": focused === "ast",
+        }} px-3 flex flex-row items-center gap-1 absolute top-0 w-full`}
+      >
+        <div className={bw`h-4.0 w-4.0 -mt-1`}>
+          <Tree className={bw`h-4.0 w-4.0`} />
+        </div>
+        <div>Syntax Tree</div>
+      </div>
     </EditorPanel>
   );
 }
@@ -208,13 +383,14 @@ const IDEPanels = {
   schema: <SchemaEditor />,
   explorer: <Explorer />,
   ast: <ASTViewer />,
+  headers: <HeadersEditor />,
 };
 
 function VerticalPanels({ index, panels }) {
   const [sizes, setSizes] = useAtom(ide.verticalRatio);
   if (panels.length === 1) {
-    const Comp = IDEPanels[panels[0]];
-    return Comp;
+    const Panel = IDEPanels[panels[0]];
+    return Panel;
   }
 
   return (
@@ -283,15 +459,25 @@ function App() {
     <div
       className={bw`h-screen w-screen pt-3 gap-2 bg-gray-300 w-full flex flex-col`}
     >
-      <div className={bw`px-3 flex flex-row gap-2`}>
-        {tabs.map((tab) => (
-          <div className={bw`px-2 py-2 font-rubik`}>{tab}</div>
-        ))}
-      </div>
-
+      {/* <div className="tab-container"> */}
+      {/* <div className={bw`px-3 flex flex-row gap-2`}>
+          {tabs.map((tab) => (
+            <div
+              style={{ minWidth: 140 }}
+              className={bw`relative px-2 flex rounded-t-md py-2 font-graphql text-sm items-center justify-center bg-gray-100`}
+              key={tab}
+            >
+              <div
+                className={bw`w-8 bg-white h-full rotate-45 absolute left-0`}
+              ></div>
+              <div>{tab}</div>
+            </div>
+          ))}
+        </div> */}
       <div className={bw`px-3`}>
         <Toolbar />
       </div>
+      {/* </div> */}
       <div
         className={bw`flex-1 w-full px-3 pb-3 bg-gray-300 flex flex-row overflow-hidden`}
       >

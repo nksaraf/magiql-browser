@@ -1,0 +1,106 @@
+Arguments: 
+  /Users/nikhilsaraf/.fnm/node-versions/v15.3.0/installation/bin/node /usr/local/Cellar/yarn/1.22.10/libexec/bin/yarn.js publish --access public
+
+PATH: 
+  /var/folders/vy/5v99851s36lfnhhyv0xnzr1r0000gn/T/yarn--1608118829552-0.6944681698535178:/Users/nikhilsaraf/garage/magiql-ide/node_modules/.bin:/Users/nikhilsaraf/.config/yarn/link/node_modules/.bin:/Users/nikhilsaraf/.fnm/node-versions/v15.3.0/installation/libexec/lib/node_modules/npm/bin/node-gyp-bin:/Users/nikhilsaraf/.fnm/node-versions/v15.3.0/installation/lib/node_modules/npm/bin/node-gyp-bin:/Users/nikhilsaraf/.fnm/node-versions/v15.3.0/installation/bin/node_modules/npm/bin/node-gyp-bin:/var/folders/vy/5v99851s36lfnhhyv0xnzr1r0000gn/T/fnm_multishell_77876_1607952108693/bin:/Users/nikhilsaraf/.fnm:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/var/folders/vy/5v99851s36lfnhhyv0xnzr1r0000gn/T/fnm_multishell_67272_1607938645534/bin:/Users/nikhilsaraf/.fnm
+
+Yarn version: 
+  1.22.10
+
+Node version: 
+  15.3.0
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error: canceled
+      at Interface.<anonymous> (/usr/local/Cellar/yarn/1.22.10/libexec/lib/cli.js:137009:13)
+      at Interface.emit (node:events:376:20)
+      at Interface._ttyWrite (node:readline:880:16)
+      at ReadStream.onkeypress (node:readline:213:10)
+      at ReadStream.emit (node:events:376:20)
+      at emitKeys (node:internal/readline/utils:345:14)
+      at emitKeys.next (<anonymous>)
+      at ReadStream.onData (node:readline:1149:36)
+      at ReadStream.emit (node:events:376:20)
+      at addChunk (node:internal/streams/readable:304:12)
+
+npm manifest: 
+  {
+    "dependencies": {
+      "@beamwind/colors": "^2.0.3",
+      "@beamwind/play": "^2.1.1",
+      "@modulz/radix-icons": "^3.3.0",
+      "@reach/combobox": "^0.12.1",
+      "@reach/listbox": "^0.12.1",
+      "@types/react": "^17.0.0",
+      "@types/react-dom": "^17.0.0",
+      "beamwind": "^2.0.2",
+      "create-hook-context": "^1.0.0",
+      "fetch-progress": "^1.3.0",
+      "graphql-ast-types": "^1.0.2",
+      "monaco-graphql": "^0.3.3",
+      "react-error-boundary": "^3.1.0",
+      "react-split-grid": "^1.0.3",
+      "recoil": "^0.1.2",
+      "recoilize": "^1.0.0",
+      "use-monaco": "^0.0.26",
+      "valtio": "^0.4.8"
+    },
+    "peerDependencies": {
+      "graphql": "*",
+      "react": "*",
+      "react-dom": "*"
+    },
+    "files": [
+      "dist"
+    ],
+    "name": "@magiql/ide",
+    "types": "dist/types",
+    "version": "0.0.11",
+    "exports": {
+      ".": {
+        "import": "./dist/esm/index.js",
+        "browser": "./dist/esm/index.js",
+        "require": "./dist/index.js",
+        "node": "./dist/index.js",
+        "default": "./dist/esm/index.js"
+      },
+      "./render": {
+        "import": "./dist/esm/render.js",
+        "browser": "./dist/esm/render.js",
+        "require": "./dist/render.js",
+        "node": "./dist/render.js",
+        "default": "./dist/esm/render.js"
+      },
+      "./package.json": "./package.json",
+      "./": "./"
+    },
+    "main": "dist/index.js",
+    "modules": "dist/esm/index.js",
+    "devDependencies": {
+      "@magiql/ide": "^0.0.13",
+      "@prefresh/vite": "^1.2.2",
+      "@types/node": "^14.14.13",
+      "pluralize": "^8.0.0",
+      "preact": "^10.5.7",
+      "prettier": "^2.2.1",
+      "shellac": "^0.4.0",
+      "ts-morph": "^9.1.0",
+      "tsup": "^3.10.1",
+      "typescript": "^4.1.3",
+      "vite": "^1.0.0-rc.13",
+      "vite-plugin-react": "^4.0.1",
+      "xss": "^1.0.8"
+    },
+    "prettier": {
+      "tabWidth": 2
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

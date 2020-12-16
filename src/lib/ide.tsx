@@ -15,14 +15,11 @@ function SaveAtom({ atom, path, serialize }) {
 
 const prefix = "magiql:/";
 
-function localStorageAtom(
-  key,
-  { defaultValue, parse = (s) => s, serialize = (s) => s }
-) {
+function localStorageAtom(key, { defaultValue }) {
   const val =
     typeof window === "undefined"
-      ? defaultValue
-      : parse(localStorage.getItem(prefix + key)) ?? defaultValue;
+      ? null
+      : localStorage.getItem(prefix + key) ?? defaultValue;
 
   const atomic = atom(val);
   return atomic;
@@ -74,7 +71,7 @@ const getRawFile = memoize(
 const getFile = memoize(function <T = string>(
   path: string,
   {
-    persist = false,
+    persist = true,
     parse = (s) => s,
     serialize = (s) => s,
     defaultValue = ("" as unknown) as T,
@@ -103,7 +100,7 @@ const getFile = memoize(function <T = string>(
 const getJSONFile = function <T>(
   path,
   {
-    persist = false,
+    persist = true,
     defaultValue = ({} as unknown) as T,
   }: { defaultValue: T; persist: boolean }
 ): RecoilState<T> {
@@ -133,7 +130,13 @@ const getTabVariablesFile = (tab: string) =>
     defaultValue: "",
   });
 
-const getTabResults = atomFamily((path) => "");
+const getTabHeadersFile = (tab: string) =>
+  getFile("/" + tab + "/headers.json", {
+    persist: true,
+    defaultValue: "{}",
+  });
+
+const getTabResults = atomFamily((path) => ({}));
 
 const getTabQueryFile = (tab: string) =>
   getFile("/" + tab + "/query.graphql", {
@@ -141,16 +144,16 @@ const getTabQueryFile = (tab: string) =>
     defaultValue: "",
   });
 
-const tabs = atom(["_0_"]);
+const tabs = atom(["query1"]);
 
-const currentTab = atom("_0_");
+const currentTab = atom("query1");
 
 const settings = getJSONFile("/settings.json", {
   persist: true,
   defaultValue: {
     panels: [["explorer"], ["editor", "variables"], ["response"]],
-    horizontalRatio: `35fr 10px 30fr 10px 35fr`,
-    verticalRatio: [`35fr 10px 30fr 10px 35fr`, `75fr 10px 25fr`, ``],
+    horizontalRatio: `35fr 8px 30fr 8px 35fr`,
+    verticalRatio: [`100fr`, `75fr 8px 25fr`, `100fr`],
   },
 });
 
@@ -171,7 +174,11 @@ export const ide = {
   currentTab,
   persistedFiles,
   getTabResults,
+  getJSONFile,
+  queryStatus: atom("idle"),
   getFile,
+  focused: atom<string | null>(null),
+  getTabHeadersFile,
   tabs,
   schemaText,
   horizontalRatio: atom(

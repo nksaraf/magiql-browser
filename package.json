@@ -5,6 +5,7 @@
     "@modulz/radix-icons": "^3.3.0",
     "@reach/combobox": "^0.12.1",
     "@reach/listbox": "^0.12.1",
+    "@reach/tooltip": "^0.12.1",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "beamwind": "^2.0.2",
@@ -41,12 +42,20 @@
       "node": "./dist/index.js",
       "default": "./dist/esm/index.js"
     },
+    "./render": {
+      "import": "./dist/esm/render.js",
+      "browser": "./dist/esm/render.js",
+      "require": "./dist/render.js",
+      "node": "./dist/render.js",
+      "default": "./dist/esm/render.js"
+    },
     "./package.json": "./package.json",
     "./": "./"
   },
   "main": "dist/index.js",
   "modules": "dist/esm/index.js",
   "devDependencies": {
+    "@magiql/ide": "^0.0.13",
     "@prefresh/vite": "^1.2.2",
     "@types/node": "^14.14.13",
     "pluralize": "^8.0.0",
@@ -62,8 +71,9 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "sucrase-node build.ts",
-    "prepublishOnly": "yarn build"
+    "build": "sucrase-node scripts/build.ts",
+    "pub": "cd pkg && yalc publish",
+    "drypub": "cd pkg && yarn publish --access public"
   },
   "prettier": {
     "tabWidth": 2

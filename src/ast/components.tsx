@@ -48,7 +48,6 @@ Name.displayName = "Name";
 export const Document = createAstComponent<gql.DocumentNode>(({ node }) => {
   const updateDocument = useUpdateAtom(ast.getDocument(node.metadata.path));
   const setLastEditedBy = useUpdateAtom(ide.lastEditedBy);
-  console.log(node.metadata.path);
   React.useEffect(() => {
     if (node.definitions.length === 0) {
       updateDocument((old) => ({
@@ -74,8 +73,6 @@ export const Document = createAstComponent<gql.DocumentNode>(({ node }) => {
       setLastEditedBy("explorer");
     }
   }, [node.definitions.length, updateDocument]);
-
-  console.log(node);
 
   return (
     <div className={bw`flex flex-col gap-6`}>
@@ -268,7 +265,7 @@ Variable.displayName = "Variable";
 //   );
 // }
 
-function UnselectedField({ type, path, fieldtype, onAdd }) {
+function UnselectedField({ type, path, fieldtype, onToggle }) {
   const [field] = useAtom(ast.getField(path));
 
   return (
@@ -281,13 +278,13 @@ function UnselectedField({ type, path, fieldtype, onAdd }) {
           value: fieldtype.name,
         },
       }}
-      onAdd={onAdd}
+      onToggle={onToggle}
       type={type}
     />
   );
 }
 
-function UnselectedType({ type, path, onAdd }) {
+function UnselectedType({ type, path, onToggle }) {
   const [fragment] = useAtom(ast.getInlineFragment(path));
 
   return (
@@ -300,7 +297,7 @@ function UnselectedType({ type, path, onAdd }) {
           name: { kind: "Name", value: type.name, metadata: {} as any },
         },
       }}
-      onAdd={onAdd}
+      onToggle={onToggle}
       type={type}
     />
   );
@@ -332,12 +329,24 @@ export const SelectionSet = createAstComponent<gql.SelectionSetNode>(
     return (
       <Lines>
         {node.metadata.isSelected && (
-          <Selections node={node.selections} type={type} />
+          <Selections
+            node={node.selections}
+            type={type}
+            onToggle={(field) => {
+              setSelectionSet((old) => ({
+                ...old,
+                selections: (old.selections ?? []).filter(
+                  (sel) => !(sel.metadata.path === field.metadata.path)
+                ),
+              }));
+              setLastEditedBy("explorer");
+            }}
+          />
         )}
         {unselectedTypes.map((sel, index) => (
           <UnselectedType
             type={sel}
-            onAdd={(field) => {
+            onToggle={(field) => {
               setSelectionSet((old) => ({
                 ...old,
                 selections: [...old.selections, field],
@@ -351,7 +360,7 @@ export const SelectionSet = createAstComponent<gql.SelectionSetNode>(
         {unselectedFields.map((sel, index) => (
           <UnselectedField
             type={type}
-            onAdd={(field) => {
+            onToggle={(field) => {
               setSelectionSet((old) => ({
                 ...old,
                 selections: [...old.selections, field],
@@ -379,7 +388,7 @@ export const SelectionSet = createAstComponent<gql.SelectionSetNode>(
 SelectionSet.displayName = "SelectionSet";
 
 const ExpandableField = createAstComponent<gql.FieldNode>(
-  ({ node, field = null, onAdd }) => {
+  ({ node, field = null, onToggle }) => {
     const hasArgs = node.arguments && node.arguments.length > 0;
 
     const aliasedField = node?.alias?.value ? (
@@ -412,16 +421,14 @@ const ExpandableField = createAstComponent<gql.FieldNode>(
       <Lines>
         <Tokens
           onClick={() =>
-            !node.metadata.isSelected
-              ? onAdd({
-                  ...node,
-                  selectionSet: {
-                    kind: "SelectionSet",
-                    selections: [],
-                    metadata: {} as any,
-                  },
-                })
-              : {}
+            onToggle({
+              ...node,
+              selectionSet: {
+                kind: "SelectionSet",
+                selections: [],
+                metadata: {} as any,
+              },
+            })
           }
           className={bw`${{ "opacity-40": !node.metadata.isSelected }}`}
         >
@@ -462,7 +469,7 @@ const ExpandableField = createAstComponent<gql.FieldNode>(
 ExpandableField.displayName = "ExpandableField";
 
 export const Field = createAstComponent<gql.FieldNode>(
-  ({ node, type, onAdd }) => {
+  ({ node, type, onToggle }) => {
     if (type) {
       const field = type.getFields()[node.name.value];
       if (!field?.type) {
@@ -478,7 +485,9 @@ export const Field = createAstComponent<gql.FieldNode>(
           "ObjectTypeDefinition",
         ].includes((fieldType as GraphQLNamedType).astNode?.kind)
       ) {
-        return <ExpandableField node={node} field={field} onAdd={onAdd} />;
+        return (
+          <ExpandableField node={node} field={field} onToggle={onToggle} />
+        );
       }
     } else if ((node.selectionSet?.selections ?? []).length > 0) {
       return <ExpandableField node={node} />;
@@ -512,7 +521,7 @@ export const Field = createAstComponent<gql.FieldNode>(
     return (
       <Lines>
         <Tokens
-          onClick={() => onAdd(node)}
+          onClick={() => onToggle(node)}
           className={bw`${{ "opacity-40": !node.metadata.isSelected }}`}
         >
           <Checkbox
@@ -600,7 +609,7 @@ export const FragmentSpread = createAstComponent<gql.FragmentSpreadNode>(
 FragmentSpread.displayName = "FragmentSpread";
 
 export const InlineFragment = createAstComponent<gql.InlineFragmentNode>(
-  ({ node, type, onAdd }) => {
+  ({ node, type, onToggle }) => {
     const [schema] = useAtom(ide.schema);
 
     const fragmentType = type ?? schema.getType(node.typeCondition.name.value);
@@ -608,7 +617,7 @@ export const InlineFragment = createAstComponent<gql.InlineFragmentNode>(
     return (
       <Lines>
         <Tokens
-          onClick={() => (!node.metadata.isSelected ? onAdd(node) : {})}
+          onClick={() => (!node.metadata.isSelected ? onToggle(node) : {})}
           className={bw`${{ "opacity-40": !node.metadata.isSelected }}`}
         >
           <Arrow
@@ -913,16 +922,16 @@ export const Definitions = createAstComponent<gql.DefinitionNode[]>(
 Definitions.displayName = "Definitions";
 
 export const Selection = createAstComponent<gql.SelectionNode>(
-  ({ node, type }) => {
+  ({ node, type, onToggle }) => {
     switch (node.kind) {
       case "Field": {
-        return <Field node={node} type={type} />;
+        return <Field node={node} type={type} onToggle={onToggle} />;
       }
       case "FragmentSpread": {
-        return <FragmentSpread node={node} type={type} />;
+        return <FragmentSpread node={node} type={type} onToggle={onToggle} />;
       }
       case "InlineFragment": {
-        return <InlineFragment node={node} />;
+        return <InlineFragment node={node} onToggle={onToggle} />;
       }
     }
   }
@@ -931,7 +940,7 @@ export const Selection = createAstComponent<gql.SelectionNode>(
 Selection.displayName = "Selection";
 
 export const Selections = createAstComponent<gql.SelectionNode[]>(
-  ({ node, type }) => {
+  ({ node, type, onToggle }) => {
     return (
       <>
         {node.map((childNode) => (
@@ -939,6 +948,7 @@ export const Selections = createAstComponent<gql.SelectionNode[]>(
             key={childNode.metadata.path}
             node={childNode}
             type={type}
+            onToggle={onToggle}
           />
         ))}
       </>
