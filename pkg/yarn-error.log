@@ -2,7 +2,7 @@ Arguments:
   /Users/nikhilsaraf/.fnm/node-versions/v15.3.0/installation/bin/node /usr/local/Cellar/yarn/1.22.10/libexec/bin/yarn.js publish --access public
 
 PATH: 
-  /var/folders/vy/5v99851s36lfnhhyv0xnzr1r0000gn/T/yarn--1608127271886-0.8852934518963793:/Users/nikhilsaraf/garage/magiql-ide/node_modules/.bin:/Users/nikhilsaraf/.config/yarn/link/node_modules/.bin:/Users/nikhilsaraf/.fnm/node-versions/v15.3.0/installation/libexec/lib/node_modules/npm/bin/node-gyp-bin:/Users/nikhilsaraf/.fnm/node-versions/v15.3.0/installation/lib/node_modules/npm/bin/node-gyp-bin:/Users/nikhilsaraf/.fnm/node-versions/v15.3.0/installation/bin/node_modules/npm/bin/node-gyp-bin:/var/folders/vy/5v99851s36lfnhhyv0xnzr1r0000gn/T/fnm_multishell_77876_1607952108693/bin:/Users/nikhilsaraf/.fnm:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/var/folders/vy/5v99851s36lfnhhyv0xnzr1r0000gn/T/fnm_multishell_67272_1607938645534/bin:/Users/nikhilsaraf/.fnm
+  /var/folders/vy/5v99851s36lfnhhyv0xnzr1r0000gn/T/yarn--1608131719213-0.5797551036510831:/Users/nikhilsaraf/garage/magiql-ide/node_modules/.bin:/Users/nikhilsaraf/.config/yarn/link/node_modules/.bin:/Users/nikhilsaraf/.fnm/node-versions/v15.3.0/installation/libexec/lib/node_modules/npm/bin/node-gyp-bin:/Users/nikhilsaraf/.fnm/node-versions/v15.3.0/installation/lib/node_modules/npm/bin/node-gyp-bin:/Users/nikhilsaraf/.fnm/node-versions/v15.3.0/installation/bin/node_modules/npm/bin/node-gyp-bin:/var/folders/vy/5v99851s36lfnhhyv0xnzr1r0000gn/T/fnm_multishell_77876_1607952108693/bin:/Users/nikhilsaraf/.fnm:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/var/folders/vy/5v99851s36lfnhhyv0xnzr1r0000gn/T/fnm_multishell_67272_1607938645534/bin:/Users/nikhilsaraf/.fnm
 
 Yarn version: 
   1.22.10
@@ -31,7 +31,6 @@ npm manifest:
     "dependencies": {
       "@beamwind/colors": "^2.0.3",
       "@beamwind/play": "^2.1.1",
-      "@modulz/radix-icons": "^3.3.0",
       "@reach/combobox": "^0.12.1",
       "@reach/listbox": "^0.12.1",
       "@reach/tooltip": "^0.12.1",
@@ -39,15 +38,10 @@ npm manifest:
       "@types/react-dom": "^17.0.0",
       "beamwind": "^2.0.2",
       "create-hook-context": "^1.0.0",
-      "fetch-progress": "^1.3.0",
-      "graphql-ast-types": "^1.0.2",
-      "monaco-graphql": "^0.3.3",
       "react-error-boundary": "^3.1.0",
       "react-split-grid": "^1.0.3",
       "recoil": "^0.1.2",
-      "recoilize": "^1.0.0",
-      "use-monaco": "^0.0.26",
-      "valtio": "^0.4.8"
+      "use-monaco": "^0.0.26"
     },
     "peerDependencies": {
       "graphql": "*",
@@ -55,11 +49,13 @@ npm manifest:
       "react-dom": "*"
     },
     "files": [
-      "dist"
+      "dist",
+      "render",
+      "README.md"
     ],
     "name": "@magiql/ide",
     "types": "dist/types",
-    "version": "0.0.12",
+    "version": "0.0.16",
     "exports": {
       ".": {
         "import": "./dist/esm/index.js",
