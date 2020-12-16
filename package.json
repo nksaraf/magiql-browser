@@ -29,7 +29,7 @@
   ],
   "name": "@magiql/ide",
   "types": "dist/types",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",

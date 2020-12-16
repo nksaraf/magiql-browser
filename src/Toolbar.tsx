@@ -66,20 +66,23 @@ export function Toolbar() {
     <div
       className={bw`w-full flex flex-row items-center gap-4 rounded-md bg-gray-100 h-10 py-1.5 px-3`}
     >
-      <div className={bw``}>
-        <Logo
-          className={bw`${
-            schema ? `text-#e10098` : `text-gray-400`
-          } hover:(mb-0.5 scale-110) ${iconButton}`}
-          // onClick={() => {
-          //   setPanels((props) =>
-          //     props[2].includes("schema")
-          //       ? props
-          //       : [props[0], props[1], ["schema"]]
-          //   );
-          // }}
-        />
-      </div>
+      <Tooltip className={bw`${tooltip}`} label="MagiQL IDE">
+        <div>
+          <Logo
+            className={bw`${
+              schema ? `text-#e10098` : `text-gray-400`
+            } hover:(mb-0.5 scale-110) ${iconButton}`}
+            onClick={() => {
+              setFocused("schema");
+              setPanels((props) =>
+                props[2].includes("schema")
+                  ? props
+                  : [props[0], props[1], ["schema"]]
+              );
+            }}
+          />
+        </div>
+      </Tooltip>
       <div
         className={bw`px-4 flex-1 text-gray-800 flex gap-3 flex-row col-span-4 text-gray-600 bg-gray-200 h-full items-center rounded-md text-center font-graphql text-sm`}
       >

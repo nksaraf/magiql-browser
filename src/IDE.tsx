@@ -23,6 +23,7 @@ import {
   Helmet,
   InputIcon,
   Loading,
+  Response,
   Tree,
 } from "./lib/Icons";
 
@@ -214,10 +215,10 @@ function ResultsEditor() {
           onClick={() => {
             setFocused("results");
           }}
-          className={bw`flex flex-row items-center gap-1`}
+          className={bw`flex flex-row items-center gap-1.5`}
         >
-          <div className={bw`h-4.5 w-4.5 -mt-1`}>
-            <Helmet className={bw`h-4.5 w-4.5`} />
+          <div className={bw`h-4.0 w-4.0`}>
+            <Response className={bw`h-4.0 w-4.0`} />
           </div>
           <div>Response</div>
         </div>
