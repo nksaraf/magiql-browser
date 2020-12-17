@@ -343,8 +343,6 @@ export function Explorer() {
     }
   }, [lasEditedBy]);
 
-  console.log(editorPanelHeader(focused === "editor"));
-
   return (
     <div
       onClick={() => {

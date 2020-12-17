@@ -282,11 +282,6 @@ export const getVariableDefinitions = atomFamily<gql.VariableDefinitionNode[]>(
     } else {
       const oldPaths = get(getVariableDefinitionPaths(path));
       const paths = nodes.map((node, index) => path + "." + index);
-      console.log(
-        oldPaths,
-        paths,
-        nodes.map((node, index) => node.metadata?.path)
-      );
 
       for (var p in oldPaths) {
         if (!paths.includes(p)) {
@@ -483,11 +478,6 @@ export const getFields = atomFamily<gql.FieldNode[]>(
     } else {
       const oldPaths = get(getFieldPaths(path));
       const paths = nodes.map((node, index) => path + "." + index);
-      console.log(
-        oldPaths,
-        paths,
-        nodes.map((node, index) => node.metadata?.path)
-      );
 
       for (var p in oldPaths) {
         if (!paths.includes(p)) {
@@ -569,11 +559,6 @@ export const getArguments = atomFamily<gql.ArgumentNode[]>(
     } else {
       const oldPaths = get(getArgumentPaths(path));
       const paths = nodes.map((node, index) => path + "." + index);
-      console.log(
-        oldPaths,
-        paths,
-        nodes.map((node, index) => node.metadata?.path)
-      );
 
       for (var p in oldPaths) {
         if (!paths.includes(p)) {
@@ -1186,11 +1171,6 @@ export const getObjectFields = atomFamily<gql.ObjectFieldNode[]>(
     } else {
       const oldPaths = get(getObjectFieldPaths(path));
       const paths = nodes.map((node, index) => path + "." + index);
-      console.log(
-        oldPaths,
-        paths,
-        nodes.map((node, index) => node.metadata?.path)
-      );
 
       for (var p in oldPaths) {
         if (!paths.includes(p)) {
@@ -1272,11 +1252,6 @@ export const getDirectives = atomFamily<gql.DirectiveNode[]>(
     } else {
       const oldPaths = get(getDirectivePaths(path));
       const paths = nodes.map((node, index) => path + "." + index);
-      console.log(
-        oldPaths,
-        paths,
-        nodes.map((node, index) => node.metadata?.path)
-      );
 
       for (var p in oldPaths) {
         if (!paths.includes(p)) {
@@ -1774,11 +1749,6 @@ export const getDefinitions = atomFamily<gql.DefinitionNode[]>(
     } else {
       const oldPaths = get(getDefinitionPaths(path));
       const paths = nodes.map((node, index) => path + "." + index);
-      console.log(
-        oldPaths,
-        paths,
-        nodes.map((node, index) => node.metadata?.path)
-      );
 
       for (var p in oldPaths) {
         if (!paths.includes(p)) {
@@ -1867,11 +1837,6 @@ export const getSelections = atomFamily<gql.SelectionNode[]>(
     } else {
       const oldPaths = get(getSelectionPaths(path));
       const paths = nodes.map((node, index) => path + "." + index);
-      console.log(
-        oldPaths,
-        paths,
-        nodes.map((node, index) => node.metadata?.path)
-      );
 
       for (var p in oldPaths) {
         if (!paths.includes(p)) {
@@ -2012,11 +1977,6 @@ export const getValues = atomFamily<gql.ValueNode[]>(
     } else {
       const oldPaths = get(getValuePaths(path));
       const paths = nodes.map((node, index) => path + "." + index);
-      console.log(
-        oldPaths,
-        paths,
-        nodes.map((node, index) => node.metadata?.path)
-      );
 
       for (var p in oldPaths) {
         if (!paths.includes(p)) {

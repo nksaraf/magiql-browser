@@ -4,8 +4,8 @@ import pluralize from "pluralize";
 import prettier from "prettier";
 
 const project = new Project();
-project.addSourceFileAtPath("src/ast/types.ts");
-const source = project.getSourceFile("src/ast/types.ts");
+project.addSourceFileAtPath("src/components/ast/types.ts");
+const source = project.getSourceFile("src/components/ast/types.ts");
 import fs from "fs";
 function caps(str) {
   return str.charAt(0).toUpperCase() + str.substr(1);
@@ -18,7 +18,7 @@ const atomFamily = ({ name, type, get, set = undefined }) => {
 
 let atoms = `
 import * as gql from './types'
-import { atom, atomFamily } from '../lib/atom'
+import { atom, atomFamily } from '../../lib/atom'
 
 ${atomFamily({
   name: "getNodeMetadata",
@@ -198,7 +198,6 @@ ${["string", "boolean", "number"]
           else { 
             const oldPaths = get(get${astKind}Paths(path));
             const paths = nodes.map((node, index) => (path + '.' + index));
-            console.log(oldPaths, paths,  nodes.map((node, index) => node.metadata?.path));
 
             for (var p in oldPaths) {
               if (!paths.includes(p)) {
@@ -314,7 +313,6 @@ ${source
               else { 
                 const oldPaths = get(get${astKind}Paths(path));
                 const paths = nodes.map((node, index) => (path + '.' + index));
-                console.log(oldPaths, paths,  nodes.map((node, index) => node.metadata?.path))
     
                 for (var p in oldPaths) {
                   if (!paths.includes(p)) {
@@ -338,13 +336,13 @@ ${source
 
 try {
   fs.writeFileSync(
-    "./src/ast/atoms.ts",
+    "./src/components/ast/atoms.ts",
     prettier.format(atoms, {
       parser: "babel-ts",
     })
   );
 } catch (e) {
-  fs.writeFileSync("./src/ast/atoms.ts", atoms);
+  fs.writeFileSync("./src/components/ast/atoms.ts", atoms);
 }
 
 // function createComponent({ name, type, body }) {

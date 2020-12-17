@@ -9,7 +9,6 @@
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "strict": false,
-    "emitDeclarationOnly": true,
     "declaration": true,
     "outDir": "pkg/dist/types",
     "forceConsistentCasingInFileNames": true,

@@ -17,6 +17,8 @@ import {
 } from "./tokens";
 import {
   getNamedType,
+  GraphQLArgument,
+  GraphQLField,
   GraphQLInterfaceType,
   GraphQLNamedType,
   GraphQLObjectType,
@@ -46,9 +48,10 @@ export const [ASTProvider, useAST] = createContext(
   }
 );
 
-function createAstComponent<T extends gql.ASTNode | gql.ASTNode[]>(
-  Component: React.FC<{ node: T; [key: string]: any }>
-) {
+function createAstComponent<
+  T extends gql.ASTNode | gql.ASTNode[],
+  P extends { [key: string]: any } = {}
+>(Component: React.FC<{ node: T; [key: string]: any } & P>) {
   return Component;
 }
 
@@ -188,7 +191,13 @@ export const VariableDefinition = createAstComponent<gql.VariableDefinitionNode>
           <Variable node={node.variable} />:
         </Tokens>
         <Type node={node.type} />
-        <Value node={node.defaultValue} />
+        {node.defaultValue && (
+          <Tokens>
+            <Punctuation>=</Punctuation>
+            <Value node={node.defaultValue} />
+          </Tokens>
+        )}
+
         <Directives node={node.directives} />
       </Tokens>
     );
@@ -201,11 +210,11 @@ export const VariableDefinitions = createAstComponent<
   gql.VariableDefinitionNode[]
 >(({ node }) => {
   return (
-    <div>
+    <>
       {node.map((childNode) => (
         <VariableDefinition key={childNode.metadata.path} node={childNode} />
       ))}
-    </div>
+    </>
   );
 });
 
@@ -219,84 +228,11 @@ export const Variable = createAstComponent<gql.VariableNode>(({ node }) => {
   );
 });
 
-import Tooltip, { useTooltip, TooltipPopup } from "@reach/tooltip";
+import Tooltip from "@reach/tooltip";
 
 Variable.displayName = "Variable";
 
-// function UnselectedFields({
-//   parentPath,
-//   type,
-// }: {
-//   type: GraphQLObjectType | GraphQLInterfaceType | GraphQLUnionType;
-//   parentPath: string;
-// }) {
-//   const [selectionSet] = useAtom(ast.getSelectionSet(parentPath));
-//   const schema = useSchema();
-
-//   let unselectedFields = removeSelections(
-//     getFields({ type, schema }),
-//     selectionSet?.selections ?? [],
-//     (item) => `${parentPath}.${item.name}`
-//   );
-
-//   return (
-//     <>
-//       {unselectedFields.map((field) => (
-//         <Field
-//           key={`${parentPath}.${field.name}`}
-//           field={field}
-//           path={`${parentPath}.${field.name}`}
-//         />
-//       ))}
-//     </>
-//   );
-// }
-
-// export const removeSelections = (list, selections, getPath) => {
-//   let unselected = [...list];
-//   selections?.forEach((selection) => {
-//     const selectedField = unselected.find((item) =>
-//       selection.startsWith(getPath(item))
-//     );
-
-//     if (selectedField) {
-//       unselected = unselected.filter(
-//         (type) => type.name !== selectedField.name
-//       );
-//     }
-//   });
-//   return unselected;
-// };
-
-// function UnselectedTypes({
-//   node,
-//   type,
-// }: {
-//   type: GraphQLObjectType | GraphQLInterfaceType | GraphQLUnionType;
-//   node: gql.SelectionSetNode;
-// }) {
-//   const schema = useSchema();
-
-//   let unselectedTypes = removeSelections(
-//     [...getTypes({ type, schema })],
-//     selectionSet?.selections ?? [],
-//     (item) => `${parentPath}.${item.name}`
-//   );
-
-//   return (
-//     <>
-//       {unselectedTypes.map((type) => (
-//         <InlineFragment
-//           key={`${parentPath}.${type.name}`}
-//           type={type}
-//           path={`${parentPath}.${type.name}`}
-//         />
-//       ))}
-//     </>
-//   );
-// }
-
-function UnselectedField({ type, path, fieldtype, onToggle }) {
+function UnselectedField({ type, path, fieldtype, onAdd }) {
   const [field] = useAtom(ast.getField(path));
 
   return (
@@ -309,13 +245,13 @@ function UnselectedField({ type, path, fieldtype, onToggle }) {
           value: fieldtype.name,
         },
       }}
-      onToggle={onToggle}
+      onToggle={onAdd}
       type={type}
     />
   );
 }
 
-function UnselectedType({ type, path, onToggle }) {
+function UnselectedType({ type, path, onAdd }) {
   const [fragment] = useAtom(ast.getInlineFragment(path));
 
   return (
@@ -328,10 +264,29 @@ function UnselectedType({ type, path, onToggle }) {
           name: { kind: "Name", value: type.name, metadata: {} as any },
         },
       }}
-      onToggle={onToggle}
+      onToggle={onAdd}
       type={type}
     />
   );
+}
+
+function useUpdateCollection({ node, key }) {
+  const setNode = useUpdateNode({ node });
+
+  return {
+    removeItem: (item) =>
+      setNode((old) => ({
+        ...old,
+        [key]: (old[key] ?? []).filter(
+          (sel) => !(sel.metadata.path === item.metadata.path)
+        ),
+      })),
+    addItem: (item) =>
+      setNode((old) => ({
+        ...old,
+        [key]: [...(old[key] ?? []), item],
+      })),
+  };
 }
 
 export const SelectionSet = createAstComponent<gql.SelectionSetNode>(
@@ -339,7 +294,10 @@ export const SelectionSet = createAstComponent<gql.SelectionSetNode>(
     const schema = useSchema();
     const types = schema ? [...getTypes({ type, schema })] : [];
     const fields = schema ? [...getFields({ type, schema })] : [];
-    const setSelectionSet = useUpdateNode({ node });
+    const { addItem, removeItem } = useUpdateCollection({
+      node,
+      key: "selections",
+    });
     const unselectedTypes = types.filter(
       (type) =>
         !node.selections.find((sel) =>
@@ -360,25 +318,13 @@ export const SelectionSet = createAstComponent<gql.SelectionSetNode>(
           <Selections
             node={node.selections}
             type={type}
-            onToggle={(field) => {
-              setSelectionSet((old) => ({
-                ...old,
-                selections: (old.selections ?? []).filter(
-                  (sel) => !(sel.metadata.path === field.metadata.path)
-                ),
-              }));
-            }}
+            onRemove={removeItem}
           />
         )}
         {unselectedTypes.map((sel, index) => (
           <UnselectedType
             type={sel}
-            onToggle={(field) => {
-              setSelectionSet((old) => ({
-                ...old,
-                selections: [...old.selections, field],
-              }));
-            }}
+            onAdd={addItem}
             key={node.metadata.path + "." + sel.name}
             path={node.metadata.path + "." + sel.name}
           />
@@ -386,12 +332,7 @@ export const SelectionSet = createAstComponent<gql.SelectionSetNode>(
         {unselectedFields.map((sel, index) => (
           <UnselectedField
             type={type}
-            onToggle={(field) => {
-              setSelectionSet((old) => ({
-                ...old,
-                selections: [...old.selections, field],
-              }));
-            }}
+            onAdd={addItem}
             fieldtype={sel}
             key={node.metadata.path + "." + sel.name}
             path={node.metadata.path + "." + sel.name}
@@ -405,6 +346,7 @@ export const SelectionSet = createAstComponent<gql.SelectionSetNode>(
 export const tooltip = `bg-gray-700 text-white border-none rounded-md shadow-lg font-graphql`;
 
 SelectionSet.displayName = "SelectionSet";
+
 export const withTooltip = (description, children) =>
   description ? (
     <Tooltip className={bw`${tooltip} text-xs ml-5`} label={description}>
@@ -413,11 +355,16 @@ export const withTooltip = (description, children) =>
   ) : (
     children
   );
-const ExpandableField = createAstComponent<gql.FieldNode>(
-  ({ node, field = null, onToggle }) => {
-    const hasArgs = node.arguments && node.arguments.length > 0;
-    const type = field?.type ? getNamedType(field?.type) : null;
 
+export const ExpandableField = createAstComponent<gql.FieldNode>(
+  ({ node, field = null, onToggle }) => {
+    const type = field?.type ? getNamedType(field?.type) : null;
+    console.log({ field });
+    const hasArgs =
+      (node.arguments && node.arguments.length > 0) || field?.args?.length
+        ? true
+        : false;
+    const updateArguments = useUpdateCollection({ node, key: "arguments" });
     const aliasedField = node?.alias?.value ? (
       <>
         <FieldName>{node.alias?.value}: </FieldName>
@@ -445,8 +392,6 @@ const ExpandableField = createAstComponent<gql.FieldNode>(
       aliasedField
     );
 
-    console.log(type);
-
     return (
       <Lines>
         {withTooltip(
@@ -473,7 +418,13 @@ const ExpandableField = createAstComponent<gql.FieldNode>(
         )}
         {hasArgs && node.metadata.isSelected && (
           <Indented>
-            <Arguments node={node.arguments} />
+            <Arguments
+              onAdd={updateArguments.addItem}
+              onRemove={updateArguments.removeItem}
+              node={node.arguments}
+              parentPath={node.metadata.path}
+              field={field}
+            />
           </Indented>
         )}
         {hasArgs && node.metadata.isSelected && (
@@ -483,10 +434,7 @@ const ExpandableField = createAstComponent<gql.FieldNode>(
         )}
         {node.metadata.isSelected && (
           <Indented>
-            <SelectionSet
-              node={node.selectionSet}
-              type={field ? getNamedType(field.type) : undefined}
-            />
+            <SelectionSet node={node.selectionSet} type={type} />
           </Indented>
         )}
         {node.metadata.isSelected && (
@@ -503,30 +451,36 @@ ExpandableField.displayName = "ExpandableField";
 
 export const Field = createAstComponent<gql.FieldNode>(
   ({ node, type, onToggle }) => {
+    let field;
+    const updateArguments = useUpdateCollection({ node, key: "arguments" });
+
     if (type) {
-      const field = type.getFields()[node.name.value];
+      field = type.getFields()[node.name.value];
       if (!field?.type) {
         return null;
       }
+    }
 
-      const fieldType = getNamedType(field.type);
+    const fieldType = field ? getNamedType(field.type) : null;
 
-      if (
-        [
-          "InterfaceTypeDefinition",
-          "UnionTypeDefinition",
-          "ObjectTypeDefinition",
-        ].includes((fieldType as GraphQLNamedType).astNode?.kind)
-      ) {
-        return (
-          <ExpandableField node={node} field={field} onToggle={onToggle} />
-        );
-      }
-    } else if ((node.selectionSet?.selections ?? []).length > 0) {
+    if (
+      [
+        "InterfaceTypeDefinition",
+        "UnionTypeDefinition",
+        "ObjectTypeDefinition",
+      ].includes((fieldType as GraphQLNamedType)?.astNode?.kind)
+    ) {
+      return <ExpandableField node={node} field={field} onToggle={onToggle} />;
+    }
+
+    if ((node.selectionSet?.selections ?? []).length > 0) {
       return <ExpandableField node={node} />;
     }
 
-    const hasArgs = node.arguments && node.arguments.length > 0;
+    const hasArgs =
+      (node.arguments && node.arguments.length > 0) || field?.args?.length
+        ? true
+        : false;
 
     const aliasedField = node?.alias?.value ? (
       <>
@@ -571,7 +525,13 @@ export const Field = createAstComponent<gql.FieldNode>(
         {node.metadata.isSelected && hasArgs && (
           <>
             <Indented>
-              <Arguments node={node.arguments} />
+              <Arguments
+                onAdd={updateArguments.addItem}
+                onRemove={updateArguments.removeItem}
+                parentPath={node.metadata.path}
+                node={node.arguments}
+                field={field}
+              />
             </Indented>
             <Tokens>
               <Punctuation>)</Punctuation>
@@ -580,16 +540,6 @@ export const Field = createAstComponent<gql.FieldNode>(
         )}
       </Lines>
     );
-
-    // return (
-    //   <div className={bw``}>
-    //     <Name node={node.alias} />
-    //     <Name node={node.name} />
-    //     <Arguments node={node.arguments} />
-    //     <Directives node={node.directives} />
-    //     <SelectionSet node={node.selectionSet} />
-    //   </div>
-    // );
   }
 );
 
@@ -607,23 +557,218 @@ export const Fields = createAstComponent<gql.FieldNode[]>(({ node, type }) => {
 
 Fields.displayName = "Fields";
 
-export const Argument = createAstComponent<gql.ArgumentNode>(({ node }) => {
+export function KeyWithObjectValue({
+  name,
+  value,
+  isSelected,
+  onToggle = () => {},
+  isLast,
+}) {
+  const update = useUpdateCollection({ node: value, key: "fields" });
   return (
-    <div className={bw`flex flex-row items-start font-mono text-xs gap-1`}>
-      <div className={bw`text-graphql-argname`}>{node.name.value}: </div>
-      <Value node={node.value} />
-    </div>
+    <Lines>
+      <Tokens onClick={onToggle} className={bw`text-graphql-argname`}>
+        <Arrow isOpen={isSelected} />
+        <div>{name.value}: </div>
+        <Punctuation>{"{"}</Punctuation>
+      </Tokens>
+      <Indented>
+        <ObjectFields
+          onAdd={update.addItem}
+          onRemove={update.removeItem}
+          node={(value as gql.ObjectValueNode).fields}
+        />
+      </Indented>
+      <Tokens>
+        <Punctuation>
+          {"}"}
+          {isLast ? null : ","}
+        </Punctuation>
+      </Tokens>
+    </Lines>
   );
+}
+
+export function KeyWithListValue({
+  name,
+  value,
+  isSelected,
+  onToggle = () => {},
+  isLast,
+}) {
+  const update = useUpdateCollection({ node: value, key: "values" });
+  return (
+    <Lines>
+      <Tokens onClick={onToggle} className={bw`text-graphql-argname`}>
+        <Arrow isOpen={isSelected} />
+        <div>{name.value}: </div>
+        <Punctuation>{"["}</Punctuation>
+      </Tokens>
+      <Indented>
+        <ListItems
+          onAdd={update.addItem}
+          onRemove={update.removeItem}
+          node={(value as gql.ListValueNode).values}
+        />
+      </Indented>
+      <Tokens>
+        <Punctuation>
+          {"]"}
+          {isLast ? null : ","}
+        </Punctuation>
+      </Tokens>
+    </Lines>
+  );
+}
+
+export function KeyValue({
+  name,
+  value,
+  isSelected,
+  onToggle = () => {},
+  isLast,
+}) {
+  const kind = value.kind;
+
+  if (kind === "ListValue") {
+    return (
+      <KeyWithListValue
+        name={name}
+        onToggle={onToggle}
+        value={value}
+        isSelected={isSelected}
+        isLast={isLast}
+      />
+    );
+  } else if (kind === "ObjectValue") {
+    return (
+      <KeyWithObjectValue
+        name={name}
+        onToggle={onToggle}
+        value={value}
+        isSelected={isSelected}
+        isLast={isLast}
+      />
+    );
+  } else {
+    return (
+      <Tokens>
+        <Tokens onClick={onToggle}>
+          <Checkbox checked={isSelected} />
+          <div className={bw`text-graphql-argname`}>{name.value}: </div>
+        </Tokens>
+        <Value node={value} />
+      </Tokens>
+    );
+  }
+}
+
+export const Argument = createAstComponent<
+  gql.ArgumentNode,
+  { argument?: GraphQLArgument }
+>(({ node, isLast, onToggle, argument }) => {
+  const schema = useSchema();
+  if (node.metadata.isSelected) {
+    return (
+      <KeyValue
+        name={node.name}
+        value={node.value}
+        onToggle={onToggle}
+        isSelected={node.metadata.isSelected}
+        isLast={isLast}
+      />
+    );
+  } else if (argument) {
+    // if (node.value.kind === "ObjectValue") {
+    // } else {
+
+    if (argument.astNode.type.kind === "NamedType") {
+      console.log("inspect", schema.getType(argument.type.inspect()));
+    }
+    return (
+      <Tokens
+        onClick={onToggle}
+        className={bw`text-graphql-argname opacity-50`}
+      >
+        <Checkbox checked={false} />
+        {node.name.value}
+      </Tokens>
+    );
+    // }
+  }
 });
+
+function UnusedArgument({ argument, path, onAdd, isLast }) {
+  let [node] = useAtom(ast.getArgument(path));
+
+  let namedNode = {
+    ...node,
+    value: {
+      kind: "IntValue",
+      metadata: {},
+      value: 0,
+    },
+    name: {
+      ...node.name,
+      value: argument.name,
+    },
+  };
+
+  console.log({ node, namedNode, argument, path, onAdd, isLast });
+
+  return (
+    <Argument
+      argument={argument}
+      onToggle={() => {
+        console.log({ namedNode });
+        onAdd(namedNode);
+      }}
+      node={namedNode as any}
+      isLast={isLast}
+    />
+  );
+}
 
 Argument.displayName = "Argument";
 
-export const Arguments = createAstComponent<gql.ArgumentNode[]>(({ node }) => {
+export const Arguments = createAstComponent<
+  gql.ArgumentNode[],
+  {
+    field?: GraphQLField<any, any>;
+    onAdd?: any;
+    onRemove?: any;
+    parentPath?: string;
+  }
+>(({ node, field, onAdd, onRemove, parentPath }) => {
+  const unusedArguments =
+    field?.args.filter((arg) => !node.find((n) => arg.name === n.name.value)) ??
+    [];
+
   return (
     <Lines>
-      {node.map((childNode) => (
-        <Argument key={childNode.metadata.path} node={childNode} />
+      {node.map((childNode, index) => (
+        <Argument
+          onToggle={() => {
+            onRemove(childNode);
+          }}
+          key={childNode.metadata.path}
+          node={childNode}
+          isLast={
+            unusedArguments.length === 0 ? index === node.length - 1 : false
+          }
+        />
       ))}
+      {unusedArguments.map((arg, index) => {
+        return (
+          <UnusedArgument
+            key={parentPath + "." + arg.name}
+            argument={arg}
+            onAdd={onAdd}
+            path={parentPath + "." + arg.name}
+            isLast={index === unusedArguments.length - 1}
+          />
+        );
+      })}
     </Lines>
   );
 });
@@ -650,13 +795,14 @@ export const InlineFragment = createAstComponent<gql.InlineFragmentNode>(
   ({ node, type, onToggle }) => {
     const schema = useSchema();
 
-    const fragmentType =
-      schema ?? schema.getType(node.typeCondition.name.value);
+    const fragmentType = schema
+      ? schema.getType(node.typeCondition.name.value)
+      : null;
 
     return (
       <Lines>
         <Tokens
-          onClick={() => (!node.metadata.isSelected ? onToggle(node) : {})}
+          onClick={() => onToggle(node)}
           className={bw`${{ "opacity-40": !node.metadata.isSelected }}`}
         >
           <Arrow
@@ -811,7 +957,7 @@ EnumValue.displayName = "EnumValue";
 export const ListValue = createAstComponent<gql.ListValueNode>(({ node }) => {
   return (
     <Tokens className={bw`text-graphql-punctuation`}>
-      [<Values node={node.values} />]
+      [<ListItems node={node.values} />]
     </Tokens>
   );
 });
@@ -835,31 +981,90 @@ export const ObjectValue = createAstComponent<gql.ObjectValueNode>(
 ObjectValue.displayName = "ObjectValue";
 
 export const ObjectField = createAstComponent<gql.ObjectFieldNode>(
-  ({ node }) => {
+  ({ node, isLast }) => {
+    // kind = node.value.kind;
+    // if (kind === "ListValue") {
+    //   return (
+    //     <Lines>
+    //       <Tokens className={bw`text-graphql-argname`}>
+    //         <Arrow isOpen={node.metadata.isSelected} />
+    //         <div>{node.name.value}: </div>
+    //         <Punctuation>{"["}</Punctuation>
+    //       </Tokens>
+    //       <Indented>
+    //         <Values node={(node.value as gql.ListValueNode).values} />
+    //       </Indented>
+    //       <Tokens>
+    //         <Punctuation>
+    //           {"]"}
+    //           {isLast ? null : ","}
+    //         </Punctuation>
+    //       </Tokens>
+    //     </Lines>
+    //   );
+    // } else if (kind === "ObjectValue") {
+    //   return (
+    //     <Lines>
+    //       <Tokens className={bw`text-graphql-argname`}>
+    //         <Arrow isOpen={node.metadata.isSelected} />
+    //         <div>{node.name.value}: </div>
+    //         <Punctuation>{"{"}</Punctuation>
+    //       </Tokens>
+    //       <Indented>
+    //         <ObjectFields node={(node.value as gql.ObjectValueNode).fields} />
+    //       </Indented>
+    //       <Tokens>
+    //         <Punctuation>
+    //           {"}"}
+    //           {isLast ? null : ","}
+    //         </Punctuation>
+    //       </Tokens>
+    //     </Lines>
+    //   );
+    // } else {
     return (
       <Tokens>
-        <Tokens className={bw`text-graphql-punctuation gap-0`}>
-          <Name node={node.name} />:
-        </Tokens>
+        <Checkbox checked={node.metadata.isSelected} />
+        <div className={bw`text-graphql-argname`}>{node.name.value}: </div>
         <Value node={node.value} />
       </Tokens>
     );
+    // }
+
+    // if (node.value.kind === "ObjectValue") {
+    // }
+    // return (
+    //   <Tokens>
+    //     <Tokens className={bw`text-graphql-argname gap-0`}>
+    //       <div>{node.name.value}</div>
+    //       <Punctuation>: </Punctuation>
+    //     </Tokens>
+    //     <Value node={node.value} />
+    //   </Tokens>
+    // );
   }
 );
 
 ObjectField.displayName = "ObjectField";
 
 export const ObjectFields = createAstComponent<gql.ObjectFieldNode[]>(
-  ({ node }) => {
+  ({ node, onAdd, onRemove }) => {
     return (
-      <>
-        {node.map((childNode, index) => (
-          <div className={bw`flex flex-row gap-0`}>
-            <ObjectField key={childNode.metadata.path} node={childNode} />
-            {<Punctuation>{index < node.length - 1 ? "," : ""}</Punctuation>}
-          </div>
-        ))}
-      </>
+      <Lines>
+        {node.map((childNode, index) => {
+          return (
+            <KeyValue
+              onToggle={() => {
+                onRemove(childNode);
+              }}
+              name={childNode.name}
+              value={childNode.value}
+              isSelected={childNode.metadata.isSelected}
+              isLast={index}
+            />
+          );
+        })}
+      </Lines>
     );
   }
 );
@@ -990,7 +1195,7 @@ export const Selection = createAstComponent<gql.SelectionNode>(
 Selection.displayName = "Selection";
 
 export const Selections = createAstComponent<gql.SelectionNode[]>(
-  ({ node, type, onToggle }) => {
+  ({ node, type, onRemove }) => {
     return (
       <>
         {node.map((childNode) => (
@@ -998,7 +1203,7 @@ export const Selections = createAstComponent<gql.SelectionNode[]>(
             key={childNode.metadata.path}
             node={childNode}
             type={type}
-            onToggle={onToggle}
+            onToggle={onRemove}
           />
         ))}
       </>
@@ -1046,24 +1251,71 @@ export const Value = createAstComponent<gql.ValueNode>(({ node }) => {
 
 Value.displayName = "Value";
 
-export const Values = createAstComponent<gql.ValueNode[]>(({ node }) => {
-  if (!node) {
-    return null;
+function ListItem({ node: childNode, onToggle, isLast }) {
+  if (childNode.kind === "ListValue") {
+    return (
+      <Lines>
+        <Tokens>
+          <Arrow isOpen={childNode.metadata.isSelected} onClick={onToggle} />
+          <Punctuation>[</Punctuation>
+        </Tokens>
+        <Indented>
+          <ListItems node={childNode.values} />
+        </Indented>
+        <Tokens>
+          <Punctuation>]</Punctuation>
+        </Tokens>
+      </Lines>
+    );
+  } else if (childNode.kind === "ObjectValue") {
+    return (
+      <Lines>
+        <Tokens>
+          <Arrow isOpen={childNode.metadata.isSelected} onClick={onToggle} />
+          <Punctuation>{"{"}</Punctuation>
+        </Tokens>
+        <Indented>
+          <ObjectFields node={childNode.fields} />
+        </Indented>
+        <Tokens>
+          <Punctuation>{"}"}</Punctuation>
+        </Tokens>
+      </Lines>
+    );
   }
 
   return (
-    <div className={bw`flex flex-row gap-1`}>
-      {node.map((childNode, index) => (
-        <div className={bw`flex flex-row`}>
-          <Value key={childNode.metadata.path} node={childNode} />
-          {index < node.length - 1 ? "," : ""}
-        </div>
-      ))}
-    </div>
+    <Tokens onClick={onToggle} key={childNode.metadata.path}>
+      <Checkbox checked={childNode.metadata.isSelected} />
+      <Tokens className={bw`gap-0`}>
+        <Value node={childNode} />
+        {isLast ? "," : ""}
+      </Tokens>
+    </Tokens>
   );
-});
+}
 
-Values.displayName = "Values";
+export const ListItems = createAstComponent<gql.ValueNode[]>(
+  ({ node, onAdd, onRemove }) => {
+    if (!node) {
+      return null;
+    }
+
+    return (
+      <Lines>
+        {node.map((childNode, index) => {
+          return (
+            <ListItem
+              isLast={index < node.length - 1}
+              node={childNode}
+              onToggle={() => onRemove(childNode)}
+            />
+          );
+        })}
+      </Lines>
+    );
+  }
+);
 
 export const Type = createAstComponent<gql.TypeNode>(({ node }) => {
   switch (node.kind) {
