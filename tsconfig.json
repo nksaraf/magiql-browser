@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ESNext"
-    ],
+    "target": "es5",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "types": [],
     "allowJs": true,
     "checkJs": false,
@@ -13,22 +9,16 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": false,
-    "emitDeclarationOnly": true,
     "declaration": true,
     "outDir": "pkg/dist/types",
     "forceConsistentCasingInFileNames": true,
-    "module": "ESNext",
+    "module": "commonjs",
     "noImplicitAny": false,
-    "moduleResolution": "Node",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
-    "noEmit": true
+    "jsx": "react"
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src"],
+  "exclude": ["node_modules"]
 }

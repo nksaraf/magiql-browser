@@ -11,6 +11,9 @@ import * as GQL from "./ast/components";
 import { EditorPanel, header, panel } from "./lib/components";
 import SplitGrid from "react-split-grid";
 import { buildASTSchema, parse, print } from "graphql";
+import * as gqlAst from "./ast/atoms";
+import { Toolbar } from "./Toolbar";
+import { SchemaConfig } from "use-monaco/dist/types/src/plugins/graphql/typings";
 
 import lightTheme from "./editor/theme";
 import * as config from "./editor/graphql.config";
@@ -283,9 +286,6 @@ function LoadSchema() {
   return null;
 }
 
-import * as gqlAst from "./ast/atoms";
-import { Toolbar } from "./Toolbar";
-
 function Explorer() {
   const [currentTab] = useAtom(ide.currentTab);
   const [query, setQueryText] = useAtom(ide.getTabQueryFile(currentTab));
@@ -510,7 +510,7 @@ function App() {
   );
 }
 
-export function GraphQLIDE({ schemaConfig }) {
+export function GraphQLIDE({ schemaConfig }: { schemaConfig: SchemaConfig }) {
   return (
     <RecoilRoot
       initializeState={(snapshpt) => {

@@ -2,7 +2,7 @@ Arguments:
   /Users/nikhilsaraf/.fnm/node-versions/v15.3.0/installation/bin/node /usr/local/Cellar/yarn/1.22.10/libexec/bin/yarn.js publish --access public
 
 PATH: 
-  /var/folders/vy/5v99851s36lfnhhyv0xnzr1r0000gn/T/yarn--1608131719213-0.5797551036510831:/Users/nikhilsaraf/garage/magiql-ide/node_modules/.bin:/Users/nikhilsaraf/.config/yarn/link/node_modules/.bin:/Users/nikhilsaraf/.fnm/node-versions/v15.3.0/installation/libexec/lib/node_modules/npm/bin/node-gyp-bin:/Users/nikhilsaraf/.fnm/node-versions/v15.3.0/installation/lib/node_modules/npm/bin/node-gyp-bin:/Users/nikhilsaraf/.fnm/node-versions/v15.3.0/installation/bin/node_modules/npm/bin/node-gyp-bin:/var/folders/vy/5v99851s36lfnhhyv0xnzr1r0000gn/T/fnm_multishell_77876_1607952108693/bin:/Users/nikhilsaraf/.fnm:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/var/folders/vy/5v99851s36lfnhhyv0xnzr1r0000gn/T/fnm_multishell_67272_1607938645534/bin:/Users/nikhilsaraf/.fnm
+  /var/folders/vy/5v99851s36lfnhhyv0xnzr1r0000gn/T/yarn--1608164737213-0.03722209910094798:/Users/nikhilsaraf/garage/magiql-ide/node_modules/.bin:/Users/nikhilsaraf/.config/yarn/link/node_modules/.bin:/Users/nikhilsaraf/.fnm/node-versions/v15.3.0/installation/libexec/lib/node_modules/npm/bin/node-gyp-bin:/Users/nikhilsaraf/.fnm/node-versions/v15.3.0/installation/lib/node_modules/npm/bin/node-gyp-bin:/Users/nikhilsaraf/.fnm/node-versions/v15.3.0/installation/bin/node_modules/npm/bin/node-gyp-bin:/var/folders/vy/5v99851s36lfnhhyv0xnzr1r0000gn/T/fnm_multishell_67052_1608163266026/bin:/Users/nikhilsaraf/.fnm:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/var/folders/vy/5v99851s36lfnhhyv0xnzr1r0000gn/T/fnm_multishell_47177_1608132404580/bin:/Users/nikhilsaraf/.fnm
 
 Yarn version: 
   1.22.10
@@ -41,8 +41,9 @@ npm manifest:
       "react-error-boundary": "^3.1.0",
       "react-split-grid": "^1.0.3",
       "recoil": "^0.1.2",
-      "use-monaco": "^0.0.26"
+      "use-monaco": "^0.0.29"
     },
+    "sideEffects": false,
     "peerDependencies": {
       "graphql": "*",
       "react": "*",
@@ -55,7 +56,7 @@ npm manifest:
     ],
     "name": "@magiql/ide",
     "types": "dist/types",
-    "version": "0.0.16",
+    "version": "0.0.29",
     "exports": {
       ".": {
         "import": "./dist/esm/index.js",
@@ -75,11 +76,13 @@ npm manifest:
       "./": "./"
     },
     "main": "dist/index.js",
-    "modules": "dist/esm/index.js",
+    "module": "dist/types/index.js",
     "devDependencies": {
       "@magiql/ide": "^0.0.13",
       "@prefresh/vite": "^1.2.2",
       "@types/node": "^14.14.13",
+      "bundlesize": "^0.18.0",
+      "next": "^10.0.3",
       "pluralize": "^8.0.0",
       "preact": "^10.5.7",
       "prettier": "^2.2.1",

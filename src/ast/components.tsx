@@ -20,10 +20,10 @@ import {
   GraphQLInterfaceType,
   GraphQLNamedType,
   GraphQLObjectType,
+  GraphQLSchema,
   GraphQLUnionType,
 } from "graphql";
 import { getFields, getTypes } from "./utils";
-import { ide } from "../lib/ide";
 import {
   ListboxInput,
   ListboxButton,
@@ -45,6 +45,9 @@ export const [ASTProvider, useAST] = createContext(
     return options;
   }
 );
+
+function createAstComponent<T extends gql.ASTNode | gql.ASTNode[]>(
+  Component: React.FC<{ node: T; [key: string]: any }>
 ) {
   return Component;
 }
@@ -55,9 +58,24 @@ export const Name = createAstComponent<gql.NameNode>(({ node }) => {
 
 Name.displayName = "Name";
 
+function useUpdateNode({ node }) {
+  const options = useAST();
+
+  const updateNode = useUpdateAtom(
+    (ast as any)[`get${node.kind}`](node.metadata.path)
+  );
+
+  return React.useCallback(
+    (document) => {
+      updateNode(document);
+      options.onChange?.();
+    },
+    [options.onChange, updateNode]
+  );
+}
+
 export const Document = createAstComponent<gql.DocumentNode>(({ node }) => {
-  const updateDocument = useUpdateAtom(ast.getDocument(node.metadata.path));
-  const setLastEditedBy = useUpdateAtom(ide.lastEditedBy);
+  const updateDocument = useUpdateNode({ node });
   React.useEffect(() => {
     if (node.definitions.length === 0) {
       updateDocument((old) => ({
@@ -80,7 +98,6 @@ export const Document = createAstComponent<gql.DocumentNode>(({ node }) => {
           },
         ],
       }));
-      setLastEditedBy("explorer");
     }
   }, [node.definitions.length, updateDocument]);
 
@@ -95,7 +112,7 @@ Document.displayName = "Document";
 
 export const OperationDefinition = createAstComponent<gql.OperationDefinitionNode>(
   ({ node }) => {
-    const [schema] = useAtom(ide.schema);
+    const schema = useSchema();
 
     const getOperationType = (operation: gql.OperationDefinitionNode) => {
       if (operation.operation === "query") {
@@ -210,7 +227,7 @@ Variable.displayName = "Variable";
 //   parentPath: string;
 // }) {
 //   const [selectionSet] = useAtom(ast.getSelectionSet(parentPath));
-//   const [schema] = useAtom(ide.schema);
+//   const schema = useSchema();
 
 //   let unselectedFields = removeSelections(
 //     getFields({ type, schema }),
@@ -254,7 +271,7 @@ Variable.displayName = "Variable";
 //   type: GraphQLObjectType | GraphQLInterfaceType | GraphQLUnionType;
 //   node: gql.SelectionSetNode;
 // }) {
-//   const [schema] = useAtom(ide.schema);
+//   const schema = useSchema();
 
 //   let unselectedTypes = removeSelections(
 //     [...getTypes({ type, schema })],
@@ -315,13 +332,10 @@ function UnselectedType({ type, path, onToggle }) {
 
 export const SelectionSet = createAstComponent<gql.SelectionSetNode>(
   ({ node, type }) => {
-    const [schema] = useAtom(ide.schema);
+    const schema = useSchema();
     const types = schema ? [...getTypes({ type, schema })] : [];
     const fields = schema ? [...getFields({ type, schema })] : [];
-    const setSelectionSet = useUpdateAtom(
-      ast.getSelectionSet(node.metadata.path)
-    );
-    const setLastEditedBy = useUpdateAtom(ide.lastEditedBy);
+    const setSelectionSet = useUpdateNode({ node });
     const unselectedTypes = types.filter(
       (type) =>
         !node.selections.find((sel) =>
@@ -349,7 +363,6 @@ export const SelectionSet = createAstComponent<gql.SelectionSetNode>(
                   (sel) => !(sel.metadata.path === field.metadata.path)
                 ),
               }));
-              setLastEditedBy("explorer");
             }}
           />
         )}
@@ -361,7 +374,6 @@ export const SelectionSet = createAstComponent<gql.SelectionSetNode>(
                 ...old,
                 selections: [...old.selections, field],
               }));
-              setLastEditedBy("explorer");
             }}
             key={node.metadata.path + "." + (node.selections.length + index)}
             path={node.metadata.path + "." + (node.selections.length + index)}
@@ -375,7 +387,6 @@ export const SelectionSet = createAstComponent<gql.SelectionSetNode>(
                 ...old,
                 selections: [...old.selections, field],
               }));
-              setLastEditedBy("explorer");
             }}
             fieldtype={sel}
             key={
@@ -620,9 +631,10 @@ FragmentSpread.displayName = "FragmentSpread";
 
 export const InlineFragment = createAstComponent<gql.InlineFragmentNode>(
   ({ node, type, onToggle }) => {
-    const [schema] = useAtom(ide.schema);
+    const schema = useSchema();
 
-    const fragmentType = type ?? schema.getType(node.typeCondition.name.value);
+    const fragmentType =
+      schema ?? schema.getType(node.typeCondition.name.value);
 
     return (
       <Lines>
@@ -662,10 +674,12 @@ InlineFragment.displayName = "InlineFragment";
 
 export const FragmentDefinition = createAstComponent<gql.FragmentDefinitionNode>(
   ({ node }) => {
-    const [schema] = useAtom(ide.schema);
-    const type = schema.getType(
-      node.typeCondition.name.value
-    ) as GraphQLObjectType;
+    const schema = useSchema();
+
+    let type = null;
+    if (schema) {
+      type = schema.getType(node.typeCondition.name.value) as GraphQLObjectType;
+    }
 
     return (
       <Lines>

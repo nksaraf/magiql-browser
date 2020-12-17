@@ -1,5 +1,5 @@
 <p align="center">
-   <img src="./public/logo.svg" width=72 />
+   <img src="https://magiql-ide.vercel.app/logo.svg" width=72 />
 <h1  align="center"><code margin="0">@magiql/ide</code></h1><p align="center"><i>Web-based IDE for GraphQL, based on <code><a href="https://github.com/FormidableLabs/monaco-editor">monaco-editor</a></code></i></p>
 </p>
 

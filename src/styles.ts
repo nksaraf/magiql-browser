@@ -25,7 +25,7 @@ const fontInjector =
     ? noOpInjector()
     : cssomInjector({ target: getStyleElement().sheet });
 
-setup({
+export const step = setup({
   init(insert, theme) {
     `:root {
   --reach-listbox: 1;

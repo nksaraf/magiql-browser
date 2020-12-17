@@ -5,3 +5,5 @@ yarn.lock
 pages
 next-env.d.ts
 .next
+
+min
