@@ -20,22 +20,15 @@
   <body>
     <noscript> You need to enable JavaScript to run this app. </noscript>
     <div id="root"></div>
-    <!-- <div id="MAGIQL_IDE_CONFIG">
-      { "uri": "https://swapi-graphql.netlify.app/.netlify/functions/index" }
-    </div> -->
-    <div id="MAGIQL_IDE_CONFIG">
-      { "uri": "https://poke-api-delta.vercel.app/api/graphql" }
-    </div>
     <script type="module">
       import React from "react";
       import { render } from "react-dom";
       import { GraphQLIDE } from "./src/index.tsx";
 
+      const config = document.getElementById("MAGIQL_IDE_CONFIG");
       render(
         React.createElement(GraphQLIDE, {
-          schemaConfig: JSON.parse(
-            document.getElementById("MAGIQL_IDE_CONFIG").innerText
-          ),
+          schemaConfig: config ? JSON.parse(config.innerText) : undefined,
         }),
         document.getElementById("root")
       );

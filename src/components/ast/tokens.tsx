@@ -36,7 +36,7 @@ export function Lines({ children }) {
 export function Tokens({ children, gap = 1.5, className = "", ...props }) {
   return (
     <div
-      className={`${bw`${graphqlNode} ${"gap" + "-" + gap} `} ${className}`}
+      className={`${bw`${className} ${graphqlNode} ${"gap" + "-" + gap} `}`}
       {...props}
     >
       {children}

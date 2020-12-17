@@ -184,7 +184,9 @@ export const VariableDefinition = createAstComponent<gql.VariableDefinitionNode>
   ({ node }) => {
     return (
       <Tokens>
-        <Variable node={node.variable} />
+        <Tokens className={bw`text-graphql-variable gap-0.25`}>
+          <Variable node={node.variable} />:
+        </Tokens>
         <Type node={node.type} />
         <Value node={node.defaultValue} />
         <Directives node={node.directives} />
@@ -607,10 +609,10 @@ Fields.displayName = "Fields";
 
 export const Argument = createAstComponent<gql.ArgumentNode>(({ node }) => {
   return (
-    <Tokens>
+    <div className={bw`flex flex-row items-start font-mono text-xs gap-1`}>
       <div className={bw`text-graphql-argname`}>{node.name.value}: </div>
       <Value node={node.value} />
-    </Tokens>
+    </div>
   );
 });
 
@@ -808,9 +810,9 @@ EnumValue.displayName = "EnumValue";
 
 export const ListValue = createAstComponent<gql.ListValueNode>(({ node }) => {
   return (
-    <div className={bw``}>
-      <Values node={node.values} />
-    </div>
+    <Tokens className={bw`text-graphql-punctuation`}>
+      [<Values node={node.values} />]
+    </Tokens>
   );
 });
 
@@ -819,9 +821,13 @@ ListValue.displayName = "ListValue";
 export const ObjectValue = createAstComponent<gql.ObjectValueNode>(
   ({ node }) => {
     return (
-      <div className={bw``}>
-        <ObjectFields node={node.fields} />
-      </div>
+      <Lines>
+        <Punctuation>{"{"}</Punctuation>
+        <Indented>
+          <ObjectFields node={node.fields} />
+        </Indented>
+        <Punctuation>{"}"}</Punctuation>
+      </Lines>
     );
   }
 );
@@ -831,10 +837,12 @@ ObjectValue.displayName = "ObjectValue";
 export const ObjectField = createAstComponent<gql.ObjectFieldNode>(
   ({ node }) => {
     return (
-      <div className={bw``}>
-        <Name node={node.name} />
+      <Tokens>
+        <Tokens className={bw`text-graphql-punctuation gap-0`}>
+          <Name node={node.name} />:
+        </Tokens>
         <Value node={node.value} />
-      </div>
+      </Tokens>
     );
   }
 );
@@ -844,11 +852,14 @@ ObjectField.displayName = "ObjectField";
 export const ObjectFields = createAstComponent<gql.ObjectFieldNode[]>(
   ({ node }) => {
     return (
-      <div>
-        {node.map((childNode) => (
-          <ObjectField key={childNode.metadata.path} node={childNode} />
+      <>
+        {node.map((childNode, index) => (
+          <div className={bw`flex flex-row gap-0`}>
+            <ObjectField key={childNode.metadata.path} node={childNode} />
+            {<Punctuation>{index < node.length - 1 ? "," : ""}</Punctuation>}
+          </div>
         ))}
-      </div>
+      </>
     );
   }
 );
@@ -888,9 +899,9 @@ NamedType.displayName = "NamedType";
 
 export const ListType = createAstComponent<gql.ListTypeNode>(({ node }) => {
   return (
-    <div className={bw`text-graphql-punctuation`}>
+    <Tokens className={bw`text-graphql-punctuation gap-0`}>
       [<Type node={node.type} />]
-    </div>
+    </Tokens>
   );
 });
 
@@ -899,9 +910,9 @@ ListType.displayName = "ListType";
 export const NonNullType = createAstComponent<gql.NonNullTypeNode>(
   ({ node }) => {
     return (
-      <div className={bw`text-graphql-punctuation`}>
+      <Tokens className={bw`text-graphql-punctuation gap-0`}>
         <Abstract node={node.type} />!
-      </div>
+      </Tokens>
     );
   }
 );
@@ -998,6 +1009,10 @@ export const Selections = createAstComponent<gql.SelectionNode[]>(
 Selections.displayName = "Selections";
 
 export const Value = createAstComponent<gql.ValueNode>(({ node }) => {
+  if (!node) {
+    return null;
+  }
+
   switch (node.kind) {
     case "Variable": {
       return <Variable node={node} />;
@@ -1032,10 +1047,17 @@ export const Value = createAstComponent<gql.ValueNode>(({ node }) => {
 Value.displayName = "Value";
 
 export const Values = createAstComponent<gql.ValueNode[]>(({ node }) => {
+  if (!node) {
+    return null;
+  }
+
   return (
-    <div>
-      {node.map((childNode) => (
-        <Value key={childNode.metadata.path} node={childNode} />
+    <div className={bw`flex flex-row gap-1`}>
+      {node.map((childNode, index) => (
+        <div className={bw`flex flex-row`}>
+          <Value key={childNode.metadata.path} node={childNode} />
+          {index < node.length - 1 ? "," : ""}
+        </div>
       ))}
     </div>
   );

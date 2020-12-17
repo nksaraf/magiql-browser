@@ -68,7 +68,7 @@ const useDebounce = (
   }, [value]);
 };
 
-export const tooltip = `bg-gray-700 text-white border-none rounded-md shadow-lg font-graphql`;
+export const tooltip = `bg-blueGray-800 z-10000 text-blueGray-100 border-none rounded-md shadow-lg font-graphql`;
 const iconButton = `h-5.5 w-5.5 hover:(mb-0.5 scale-110) cursor-pointer transition-all mb-0`;
 export function Toolbar() {
   const [currentTab] = useAtom(ide.currentTab);
@@ -106,7 +106,7 @@ export function Toolbar() {
         <div>
           <Logo
             className={bw`${
-              schema?.length ? `text-#e10098` : `text-gray-400`
+              schema?.length ? `text-#e10098` : `text-blueGray-400`
             } hover:(mb-0.5 scale-110) ${iconButton}`}
             onClick={() => {
               setFocused("schema");
@@ -124,7 +124,7 @@ export function Toolbar() {
       >
         <div
           className={bw`rounded-full ${
-            schema?.length ? `bg-green-500` : `bg-gray-400`
+            schema?.length ? `bg-green-500` : `bg-blueGray-400`
           } w-2 h-2`}
         ></div>
         <div className={bw`flex-1`}>
@@ -203,7 +203,9 @@ export function Toolbar() {
         <Tooltip className={bw`${tooltip}`} label="Schema">
           <div>
             <Graphql
-              className={bw`${iconButton} text-#e10098`}
+              className={bw`${iconButton} ${
+                !schema ? "text-blueGray-400" : "text-#e10098"
+              } `}
               onClick={() => {
                 setPanels((props) =>
                   props[2].includes("schema")

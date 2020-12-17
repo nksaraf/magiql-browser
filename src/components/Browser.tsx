@@ -1,5 +1,11 @@
 import React from "react";
-import { asDisposable, MonacoProvider, plugins, useMonaco } from "use-monaco";
+import {
+  asDisposable,
+  MonacoProvider,
+  plugins,
+  useMonaco,
+  useMonacoContext,
+} from "use-monaco";
 import type * as monacoApi from "monaco-editor";
 import { bw, setup } from "@beamwind/play";
 import "../styles";
@@ -15,7 +21,6 @@ import { buildASTSchema, parse, print } from "graphql";
 import * as gqlAst from "./ast/atoms";
 import { Toolbar } from "./Toolbar";
 import { SchemaConfig } from "use-monaco/dist/types/src/plugins/graphql/typings";
-
 import lightTheme from "./editor/theme";
 import * as config from "./editor/graphql.config";
 import { ErrorBoundary } from "react-error-boundary";
@@ -138,6 +143,26 @@ export function VariablesEditor() {
     ide.getTabVariablesFile(currentTab)
   );
   const [focused, setFocused] = useAtom(ide.focused);
+  const { monaco } = useMonacoContext();
+  // const [document] = useAtom(gqlAst.getDocument(currentTab));
+
+  React.useEffect(() => {
+    // monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+    //   validate: true,
+    //   schemas: [
+    //     {
+    //       uri: "variables",
+    //       fileMatch: ["/**/variables.json"],
+    //       schema: {
+    //         type: "object",
+    //         properties: {
+    //           profieId: { description: "variable", type: "number" },
+    //         },
+    //       },
+    //     },
+    //   ],
+    // });
+  });
 
   return (
     <EditorPanel
@@ -276,9 +301,14 @@ export function LoadSchema() {
           schemaConfig: config,
         },
       });
-      loadSchema(monaco, currentTab).then((schema) => {
-        setSchema(schema);
-      });
+      loadSchema(monaco, currentTab)
+        .then((schema) => {
+          setSchema(schema);
+        })
+        .catch((e) => {
+          console.error(e);
+          setSchema(null);
+        });
     }
   }, [config, monaco]);
 
@@ -543,6 +573,24 @@ export function GraphQLIDE({
           prettier: ["graphql", "json"],
           "magiql-ide": (monaco) => {
             monaco.plugin.install(plugins.prettier(["graphql", "json"]));
+
+            // {
+            //   "type": "object",
+            //   "properties": {
+            //     "first_name": { "type": "string" },
+            //     "last_name": { "type": "string" },
+            //     "birthday": { "type": "string", "format": "date" },
+            //     "address": {
+            //       "type": "object",
+            //       "properties": {
+            //         "street_address": { "type": "string" },
+            //         "city": { "type": "string" },
+            //         "state": { "type": "string" },
+            //         "country": { "type" : "string" }
+            //       }
+            //     }
+            //   }
+            // }
             return monaco.languages.register({
               id: "graphql",
               worker: {
