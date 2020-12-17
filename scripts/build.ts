@@ -13,6 +13,8 @@ shellac`
     delete pkg.dependencies["graphql"];
     delete pkg.dependencies["react-dom"];
     delete pkg.scripts;
+    const [a, b, c] = pkg.version.split(".");
+    pkg.version = `${a}.${b}.${Number(c) + 1}`;
     fs.writeFileSync("./pkg/package.json", JSON.stringify(pkg, null, 2));
   }}
   `;

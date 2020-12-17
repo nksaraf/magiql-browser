@@ -5,7 +5,7 @@ import type { SchemaConfig } from "monaco-graphql";
 import { RecoilState } from "recoil";
 
 function SaveAtom({ atom, path, serialize }) {
-  const [val, setQuery] = useAtom(atom);
+  const [val] = useAtom(atom);
 
   React.useEffect(() => {
     localStorage.setItem(prefix + path, serialize(val));
@@ -13,7 +13,7 @@ function SaveAtom({ atom, path, serialize }) {
   return null;
 }
 
-const prefix = "magiql:/";
+export const prefix = "magiql:/";
 
 function localStorageAtom(key, { defaultValue }) {
   const val =
@@ -60,7 +60,7 @@ export function Persist() {
   );
 }
 
-const getRawFile = memoize(
+export const getRawFile = memoize(
   (path: string, { persist = false, defaultValue = "" }: any = {}) => {
     return persist
       ? localStorageAtom(path, { defaultValue })
@@ -68,7 +68,7 @@ const getRawFile = memoize(
   }
 );
 
-const getFile = memoize(function <T = string>(
+export const getFile = memoize(function <T = string>(
   path: string,
   {
     persist = true,
@@ -97,7 +97,7 @@ const getFile = memoize(function <T = string>(
   );
 });
 
-const getJSONFile = function <T>(
+export const getJSONFile = function <T>(
   path,
   {
     persist = true,
@@ -124,78 +124,87 @@ const getJSONFile = function <T>(
   });
 };
 
-const getTabVariablesFile = (tab: string) =>
+export const getTabVariablesFile = (tab: string) =>
   getFile("/" + tab + "/variables.json", {
     persist: true,
     defaultValue: "",
   });
 
-const getTabHeadersFile = (tab: string) =>
+export const getTabHeadersFile = (tab: string) =>
   getFile("/" + tab + "/headers.json", {
     persist: true,
     defaultValue: "{}",
   });
 
-const getTabResults = atomFamily((path) => ({}));
+export const getTabResults = atomFamily((path) => ({}));
 
-const getTabQueryFile = (tab: string) =>
+export const getTabQueryFile = (tab: string) =>
   getFile("/" + tab + "/query.graphql", {
     persist: true,
     defaultValue: "",
   });
 
-const tabs = atom(["query1"]);
-
-const currentTab = atom("query1");
-
-const settings = getJSONFile("/settings.json", {
+export const browser = getJSONFile(`/browser.json`, {
   persist: true,
   defaultValue: {
-    panels: [["explorer"], ["editor", "variables"], ["response"]],
-    horizontalRatio: `35fr 8px 30fr 8px 35fr`,
-    verticalRatio: [`100fr`, `75fr 8px 25fr`, `100fr`],
+    currentTab: "query1",
+    tabs: ["query1"],
   },
 });
 
-const panels = atom(
-  (get) => get(settings).panels,
+export const tabs = atom(
+  (get) => get(browser).tabs,
   (get, set, val) => {
-    set(settings, (old) => ({ ...old, panels: val }));
+    set(browser, (old) => ({ ...old, tabs: val }));
   }
 );
 
-const schemaConfig = atom<SchemaConfig | null>(null);
+export const currentTab = atom(
+  (get) => get(browser).currentTab,
+  (get, set, val) => {
+    set(browser, (old) => ({ ...old, currentTab: val }));
+  }
+);
 
-const schemaText = atom<string | null>(null);
+export const getTabSettings = (tab: string) =>
+  getJSONFile(`/${tab}/settings.json`, {
+    persist: true,
+    defaultValue: {
+      panels: [["explorer"], ["editor", "variables"], ["response"]],
+      horizontalRatio: `35fr 8px 30fr 8px 35fr`,
+      verticalRatio: [`100fr`, `75fr 8px 25fr`, `100fr`],
+    },
+  });
 
-export const ide = {
-  getTabVariablesFile,
-  getTabQueryFile,
-  currentTab,
-  persistedFiles,
-  getTabResults,
-  getJSONFile,
-  queryStatus: atom("idle"),
-  getFile,
-  focused: atom<string | null>(null),
-  getTabHeadersFile,
-  tabs,
-  schemaText,
-  horizontalRatio: atom(
-    (get) => get(settings).horizontalRatio,
-    (get, set, val) => {
-      set(settings, (old) => ({ ...old, horizontalRatio: val }));
-    }
-  ),
-  verticalRatio: atom(
-    (get) => get(settings).verticalRatio,
-    (get, set, val) => {
-      set(settings, (old) => ({ ...old, verticalRatio: val }));
-    }
-  ),
-  Persist,
-  schemaConfig,
-  settings,
-  lastEditedBy: atom<string | null>(null),
-  panels,
-};
+export const getTabPanels = atomFamily(
+  (tab: string) => (get) => get(getTabSettings(tab)).panels,
+  (tab: string) => (get, set, val) => {
+    set(getTabSettings(tab), (old) => ({ ...old, panels: val }));
+  }
+);
+
+export const getTabHorizontalRatio = atomFamily(
+  (tab: string) => (get) => get(getTabSettings(tab)).horizontalRatio,
+  (tab: string) => (get, set, val) => {
+    set(getTabSettings(tab), (old) => ({ ...old, horizontalRatio: val }));
+  }
+);
+export const getTabVerticalRatio = atomFamily(
+  (tab: string) => (get) => get(getTabSettings(tab)).verticalRatio,
+  (tab: string) => (get, set, val) => {
+    set(getTabSettings(tab), (old) => ({ ...old, verticalRatio: val }));
+  }
+);
+
+export const getTabSchemaConfig = (tab: string) =>
+  getJSONFile(`/${tab}/schema.config.json`, {
+    persist: true,
+    defaultValue: {} as SchemaConfig,
+  });
+
+export const schemaText = atom<string | null>(null);
+
+export const focused = atom<string | null>(null);
+export const queryStatus = atom("idle");
+
+export const lastEditedBy = atom<string | null>(null);

@@ -29,7 +29,7 @@
   ],
   "name": "@magiql/ide",
   "types": "dist/types",
-  "version": "0.0.21",
+  "version": "0.0.23",
   "exports": {
     ".": {
       "import": "./dist/esm/index.js",
@@ -59,7 +59,9 @@
     "pluralize": "^8.0.0",
     "preact": "^10.5.7",
     "prettier": "^2.2.1",
+    "serve": "^11.3.2",
     "shellac": "^0.4.0",
+    "tailwindcss": "^2.0.2",
     "ts-morph": "^9.1.0",
     "tsup": "^3.10.1",
     "typescript": "^4.1.3",

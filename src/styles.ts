@@ -25,9 +25,12 @@ const fontInjector =
     ? noOpInjector()
     : cssomInjector({ target: getStyleElement().sheet });
 
-export const step = setup({
-  init(insert, theme) {
-    `:root {
+export const global = (() => {
+  setup({ hash: false });
+
+  setup({
+    init(insert, theme) {
+      `:root {
   --reach-listbox: 1;
 }
 
@@ -153,13 +156,14 @@ export const step = setup({
     opacity: 1;
   }
 }`
-      .split("\n\n")
-      .forEach(insert);
-    insert(`body{margin:0}`);
-    fontInjector.insert(
-      `@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&display=swap');`,
-      0
-    );
-  },
-  extends: {},
-});
+        .split("\n\n")
+        .forEach(insert);
+      insert(`body{margin:0}`);
+      fontInjector.insert(
+        `@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&display=swap');`,
+        0
+      );
+    },
+    extends: {},
+  });
+})();

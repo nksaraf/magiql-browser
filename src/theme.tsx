@@ -1,4 +1,18 @@
 import { setup, theme } from "@beamwind/play";
+import { colors } from "./lib/colors";
+
+const { black, white, ...other } = colors;
+
+let color = {
+  black,
+  white,
+};
+
+Object.keys(other).forEach((k) => {
+  Object.keys(other[k]).forEach((v) => {
+    color[k + "-" + v] = other[k][v];
+  });
+});
 
 setup({
   plugins: {
@@ -19,6 +33,7 @@ setup({
         "graphql-boolean": "#D47509",
         "graphql-enum": "#0B7FC7",
         "graphql-alias": "#1C92A9",
+        ...color,
       },
       fontFamily: {
         graphql: "Rubik",
