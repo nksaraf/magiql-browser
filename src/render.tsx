@@ -1,9 +1,9 @@
-import manifest from "@magiql/ide/dist/_assets/manifest.json";
-import pkg from "@magiql/ide/package.json";
+import manifest from "../pkg/dist/_assets/manifest.json";
+import { version } from "../package.json";
 
 const html = ({
   uri,
-  cdn = `https://unpkg.com/@magiql/ide@${pkg.version}/dist`,
+  cdn = `https://unpkg.com/@magiql/ide@${version}/dist`,
 }) => `
 <!DOCTYPE html>
 <html lang="en">

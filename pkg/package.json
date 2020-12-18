@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "@beamwind/colors": "^2.0.3",
     "@beamwind/play": "^2.1.1",
     "@reach/combobox": "^0.12.1",
     "@reach/listbox": "^0.12.1",
@@ -26,14 +25,14 @@
   ],
   "name": "@magiql/ide",
   "types": "dist/types",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "exports": {
     ".": {
-      "import": "./dist/esm/index.js",
-      "browser": "./dist/esm/index.js",
+      "import": "./dist/types/index.js",
+      "browser": "./dist/types/index.js",
       "require": "./dist/index.js",
       "node": "./dist/index.js",
-      "default": "./dist/esm/index.js"
+      "default": "./dist/types/index.js"
     },
     "./render": {
       "import": "./dist/esm/render.js",
@@ -48,7 +47,7 @@
   "main": "dist/index.js",
   "module": "dist/types/index.js",
   "devDependencies": {
-    "@magiql/ide": "file:.yalc/@magiql/ide",
+    "@magiql/ide": "^0.0.27",
     "@prefresh/vite": "^1.2.2",
     "@types/node": "^14.14.13",
     "bundlesize": "^0.18.0",

@@ -1,7 +1,7 @@
 import React from "react";
 import * as gql from "./types";
 import { atom, atomFamily, useAtom, useUpdateAtom } from "../../lib/atom";
-import "../../theme";
+import "../../lib/theme";
 import { bw } from "@beamwind/play";
 import {
   ArgumentName,

@@ -6,7 +6,7 @@ import * as ide from "../lib/ide";
 
 import Tooltip, { useTooltip, TooltipPopup } from "@reach/tooltip";
 import { useDebouncedCallback, useMonacoContext } from "use-monaco";
-import { loadSchema } from "./Browser";
+import { loadSchema } from "../lib/schema";
 
 const useCurrentQuery = () => {
   const [currentTab] = useAtom(ide.currentTab);

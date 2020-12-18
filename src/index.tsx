@@ -1,5 +1,5 @@
-export * from "./components/Browser";
-export { GraphQLIDE as default } from "./components/Browser";
+export * from "./Browser";
+export { GraphQLIDE as default } from "./Browser";
 import * as GQL from "./components/ast/components";
 import * as ast from "./components/ast/atoms";
 export * from "./components/ast/types";

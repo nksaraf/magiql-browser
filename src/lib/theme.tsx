@@ -1,5 +1,5 @@
 import { setup, theme } from "@beamwind/play";
-import { colors } from "./lib/colors";
+import { colors } from "./colors";
 
 const { black, white, ...other } = colors;
 

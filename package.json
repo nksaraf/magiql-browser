@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "@beamwind/colors": "^2.0.3",
     "@beamwind/play": "^2.1.1",
     "@reach/combobox": "^0.12.1",
     "@reach/listbox": "^0.12.1",
@@ -29,14 +28,14 @@
   ],
   "name": "@magiql/ide",
   "types": "dist/types",
-  "version": "0.0.26",
+  "version": "0.0.27",
   "exports": {
     ".": {
-      "import": "./dist/esm/index.js",
-      "browser": "./dist/esm/index.js",
+      "import": "./dist/types/index.js",
+      "browser": "./dist/types/index.js",
       "require": "./dist/index.js",
       "node": "./dist/index.js",
-      "default": "./dist/esm/index.js"
+      "default": "./dist/types/index.js"
     },
     "./render": {
       "import": "./dist/esm/render.js",
@@ -72,9 +71,9 @@
   "scripts": {
     "dev": "vite",
     "build": "sucrase-node scripts/build.ts",
-    "pub": "cd pkg && yalc publish",
+    "drypub": "cd pkg && yalc publish",
     "gen": "sucrase-node scripts/morph.ts",
-    "drypub": "cd pkg && yarn publish --access public"
+    "pub": "cd pkg && yarn publish --access public"
   },
   "prettier": {
     "tabWidth": 2
