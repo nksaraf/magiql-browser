@@ -6,4 +6,5 @@ pages
 next-env.d.ts
 .next
 
+pkg
 min
