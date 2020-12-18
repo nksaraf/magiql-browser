@@ -29,7 +29,7 @@ export function ASTViewer() {
       header="AST"
       options={{
         readOnly: true,
-        fontSize: "10",
+        fontSize: 10,
       }}
       onFocus={() => {
         setFocused("ast");

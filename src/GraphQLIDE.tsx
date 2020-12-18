@@ -6,9 +6,9 @@ import { MutableSnapshot, RecoilRoot } from "recoil";
 import * as ide from "./lib/ide";
 
 import { Toolbar } from "./components/Toolbar";
-import { SchemaConfig } from "use-monaco/dist/types/src/plugins/graphql/typings";
-import lightTheme from "./components/editor/theme";
-import * as config from "./components/editor/graphql.config";
+import type { SchemaConfig } from "use-monaco/dist/types/src/plugins/graphql/typings";
+import lightTheme from "./lib/monaco.theme";
+import * as graphqlLanguageConfig from "./lib/graphql.config";
 import { ASTViewer } from "./panels/ASTViewer";
 import { Explorer } from "./panels/Explorer";
 import { ResultsEditor } from "./panels/ResultsEditor";
@@ -75,7 +75,7 @@ export function IDEProvider({
                 extensions: [".graphql", ".gql"],
                 aliases: ["graphql"],
                 mimetypes: ["application/graphql", "text/graphql"],
-                loader: async () => config as any,
+                loader: async () => graphqlLanguageConfig as any,
               });
             },
           }}
