@@ -432,7 +432,6 @@ export const withTooltip = (description, children) =>
 export const ExpandableField = createAstComponent<gql.FieldNode>(
   ({ node, field = null, onToggle }) => {
     const type = field?.type ? getNamedType(field?.type) : null;
-    console.log({ field });
     const hasArgs =
       (node.arguments && node.arguments.length > 0) || field?.args?.length
         ? true
@@ -743,7 +742,6 @@ export const Argument = createAstComponent<
   { argument?: GraphQLArgument }
 >(({ node, isLast, onToggle, argument }) => {
   const schema = useSchema();
-  console.log(node);
   if (node.metadata.isSelected) {
     return (
       <KeyValue
@@ -790,13 +788,10 @@ function UnusedArgument({ argument, path, onAdd, isLast }) {
     },
   };
 
-  console.log({ node, namedNode, argument, path, onAdd, isLast });
-
   return (
     <Argument
       argument={argument}
       onToggle={() => {
-        console.log({ namedNode });
         onAdd(namedNode);
       }}
       node={namedNode as any}
@@ -1331,7 +1326,7 @@ function ListItemList({ node: childNode, onToggle, isLast }) {
   const updateList = useUpdateCollection({ node: childNode, key: "values" });
   return (
     <Lines>
-      <Tokens>
+      <Tokens className={bw`group`}>
         <Arrow isOpen={childNode.metadata.isSelected} onClick={onToggle} />
         {childNode.metadata.isSelected && <Punctuation>[</Punctuation>}
       </Tokens>
@@ -1357,7 +1352,7 @@ function ListItemObject({ node: childNode, onToggle, isLast }) {
   const updateList = useUpdateCollection({ node: childNode, key: "fields" });
   return (
     <Lines>
-      <Tokens>
+      <Tokens className={bw`group`}>
         <Arrow isOpen={childNode.metadata.isSelected} onClick={onToggle} />
         <Punctuation>{"{"}</Punctuation>
       </Tokens>
@@ -1387,7 +1382,11 @@ function ListItem({ node: childNode, onToggle, isLast }) {
   }
 
   return (
-    <Tokens onClick={onToggle} key={childNode.metadata.path}>
+    <Tokens
+      onClick={onToggle}
+      className={bw`group`}
+      key={childNode.metadata.path}
+    >
       <Checkbox checked={childNode.metadata.isSelected} />
       <Tokens className={bw`gap-0`}>
         <Value node={childNode} />

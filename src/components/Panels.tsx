@@ -24,6 +24,7 @@ export function VerticalPanels({ index, panels }) {
   return (
     <SplitGrid
       direction="column"
+      rowMinSize={32}
       gridTemplateRows={sizes[index]}
       onDrag={(a, b, s, d) => {
         setSizes((old) => {
