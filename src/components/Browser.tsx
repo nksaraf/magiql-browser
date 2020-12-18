@@ -571,24 +571,6 @@ export function GraphQLIDE({
           prettier: ["graphql", "json"],
           "magiql-ide": (monaco) => {
             monaco.plugin.install(plugins.prettier(["graphql", "json"]));
-
-            // {
-            //   "type": "object",
-            //   "properties": {
-            //     "first_name": { "type": "string" },
-            //     "last_name": { "type": "string" },
-            //     "birthday": { "type": "string", "format": "date" },
-            //     "address": {
-            //       "type": "object",
-            //       "properties": {
-            //         "street_address": { "type": "string" },
-            //         "city": { "type": "string" },
-            //         "state": { "type": "string" },
-            //         "country": { "type" : "string" }
-            //       }
-            //     }
-            //   }
-            // }
             return monaco.languages.register({
               id: "graphql",
               worker: {
