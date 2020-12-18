@@ -22,7 +22,7 @@ yarn add @magiql/ide
 
 ## Features
 
-* **Goal:** IDE-like experience for GraphQL exploration and development (eg. CodeSandbox for frontend) using [monaco-editor](https://microsoft.github.io/monaco-editor/)
+* **Goal:** IDE-like experience for GraphQL exploration and development (eg. CodeSandbox for frontend) using [`monaco-editor`](https://microsoft.github.io/monaco-editor/)
 * **Language service:** supported using web workers (everything is off the main UI thread)
 	* Uses `graphql-language-service`
 	* Based on work on `monaco-graphql`
