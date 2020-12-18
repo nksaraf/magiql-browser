@@ -325,8 +325,8 @@ export const SelectionSet = createAstComponent<gql.SelectionSetNode>(
           <UnselectedType
             type={sel}
             onAdd={addItem}
-            key={node.metadata.path + "." + sel.name}
-            path={node.metadata.path + "." + sel.name}
+            key={node.metadata.path + ".type:" + sel.name}
+            path={node.metadata.path + ".type:" + sel.name}
           />
         ))}
         {unselectedFields.map((sel, index) => (
@@ -334,8 +334,8 @@ export const SelectionSet = createAstComponent<gql.SelectionSetNode>(
             type={type}
             onAdd={addItem}
             fieldtype={sel}
-            key={node.metadata.path + "." + sel.name}
-            path={node.metadata.path + "." + sel.name}
+            key={node.metadata.path + ".field:" + sel.name}
+            path={node.metadata.path + ".field:" + sel.name}
           />
         ))}
       </Lines>
@@ -668,6 +668,7 @@ export const Argument = createAstComponent<
   { argument?: GraphQLArgument }
 >(({ node, isLast, onToggle, argument }) => {
   const schema = useSchema();
+  console.log(node);
   if (node.metadata.isSelected) {
     return (
       <KeyValue
@@ -761,10 +762,10 @@ export const Arguments = createAstComponent<
       {unusedArguments.map((arg, index) => {
         return (
           <UnusedArgument
-            key={parentPath + "." + arg.name}
+            key={parentPath + ".argument:" + arg.name}
             argument={arg}
             onAdd={onAdd}
-            path={parentPath + "." + arg.name}
+            path={parentPath + ".argument:" + arg.name}
             isLast={index === unusedArguments.length - 1}
           />
         );

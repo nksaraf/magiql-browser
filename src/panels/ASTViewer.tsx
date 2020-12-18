@@ -26,7 +26,7 @@ export function ASTViewer() {
 
   return (
     <EditorPanel
-      header="AST"
+      header="Abstract Syntax Tree"
       options={{
         readOnly: true,
         fontSize: 10,
