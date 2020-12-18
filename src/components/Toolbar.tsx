@@ -69,7 +69,7 @@ const useDebounce = (
 };
 
 export const tooltip = `bg-blueGray-800 z-10000 text-blueGray-100 border-none rounded-md shadow-lg font-graphql`;
-const iconButton = `h-5.5 w-5.5 hover:(mb-0.5 scale-110) cursor-pointer transition-all mb-0`;
+const iconButton = `h-5.5 w-5.5 group-hover:(mb-0.5 scale-110) cursor-pointer transition-all mb-0`;
 export function Toolbar() {
   const [currentTab] = useAtom(ide.currentTab);
   const [result, setResults] = useAtom(ide.getTabResults(currentTab));
@@ -138,10 +138,12 @@ export function Toolbar() {
         </div>
       </div>
       <div
-        className={bw`py-1 flex flex-row rounded-md gap-3 items-center rounded-md`}
+        className={bw`py-1 flex flex-row rounded-md items-center rounded-md`}
       >
         <Tooltip className={bw`${tooltip}`} label="Run Query">
-          <div>
+          <div
+            className={bw`group transition-all hover:(bg-blueGray-200) rounded-md py-1 px-2`}
+          >
             <PlayButton
               onClick={async () => {
                 setPanels((props) =>
@@ -170,8 +172,9 @@ export function Toolbar() {
           </div>
         </Tooltip>
         <Tooltip className={bw`${tooltip}`} label="Syntax Tree">
-          <div>
-            {" "}
+          <div
+            className={bw`group transition-all hover:(bg-blueGray-200) rounded-md py-1 px-2`}
+          >
             <Tree
               onClick={async () => {
                 setPanels((props) =>
@@ -186,7 +189,9 @@ export function Toolbar() {
           </div>
         </Tooltip>
         <Tooltip className={bw`${tooltip}`} label="Headers">
-          <div>
+          <div
+            className={bw`group transition-all hover:(bg-blueGray-200) rounded-md py-1 px-2`}
+          >
             <Helmet
               onClick={async () => {
                 setPanels((props) =>
@@ -201,7 +206,9 @@ export function Toolbar() {
           </div>
         </Tooltip>
         <Tooltip className={bw`${tooltip}`} label="Schema">
-          <div>
+          <div
+            className={bw`group transition-all hover:(bg-blueGray-200) rounded-md py-1 px-2`}
+          >
             <Graphql
               className={bw`${iconButton} ${
                 !schema ? "text-blueGray-400" : "text-#e10098"

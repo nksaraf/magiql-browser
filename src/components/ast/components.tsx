@@ -18,12 +18,17 @@ import {
 import {
   getNamedType,
   GraphQLArgument,
+  GraphQLEnumType,
   GraphQLField,
+  GraphQLInputObjectType,
+  GraphQLInputType,
   GraphQLInterfaceType,
   GraphQLNamedType,
   GraphQLObjectType,
+  GraphQLScalarType,
   GraphQLSchema,
   GraphQLUnionType,
+  isWrappingType,
 } from "graphql";
 import { getFields, getTypes } from "./utils";
 import {
@@ -193,11 +198,15 @@ export const OperationDefinition = createAstComponent<gql.OperationDefinitionNod
 OperationDefinition.displayName = "OperationDefinition";
 
 export const VariableDefinition = createAstComponent<gql.VariableDefinitionNode>(
-  ({ node }) => {
+  ({ node, onToggle }) => {
     if (!node.defaultValue) {
       return (
         <Tokens>
-          <Tokens className={bw`text-graphql-variable`} gap={0.25}>
+          <Tokens
+            onClick={onToggle}
+            className={bw`text-graphql-variable`}
+            gap={0.25}
+          >
             <Variable node={node.variable} />
             <Punctuation>:</Punctuation>
           </Tokens>
@@ -210,7 +219,11 @@ export const VariableDefinition = createAstComponent<gql.VariableDefinitionNode>
         <Lines>
           <Tokens>
             <Tokens className={bw`group`}>
-              <Arrow className={bw`text-graphql-variable`} isOpen={true} />
+              <Arrow
+                onClick={onToggle}
+                className={bw`text-graphql-variable`}
+                isOpen={true}
+              />
               <Tokens className={bw`text-graphql-variable`} gap={0.25}>
                 <Variable node={node.variable} />
                 <Punctuation>:</Punctuation>
@@ -236,7 +249,11 @@ export const VariableDefinition = createAstComponent<gql.VariableDefinitionNode>
         <Lines>
           <Tokens>
             <Tokens className={bw`group`}>
-              <Arrow className={bw`text-graphql-variable`} isOpen={true} />
+              <Arrow
+                onClick={onToggle}
+                className={bw`text-graphql-variable`}
+                isOpen={true}
+              />
               <Tokens className={bw`text-graphql-variable`} gap={0.25}>
                 <Variable node={node.variable} />
                 <Punctuation>:</Punctuation>
@@ -261,7 +278,7 @@ export const VariableDefinition = createAstComponent<gql.VariableDefinitionNode>
       return (
         <Tokens>
           <Tokens className={bw`group`}>
-            <Checkbox checked={true} />
+            <Checkbox onClick={onToggle} checked={true} />
             <Tokens className={bw`text-graphql-variable`} gap={0.25}>
               <Variable node={node.variable} />
               <Punctuation>:</Punctuation>
@@ -281,11 +298,17 @@ VariableDefinition.displayName = "VariableDefinition";
 
 export const VariableDefinitions = createAstComponent<
   gql.VariableDefinitionNode[]
->(({ node }) => {
+>(({ node, onRemove }) => {
   return (
     <Lines>
       {node.map((childNode) => (
-        <VariableDefinition key={childNode.metadata.path} node={childNode} />
+        <VariableDefinition
+          key={childNode.metadata.path}
+          node={childNode}
+          onToggle={() => {
+            onRemove(childNode);
+          }}
+        />
       ))}
     </Lines>
   );
@@ -737,11 +760,18 @@ export function KeyValue({
   }
 }
 
+function unwrapInputType(inputType: GraphQLInputType): any {
+  let unwrappedType = inputType;
+  while (isWrappingType(unwrappedType)) {
+    unwrappedType = unwrappedType.ofType;
+  }
+  return unwrappedType;
+}
+
 export const Argument = createAstComponent<
   gql.ArgumentNode,
   { argument?: GraphQLArgument }
 >(({ node, isLast, onToggle, argument }) => {
-  const schema = useSchema();
   if (node.metadata.isSelected) {
     return (
       <KeyValue
@@ -756,19 +786,48 @@ export const Argument = createAstComponent<
     // if (node.value.kind === "ObjectValue") {
     // } else {
 
-    if (argument.astNode.type.kind === "NamedType") {
-      console.log("inspect", schema.getType(argument.type.inspect()));
+    const type = unwrapInputType(argument.type);
+
+    if (type instanceof GraphQLScalarType) {
+      return (
+        <Tokens
+          onClick={onToggle}
+          className={bw`text-graphql-argname opacity-50 group`}
+        >
+          <Checkbox checked={false} />
+          <Tokens gap={0.25}>
+            {node.name.value}
+            <Punctuation>:</Punctuation>
+          </Tokens>
+        </Tokens>
+      );
+    } else if (type instanceof GraphQLInputObjectType) {
+      return (
+        <Tokens
+          onClick={onToggle}
+          className={bw`text-graphql-argname opacity-50 group`}
+        >
+          <Arrow isOpen={false} />
+          <Tokens gap={0.25}>
+            {node.name.value}
+            <Punctuation>:</Punctuation>
+          </Tokens>
+        </Tokens>
+      );
+    } else if (type instanceof GraphQLEnumType) {
+      return (
+        <Tokens
+          onClick={onToggle}
+          className={bw`text-graphql-argname opacity-50 group`}
+        >
+          <Checkbox checked={false} />
+          <Tokens gap={0.25}>
+            {node.name.value}
+            <Punctuation>:</Punctuation>
+          </Tokens>
+        </Tokens>
+      );
     }
-    return (
-      <Tokens
-        onClick={onToggle}
-        className={bw`text-graphql-argname opacity-50`}
-      >
-        <Checkbox checked={false} />
-        {node.name.value}
-      </Tokens>
-    );
-    // }
   }
 });
 

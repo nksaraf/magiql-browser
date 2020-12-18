@@ -140,7 +140,7 @@ export function Arrow({ isOpen, className, ...props }: any) {
   );
 }
 
-export function Checkbox(props: { checked: boolean; className?: string }) {
+export function Checkbox(props: any) {
   return (
     <div
       style={{ padding: "1px" }}

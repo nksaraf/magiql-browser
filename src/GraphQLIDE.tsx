@@ -31,21 +31,24 @@ export const DEFAULT_PANELS = {
 export function IDEProvider({
   panels,
   initializeState,
-  schemaConfig,
+  initialSchemaConfig,
   children,
 }) {
   return (
     <RecoilRoot
       initializeState={(snapshot) => {
         snapshot.set(ide.persistedFiles, { "/browser.json": true });
-        if (schemaConfig) {
-          snapshot.set(
-            ide.getTabSchemaConfig(
-              snapshot.getLoadable(ide.currentTab).contents as string
-            ),
-            schemaConfig
-          );
+        const currentTab = snapshot.getLoadable(ide.currentTab)
+          .contents as string;
+
+        const oldConfig = snapshot.getLoadable(
+          ide.getTabSchemaConfig(currentTab)
+        ).contents;
+
+        if (initialSchemaConfig && !(oldConfig as SchemaConfig).uri?.length) {
+          snapshot.set(ide.getTabSchemaConfig(currentTab), initialSchemaConfig);
         }
+
         initializeState?.(snapshot, ide);
       }}
     >
@@ -61,7 +64,7 @@ export function IDEProvider({
                   label: "graphql",
                   options: {
                     languageConfig: {
-                      schemaConfig: schemaConfig,
+                      schemaConfig: initialSchemaConfig,
                     },
                   },
                   src:
@@ -90,15 +93,15 @@ export function IDEProvider({
 
 export function GraphQLIDE({
   initializeState,
-  schemaConfig,
+  initialSchemaConfig,
 }: {
-  schemaConfig: SchemaConfig;
+  initialSchemaConfig: SchemaConfig;
   initializeState?: (snapshot: MutableSnapshot, atoms: typeof ide) => void;
 }) {
   return (
     <IDEProvider
       initializeState={initializeState}
-      schemaConfig={schemaConfig}
+      initialSchemaConfig={initialSchemaConfig}
       panels={DEFAULT_PANELS}
     >
       <div
