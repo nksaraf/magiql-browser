@@ -95,6 +95,25 @@ export function Logo(props) {
   );
 }
 
+export function Check(props) {
+  return (
+    <svg
+      viewBox="0 0 333 333"
+      x="0px"
+      y="0px"
+      fill="currentColor"
+      fillRule="evenodd"
+      clipRule="evenodd"
+      shapeRendering="geometricPrecision"
+      textRendering="geometricPrecision"
+      imageRendering="optimizeQuality"
+      {...props}
+    >
+      <path d="M129 191c-13-12-34-34-48-48-14-13-23-2-40 16-19 19 0 29 27 56l49 49c18 16 33-8 57-31l98-99c31-30 38-30 13-54-22-23-21-23-56 13-16 15-95 95-100 98z" />
+    </svg>
+  );
+}
+
 export function Tree(props) {
   return (
     <svg x="0px" y="0px" viewBox="0 0 100 100" {...props}>

@@ -117,6 +117,11 @@ export const OperationDefinition = createAstComponent<gql.OperationDefinitionNod
   ({ node }) => {
     const schema = useSchema();
 
+    const updateVariables = useUpdateCollection({
+      node,
+      key: "variableDefinitions",
+    });
+
     const getOperationType = (operation: gql.OperationDefinitionNode) => {
       if (operation.operation === "query") {
         return schema.getQueryType();
@@ -159,7 +164,11 @@ export const OperationDefinition = createAstComponent<gql.OperationDefinitionNod
         </Tokens>
         {hasVars && (
           <Indented>
-            <VariableDefinitions node={node.variableDefinitions} />
+            <VariableDefinitions
+              node={node.variableDefinitions}
+              onAdd={updateVariables.addItem}
+              onRemove={updateVariables.removeItem}
+            />
           </Indented>
         )}
         {hasVars && (
@@ -185,22 +194,80 @@ OperationDefinition.displayName = "OperationDefinition";
 
 export const VariableDefinition = createAstComponent<gql.VariableDefinitionNode>(
   ({ node }) => {
-    return (
-      <Tokens>
-        <Tokens className={bw`text-graphql-variable gap-0.25`}>
-          <Variable node={node.variable} />:
-        </Tokens>
-        <Type node={node.type} />
-        {node.defaultValue && (
-          <Tokens>
-            <Punctuation>=</Punctuation>
-            <Value node={node.defaultValue} />
+    if (!node.defaultValue) {
+      return (
+        <Tokens>
+          <Tokens className={bw`text-graphql-variable`} gap={0.25}>
+            <Variable node={node.variable} />
+            <Punctuation>:</Punctuation>
           </Tokens>
-        )}
-
-        <Directives node={node.directives} />
-      </Tokens>
-    );
+          <Type node={node.type} />
+          <Directives node={node.directives} />
+        </Tokens>
+      );
+    } else if (node.defaultValue.kind === "ObjectValue") {
+      return (
+        <Lines>
+          <Tokens>
+            <Arrow className={bw`text-graphql-variable`} isOpen={true} />
+            <Tokens className={bw`text-graphql-variable`} gap={0.25}>
+              <Variable node={node.variable} />
+              <Punctuation>:</Punctuation>
+            </Tokens>
+            <Type node={node.type} />
+            <Tokens>
+              <Punctuation>=</Punctuation>
+              <Punctuation>{"{"}</Punctuation>
+            </Tokens>
+          </Tokens>
+          <Indented>
+            <ObjectFields node={node.defaultValue.fields} />
+          </Indented>
+          <Directives node={node.directives} />
+          <Tokens>
+            <Punctuation>{"}"}</Punctuation>
+          </Tokens>
+        </Lines>
+      );
+    } else if (node.defaultValue.kind === "ListValue") {
+      return (
+        <Lines>
+          <Tokens>
+            <Arrow className={bw`text-graphql-variable`} isOpen={true} />
+            <Tokens className={bw`text-graphql-variable`} gap={0.25}>
+              <Variable node={node.variable} />
+              <Punctuation>:</Punctuation>
+            </Tokens>
+            <Type node={node.type} />
+            <Tokens>
+              <Punctuation>=</Punctuation>
+              <Punctuation>{"["}</Punctuation>
+            </Tokens>
+          </Tokens>
+          <Indented>
+            <ListItems node={node.defaultValue.values} />
+          </Indented>
+          <Directives node={node.directives} />
+          <Tokens>
+            <Punctuation>{"]"}</Punctuation>
+          </Tokens>
+        </Lines>
+      );
+    } else {
+      return (
+        <Tokens>
+          <Checkbox checked={true} />
+          <Tokens className={bw`text-graphql-variable`} gap={0.25}>
+            <Variable node={node.variable} />
+            <Punctuation>:</Punctuation>
+          </Tokens>
+          <Type node={node.type} />
+          <Punctuation>=</Punctuation>
+          <Value node={node.defaultValue} />
+          <Directives node={node.directives} />
+        </Tokens>
+      );
+    }
   }
 );
 
@@ -210,11 +277,11 @@ export const VariableDefinitions = createAstComponent<
   gql.VariableDefinitionNode[]
 >(({ node }) => {
   return (
-    <>
+    <Lines>
       {node.map((childNode) => (
         <VariableDefinition key={childNode.metadata.path} node={childNode} />
       ))}
-    </>
+    </Lines>
   );
 });
 
@@ -407,7 +474,7 @@ export const ExpandableField = createAstComponent<gql.FieldNode>(
                 },
               })
             }
-            className={bw`${{ "opacity-40": !node.metadata.isSelected }}`}
+            className={bw`${{ "opacity-40": !node.metadata.isSelected }} group`}
           >
             <Arrow
               className={bw`text-graphql-field`}
@@ -512,7 +579,9 @@ export const Field = createAstComponent<gql.FieldNode>(
           <div>
             <Tokens
               onClick={() => onToggle(node)}
-              className={bw`${{ "opacity-40": !node.metadata.isSelected }}`}
+              className={bw`${{
+                "opacity-40": !node.metadata.isSelected,
+              }} group`}
             >
               <Checkbox
                 className={bw`text-graphql-field`}

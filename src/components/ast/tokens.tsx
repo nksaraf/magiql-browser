@@ -1,5 +1,6 @@
 import { bw } from "@beamwind/play";
 import React from "react";
+import { Check } from "../Icons";
 
 export const graphqlNode = `cursor-pointer select-none flex flex-row items-center font-mono text-xs`;
 
@@ -45,7 +46,7 @@ export function Tokens({ children, gap = 1.5, className = "", ...props }) {
 }
 
 const defaultArrowOpen = ({ className, ...props }) => (
-  <div className={bw`p-0.75`}>
+  <div className={bw`p-0.75 group-hover:(rotate-45)`}>
     <svg
       className={`${bw`w-9px h-9px`} ${className}`}
       viewBox="0 0 481.721 481.721"
@@ -66,15 +67,11 @@ const defaultArrowOpen = ({ className, ...props }) => (
 );
 
 const defaultArrowClosed = ({ className, ...props }) => (
-  <div className={bw`p-0.75`}>
+  <div className={bw`p-0.75 group-hover:(rotate-45) transition-all`}>
     <svg
       viewBox="0 0 481.721 481.721"
       fill="currentColor"
       className={`${bw`-rotate-90 w-9px h-9px`} ${className}`}
-      // style={{
-      //   // enableBackground: "new 0 0 481.721 481.721",
-      // }}
-      // xmlSpace="preserve"
       {...props}
     >
       <g>
@@ -118,12 +115,43 @@ const defaultCheckboxUnchecked = (props) => (
   </div>
 );
 
-export function Arrow({ isOpen, ...props }: any) {
-  return isOpen ? defaultArrowOpen(props) : defaultArrowClosed(props);
+export function Arrow({ isOpen, className, ...props }: any) {
+  return (
+    <div
+      className={bw`p-0.75 ${
+        isOpen ? "group-hover:(-rotate-45)" : "group-hover:(rotate-45)"
+      } transition-all`}
+    >
+      <svg
+        viewBox="0 0 481.721 481.721"
+        fill="currentColor"
+        className={`${bw`${{
+          "-rotate-90": !isOpen,
+        }} w-9px h-9px`} ${className}`}
+        {...props}
+      >
+        <g>
+          <g>
+            <path d="M10.467,146.589l198.857,252.903c17.418,30.532,45.661,30.532,63.079,0l198.839-252.866 c3.88-5.533,8.072-15.41,8.923-22.118c2.735-21.738,4.908-65.178-21.444-65.178H23.013c-26.353,0-24.192,43.416-21.463,65.147 C2.395,131.185,6.587,141.051,10.467,146.589z" />
+          </g>
+        </g>
+      </svg>
+    </div>
+  );
 }
 
 export function Checkbox(props: { checked: boolean; className?: string }) {
-  return props.checked
-    ? defaultCheckboxChecked(props)
-    : defaultCheckboxUnchecked(props);
+  return (
+    <div
+      style={{ padding: "1px" }}
+      {...props}
+      className={bw`w-3 h-3 rounded-sm ${
+        props.checked
+          ? "text-white bg-blue-400"
+          : "text-blueGray-300 bg-blueGray-300 group-hover:(text-blueGray-600)"
+      }`}
+    >
+      <Check />
+    </div>
+  );
 }

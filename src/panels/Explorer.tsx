@@ -91,6 +91,7 @@ export function Explorer() {
         <div className={bw`pt-12 pb-3 overflow-scroll w-full h-full`}>
           <div className={bw`px-4`}>
             <ErrorBoundary
+              resetKeys={[document]}
               fallbackRender={({ error }) => (
                 <pre className={bw`font-mono text-xs text-red-400`}>
                   {error.stack}
