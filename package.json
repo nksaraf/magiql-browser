@@ -28,7 +28,7 @@
   ],
   "name": "@magiql/ide",
   "types": "dist/types",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "exports": {
     ".": {
       "import": "./dist/types/index.js",

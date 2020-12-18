@@ -39,7 +39,7 @@ export function ASTViewer() {
       }}
       onChange={() => {}}
       path={`/${currentTab}/ast.json`}
-      contents={JSON.stringify(document, false ? replacer : null, 2)}
+      contents={JSON.stringify(document, true ? replacer : null, 2)}
     >
       <div
         onClick={() => {
