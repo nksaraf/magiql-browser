@@ -209,10 +209,12 @@ export const VariableDefinition = createAstComponent<gql.VariableDefinitionNode>
       return (
         <Lines>
           <Tokens>
-            <Arrow className={bw`text-graphql-variable`} isOpen={true} />
-            <Tokens className={bw`text-graphql-variable`} gap={0.25}>
-              <Variable node={node.variable} />
-              <Punctuation>:</Punctuation>
+            <Tokens className={bw`group`}>
+              <Arrow className={bw`text-graphql-variable`} isOpen={true} />
+              <Tokens className={bw`text-graphql-variable`} gap={0.25}>
+                <Variable node={node.variable} />
+                <Punctuation>:</Punctuation>
+              </Tokens>
             </Tokens>
             <Type node={node.type} />
             <Tokens>
@@ -233,10 +235,12 @@ export const VariableDefinition = createAstComponent<gql.VariableDefinitionNode>
       return (
         <Lines>
           <Tokens>
-            <Arrow className={bw`text-graphql-variable`} isOpen={true} />
-            <Tokens className={bw`text-graphql-variable`} gap={0.25}>
-              <Variable node={node.variable} />
-              <Punctuation>:</Punctuation>
+            <Tokens className={bw`group`}>
+              <Arrow className={bw`text-graphql-variable`} isOpen={true} />
+              <Tokens className={bw`text-graphql-variable`} gap={0.25}>
+                <Variable node={node.variable} />
+                <Punctuation>:</Punctuation>
+              </Tokens>
             </Tokens>
             <Type node={node.type} />
             <Tokens>
@@ -256,10 +260,12 @@ export const VariableDefinition = createAstComponent<gql.VariableDefinitionNode>
     } else {
       return (
         <Tokens>
-          <Checkbox checked={true} />
-          <Tokens className={bw`text-graphql-variable`} gap={0.25}>
-            <Variable node={node.variable} />
-            <Punctuation>:</Punctuation>
+          <Tokens className={bw`group`}>
+            <Checkbox checked={true} />
+            <Tokens className={bw`text-graphql-variable`} gap={0.25}>
+              <Variable node={node.variable} />
+              <Punctuation>:</Punctuation>
+            </Tokens>
           </Tokens>
           <Type node={node.type} />
           <Punctuation>=</Punctuation>
@@ -474,7 +480,7 @@ export const ExpandableField = createAstComponent<gql.FieldNode>(
                 },
               })
             }
-            className={bw`${{ "opacity-40": !node.metadata.isSelected }} group`}
+            className={bw`${{ "opacity-50": !node.metadata.isSelected }} group`}
           >
             <Arrow
               className={bw`text-graphql-field`}
@@ -580,7 +586,7 @@ export const Field = createAstComponent<gql.FieldNode>(
             <Tokens
               onClick={() => onToggle(node)}
               className={bw`${{
-                "opacity-40": !node.metadata.isSelected,
+                "opacity-50": !node.metadata.isSelected,
               }} group`}
             >
               <Checkbox
@@ -636,7 +642,7 @@ export function KeyWithObjectValue({
   const update = useUpdateCollection({ node: value, key: "fields" });
   return (
     <Lines>
-      <Tokens onClick={onToggle} className={bw`text-graphql-argname`}>
+      <Tokens onClick={onToggle} className={bw`text-graphql-argname group`}>
         <Arrow isOpen={isSelected} />
         <div>{name.value}: </div>
         <Punctuation>{"{"}</Punctuation>
@@ -668,7 +674,7 @@ export function KeyWithListValue({
   const update = useUpdateCollection({ node: value, key: "values" });
   return (
     <Lines>
-      <Tokens onClick={onToggle} className={bw`text-graphql-argname`}>
+      <Tokens onClick={onToggle} className={bw`text-graphql-argname group`}>
         <Arrow isOpen={isSelected} />
         <div>{name.value}: </div>
         <Punctuation>{"["}</Punctuation>
@@ -722,7 +728,7 @@ export function KeyValue({
   } else {
     return (
       <Tokens>
-        <Tokens onClick={onToggle}>
+        <Tokens onClick={onToggle} className={bw`group`}>
           <Checkbox checked={isSelected} />
           <div className={bw`text-graphql-argname`}>{name.value}: </div>
         </Tokens>
@@ -873,7 +879,7 @@ export const InlineFragment = createAstComponent<gql.InlineFragmentNode>(
       <Lines>
         <Tokens
           onClick={() => onToggle(node)}
-          className={bw`${{ "opacity-40": !node.metadata.isSelected }}`}
+          className={bw`${{ "opacity-50": !node.metadata.isSelected }} group`}
         >
           <Arrow
             className={bw`text-graphql-typename`}

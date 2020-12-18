@@ -147,7 +147,7 @@ export function Checkbox(props: { checked: boolean; className?: string }) {
       {...props}
       className={bw`w-3 h-3 rounded-sm ${
         props.checked
-          ? "text-white bg-blue-400"
+          ? "text-white bg-blue-400 group-hover:(text-white bg-blue-200)"
           : "text-blueGray-300 bg-blueGray-300 group-hover:(text-blueGray-600)"
       }`}
     >
