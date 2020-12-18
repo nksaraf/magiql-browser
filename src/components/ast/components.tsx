@@ -292,13 +292,13 @@ function useUpdateCollection({ node, key }) {
 export const SelectionSet = createAstComponent<gql.SelectionSetNode>(
   ({ node, type }) => {
     const schema = useSchema();
-    const types = schema ? [...getTypes({ type, schema })] : [];
+    const supportedTypes = schema ? [...getTypes({ type, schema })] : [];
     const fields = schema ? [...getFields({ type, schema })] : [];
     const { addItem, removeItem } = useUpdateCollection({
       node,
       key: "selections",
     });
-    const unselectedTypes = types.filter(
+    const unselectedTypes = supportedTypes.filter(
       (type) =>
         !node.selections.find((sel) =>
           sel.kind === "InlineFragment"
@@ -366,10 +366,10 @@ export const ExpandableField = createAstComponent<gql.FieldNode>(
         : false;
     const updateArguments = useUpdateCollection({ node, key: "arguments" });
     const aliasedField = node?.alias?.value ? (
-      <>
+      <Tokens>
         <FieldName>{node.alias?.value}: </FieldName>
         <Qualifier>{node.name.value}</Qualifier>
-      </>
+      </Tokens>
     ) : (
       <>
         <FieldName>{node.name.value}</FieldName>
@@ -483,10 +483,10 @@ export const Field = createAstComponent<gql.FieldNode>(
         : false;
 
     const aliasedField = node?.alias?.value ? (
-      <>
+      <Tokens>
         <FieldName>{node.alias?.value}: </FieldName>
         <Qualifier>{node.name.value}</Qualifier>
-      </>
+      </Tokens>
     ) : (
       <>
         <FieldName>{node.name.value}</FieldName>
@@ -981,72 +981,72 @@ export const ObjectValue = createAstComponent<gql.ObjectValueNode>(
 
 ObjectValue.displayName = "ObjectValue";
 
-export const ObjectField = createAstComponent<gql.ObjectFieldNode>(
-  ({ node, isLast }) => {
-    // kind = node.value.kind;
-    // if (kind === "ListValue") {
-    //   return (
-    //     <Lines>
-    //       <Tokens className={bw`text-graphql-argname`}>
-    //         <Arrow isOpen={node.metadata.isSelected} />
-    //         <div>{node.name.value}: </div>
-    //         <Punctuation>{"["}</Punctuation>
-    //       </Tokens>
-    //       <Indented>
-    //         <Values node={(node.value as gql.ListValueNode).values} />
-    //       </Indented>
-    //       <Tokens>
-    //         <Punctuation>
-    //           {"]"}
-    //           {isLast ? null : ","}
-    //         </Punctuation>
-    //       </Tokens>
-    //     </Lines>
-    //   );
-    // } else if (kind === "ObjectValue") {
-    //   return (
-    //     <Lines>
-    //       <Tokens className={bw`text-graphql-argname`}>
-    //         <Arrow isOpen={node.metadata.isSelected} />
-    //         <div>{node.name.value}: </div>
-    //         <Punctuation>{"{"}</Punctuation>
-    //       </Tokens>
-    //       <Indented>
-    //         <ObjectFields node={(node.value as gql.ObjectValueNode).fields} />
-    //       </Indented>
-    //       <Tokens>
-    //         <Punctuation>
-    //           {"}"}
-    //           {isLast ? null : ","}
-    //         </Punctuation>
-    //       </Tokens>
-    //     </Lines>
-    //   );
-    // } else {
-    return (
-      <Tokens>
-        <Checkbox checked={node.metadata.isSelected} />
-        <div className={bw`text-graphql-argname`}>{node.name.value}: </div>
-        <Value node={node.value} />
-      </Tokens>
-    );
-    // }
+// export const ObjectField = createAstComponent<gql.ObjectFieldNode>(
+//   ({ node, isLast }) => {
+//     // kind = node.value.kind;
+//     // if (kind === "ListValue") {
+//     //   return (
+//     //     <Lines>
+//     //       <Tokens className={bw`text-graphql-argname`}>
+//     //         <Arrow isOpen={node.metadata.isSelected} />
+//     //         <div>{node.name.value}: </div>
+//     //         <Punctuation>{"["}</Punctuation>
+//     //       </Tokens>
+//     //       <Indented>
+//     //         <Values node={(node.value as gql.ListValueNode).values} />
+//     //       </Indented>
+//     //       <Tokens>
+//     //         <Punctuation>
+//     //           {"]"}
+//     //           {isLast ? null : ","}
+//     //         </Punctuation>
+//     //       </Tokens>
+//     //     </Lines>
+//     //   );
+//     // } else if (kind === "ObjectValue") {
+//     //   return (
+//     //     <Lines>
+//     //       <Tokens className={bw`text-graphql-argname`}>
+//     //         <Arrow isOpen={node.metadata.isSelected} />
+//     //         <div>{node.name.value}: </div>
+//     //         <Punctuation>{"{"}</Punctuation>
+//     //       </Tokens>
+//     //       <Indented>
+//     //         <ObjectFields node={(node.value as gql.ObjectValueNode).fields} />
+//     //       </Indented>
+//     //       <Tokens>
+//     //         <Punctuation>
+//     //           {"}"}
+//     //           {isLast ? null : ","}
+//     //         </Punctuation>
+//     //       </Tokens>
+//     //     </Lines>
+//     //   );
+//     // } else {
+//     return (
+//       <Tokens>
+//         <Checkbox checked={node.metadata.isSelected} />
+//         <div className={bw`text-graphql-argname`}>{node.name.value}: </div>
+//         <Value node={node.value} />
+//       </Tokens>
+//     );
+//     // }
 
-    // if (node.value.kind === "ObjectValue") {
-    // }
-    // return (
-    //   <Tokens>
-    //     <Tokens className={bw`text-graphql-argname gap-0`}>
-    //       <div>{node.name.value}</div>
-    //       <Punctuation>: </Punctuation>
-    //     </Tokens>
-    //     <Value node={node.value} />
-    //   </Tokens>
-    // );
-  }
-);
+//     // if (node.value.kind === "ObjectValue") {
+//     // }
+//     // return (
+//     //   <Tokens>
+//     //     <Tokens className={bw`text-graphql-argname gap-0`}>
+//     //       <div>{node.name.value}</div>
+//     //       <Punctuation>: </Punctuation>
+//     //     </Tokens>
+//     //     <Value node={node.value} />
+//     //   </Tokens>
+//     // );
+//   }
+// );
 
-ObjectField.displayName = "ObjectField";
+// ObjectField.displayName = "ObjectField";
 
 export const ObjectFields = createAstComponent<gql.ObjectFieldNode[]>(
   ({ node, onAdd, onRemove }) => {
@@ -1252,36 +1252,62 @@ export const Value = createAstComponent<gql.ValueNode>(({ node }) => {
 
 Value.displayName = "Value";
 
-function ListItem({ node: childNode, onToggle, isLast }) {
-  if (childNode.kind === "ListValue") {
-    return (
-      <Lines>
-        <Tokens>
-          <Arrow isOpen={childNode.metadata.isSelected} onClick={onToggle} />
-          <Punctuation>[</Punctuation>
-        </Tokens>
+function ListItemList({ node: childNode, onToggle, isLast }) {
+  const updateList = useUpdateCollection({ node: childNode, key: "values" });
+  return (
+    <Lines>
+      <Tokens>
+        <Arrow isOpen={childNode.metadata.isSelected} onClick={onToggle} />
+        {childNode.metadata.isSelected && <Punctuation>[</Punctuation>}
+      </Tokens>
+      {childNode.metadata.isSelected && (
         <Indented>
-          <ListItems node={childNode.values} />
+          <ListItems
+            node={childNode.values}
+            onRemove={updateList.removeItem}
+            onAdd={updateList.addItem}
+          />
         </Indented>
+      )}
+      {childNode.metadata.isSelected && (
         <Tokens>
           <Punctuation>]</Punctuation>
         </Tokens>
-      </Lines>
+      )}
+    </Lines>
+  );
+}
+
+function ListItemObject({ node: childNode, onToggle, isLast }) {
+  const updateList = useUpdateCollection({ node: childNode, key: "fields" });
+  return (
+    <Lines>
+      <Tokens>
+        <Arrow isOpen={childNode.metadata.isSelected} onClick={onToggle} />
+        <Punctuation>{"{"}</Punctuation>
+      </Tokens>
+      <Indented>
+        <ObjectFields
+          node={childNode.fields}
+          onRemove={updateList.removeItem}
+          onAdd={updateList.addItem}
+        />
+      </Indented>
+      <Tokens>
+        <Punctuation>{"}"}</Punctuation>
+      </Tokens>
+    </Lines>
+  );
+}
+
+function ListItem({ node: childNode, onToggle, isLast }) {
+  if (childNode.kind === "ListValue") {
+    return (
+      <ListItemList node={childNode} onToggle={onToggle} isLast={isLast} />
     );
   } else if (childNode.kind === "ObjectValue") {
     return (
-      <Lines>
-        <Tokens>
-          <Arrow isOpen={childNode.metadata.isSelected} onClick={onToggle} />
-          <Punctuation>{"{"}</Punctuation>
-        </Tokens>
-        <Indented>
-          <ObjectFields node={childNode.fields} />
-        </Indented>
-        <Tokens>
-          <Punctuation>{"}"}</Punctuation>
-        </Tokens>
-      </Lines>
+      <ListItemObject node={childNode} onToggle={onToggle} isLast={isLast} />
     );
   }
 
