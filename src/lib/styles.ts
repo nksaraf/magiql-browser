@@ -1,5 +1,5 @@
 import { setup } from "@beamwind/play";
-import { cssomInjector, noOpInjector } from "beamwind";
+import { cssomInjector, noOpInjector } from "@beamwind/play";
 
 const getStyleElement = (nonce?: string): HTMLStyleElement => {
   // Hydrate existing style element if available

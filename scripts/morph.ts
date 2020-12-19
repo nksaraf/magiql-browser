@@ -20,10 +20,15 @@ let atoms = `
 import * as gql from './types'
 import { atom, atomFamily } from '../../lib/atom'
 
+const getParentPath = (path) => {
+  const parts = path.split('.');
+  return parts.slice(0, parts.length-1).join('.');
+}
+
 ${atomFamily({
   name: "getNodeMetadata",
   type: "gql.NodeMetadata",
-  get: `({ parentPath: "", path: path, isSelected: false, kind: "" })`,
+  get: `({ parentPath: getParentPath(path), path: path, isSelected: false, kind: "" })`,
 })}
 
 
@@ -153,11 +158,11 @@ ${["string", "boolean", "number"]
               return `set(get${astKind}${caps(fieldName)}(path), null)`;
             })
             .join(",\n")}
-          set(getNodeMetadata(path),(old) => ({ ...old, parentPath: "", isSelected: false }));
+          set(getNodeMetadata(path),(old) => ({ ...old, isSelected: false }));
           return;
         }
 
-        set(getNodeMetadata(path), { path, parentPath: "", kind: node.kind, isSelected: true });
+        set(getNodeMetadata(path), (old) => ({ ...old, kind: node.kind, isSelected: true }));
         ${children
           .map((field) => {
             const fieldName = field.compilerNode.name.getText();
@@ -257,7 +262,7 @@ ${source
         set: `(get, set, node: gql.${nodeTypeAliasName}) => {
           if (!node) {
             const kind = get(getNodeMetadata(path)).kind;
-            set(getNodeMetadata(path), (old) => ({ ...old, parentPath: "", isSelected: false  }))
+            set(getNodeMetadata(path), (old) => ({ ...old,  isSelected: false  }))
             switch (kind) {
               ${subTypes
                 .map((type) => {
@@ -269,7 +274,7 @@ ${source
               }
               return;
           } else {
-            set(getNodeMetadata(path), { path, parentPath: "", kind: node.kind, isSelected: true })
+            set(getNodeMetadata(path), (old) => ({...old,  kind: node.kind, isSelected: true }))
           }
 
           switch (node.kind) {
