@@ -4,13 +4,13 @@ import { useAtom } from "../lib/atom";
 import * as ide from "../lib/ide";
 import { panel, editorPanelHeader } from "../lib/components";
 import { parse, print } from "graphql";
-import * as gqlAst from "../components/ast/atoms";
+import * as gqlAst from "../ast/atoms";
 import { ErrorBoundary } from "react-error-boundary";
-import * as gql from "../components/ast/types";
+import * as gql from "../ast/types";
 import { ExplorerIcon } from "../components/Icons";
 
 import { useUpdateAtom } from "../lib/atom";
-import * as GQL from "../components/ast/components";
+import * as GQL from "../ast/componnents/components";
 import { buildASTSchema } from "graphql";
 import { LoadSchema } from "../lib/schema";
 

@@ -3,7 +3,7 @@ import { bw } from "@beamwind/play";
 import { useAtom } from "../lib/atom";
 import * as ide from "../lib/ide";
 import { EditorPanel } from "../components/EditorPanel";
-import * as gqlAst from "../components/ast/atoms";
+import * as gqlAst from "../ast/atoms";
 import { Tree } from "../components/Icons";
 import { editorPanelHeader } from "../lib/components";
 

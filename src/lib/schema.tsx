@@ -4,9 +4,8 @@ import * as monacoApi from "monaco-editor";
 import { useAtom } from "./atom";
 import * as ide from "./ide";
 
-
 export async function loadSchema(monaco: typeof monacoApi, tab) {
-  const worker = await monaco.worker.get<{ getSchema: () => Promise<string>; }>(
+  const worker = await monaco.worker.get<{ getSchema: () => Promise<string> }>(
     "graphql",
     monaco.Uri.file(`/${tab}/query.graphql`)
   );

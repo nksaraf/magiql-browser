@@ -1,6 +1,6 @@
 import { bw } from "@beamwind/play";
 import React from "react";
-import { Check } from "../Icons";
+import { Check } from "../components/Icons";
 
 export const graphqlNode = `cursor-pointer select-none flex flex-row items-center font-mono text-xs`;
 

@@ -1,5 +1,5 @@
 import * as gql from "./types";
-import { atom, atomFamily } from "../../lib/atom";
+import { atom, atomFamily } from "../lib/atom";
 
 const getParentPath = (path) => {
   const parts = path.split(".");
