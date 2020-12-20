@@ -35,8 +35,8 @@ const html = ({
 </html>
 `;
 
-export function renderPlayround(props: { uri: string; cdn?: string }) {
+export function renderPlayground(props: { uri: string; cdn?: string }) {
   return html(props);
 }
 
-export default renderPlayround;
+export default renderPlayground;

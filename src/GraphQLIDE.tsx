@@ -1,9 +1,10 @@
 import React from "react";
 import { MonacoProvider } from "use-monaco";
 import { bw } from "@beamwind/play";
-import "./lib/styles";
+import "./lib/global.styles";
 import { MutableSnapshot, RecoilRoot } from "recoil";
 import * as ide from "./lib/ide";
+import * as SaveAtom from "./lib/fs";
 
 import { Toolbar } from "./components/Toolbar";
 import type { SchemaConfig } from "use-monaco/dist/types/src/plugins/graphql/typings";
@@ -37,7 +38,7 @@ export function IDEProvider({
   return (
     <RecoilRoot
       initializeState={(snapshot) => {
-        snapshot.set(ide.persistedFiles, { "/browser.json": true });
+        snapshot.set(SaveAtom.persistedFiles, { "/browser.json": true });
         const currentTab = snapshot.getLoadable(ide.currentTab)
           .contents as string;
 
@@ -83,7 +84,7 @@ export function IDEProvider({
             },
           }}
         >
-          <ide.Persist />
+          <SaveAtom.Persist />
           {children}
         </MonacoProvider>
       </PanelConfigProvider>

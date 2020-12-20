@@ -86,7 +86,7 @@ export const Document = createAstComponent<gql.DocumentNode>(({ node }) => {
 
   return (
     <div className={bw`flex flex-col gap-6`}>
-       <>
+      <>
         {node.definitions.map((childNode) => (
           <Definition key={childNode.metadata.path} node={childNode} />
         ))}
@@ -103,8 +103,6 @@ import { Variable } from "./Variable";
 import { Arguments } from "./Arguments";
 import { Value } from "./Value";
 import { Definition } from "./Definition";
-import { Selection } from "./Selection";
-import { Abstract } from "./NamedType";
 
 export function useUpdateCollection({ node, key }) {
   const setNode = useUpdateNode({ node });
@@ -353,7 +351,6 @@ export const Directive = createAstComponent<gql.DirectiveNode>(({ node }) => {
 });
 
 Directive.displayName = "Directive";
-
 
 function ListItemList({ node: childNode, onToggle, isLast }) {
   const updateList = useUpdateCollection({ node: childNode, key: "values" });

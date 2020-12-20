@@ -84,7 +84,7 @@ export const OperationDefinition = createAstComponent<gql.OperationDefinitionNod
           </Tokens>
         )}
         <Indented>
-          <SelectionSet type={type} node={node.selectionSet} />
+          <SelectionSet parentType={type} node={node.selectionSet} />
         </Indented>
         <Tokens>
           <Punctuation>{"}"}</Punctuation>

@@ -2,7 +2,7 @@ import React from "react";
 import { bw } from "@beamwind/play";
 import { useAtom } from "../lib/atom";
 import * as ide from "../lib/ide";
-import { panel } from "../lib/components";
+import { panel } from "../lib/styles";
 import { noop, useEditor, UseEditorOptions, useFile } from "use-monaco";
 
 export function EditorPanel({

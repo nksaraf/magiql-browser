@@ -5,7 +5,7 @@ import * as ide from "../lib/ide";
 import { EditorPanel } from "../components/EditorPanel";
 import * as gqlAst from "../ast/atoms";
 import { Tree } from "../components/Icons";
-import { editorPanelHeader } from "../lib/components";
+import { editorPanelHeader } from "../lib/styles";
 
 export function replacer(key, value) {
   // Filtering out properties

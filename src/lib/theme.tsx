@@ -22,6 +22,7 @@ setup({
     extend: {
       colors: {
         "graphql-field": "#1F61A0",
+        "graphql-pink": "#e10098",
         "graphql-keyword": "#B11A04",
         "graphql-opname": "#D2054E",
         "graphql-typename": "#CA9800",
@@ -46,7 +47,8 @@ setup({
     },
   },
 });
-const defaultColors = {
+
+const graphQLColors = {
   keyword: "#B11A04",
   // OperationName, FragmentName
   def: "#D2054E",

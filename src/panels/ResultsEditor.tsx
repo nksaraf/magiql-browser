@@ -4,7 +4,7 @@ import { useAtom } from "../lib/atom";
 import * as ide from "../lib/ide";
 import { EditorPanel } from "../components/EditorPanel";
 import { Loading, Response } from "../components/Icons";
-import { editorPanelHeader } from "../lib/components";
+import { editorPanelHeader } from "../lib/styles";
 
 export function ResultsEditor() {
   const [currentTab] = useAtom(ide.currentTab);

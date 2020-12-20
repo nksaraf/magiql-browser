@@ -2,7 +2,7 @@ import React from "react";
 import { bw } from "@beamwind/play";
 import { useAtom } from "../lib/atom";
 import * as ide from "../lib/ide";
-import { panel, editorPanelHeader } from "../lib/components";
+import { panel, editorPanelHeader } from "../lib/styles";
 import { parse, print } from "graphql";
 import * as gqlAst from "../ast/atoms";
 import { ErrorBoundary } from "react-error-boundary";
@@ -12,7 +12,7 @@ import { ExplorerIcon } from "../components/Icons";
 import { useUpdateAtom } from "../lib/atom";
 import * as GQL from "../ast/componnents/components";
 import { buildASTSchema } from "graphql";
-import { LoadSchema } from "../lib/schema";
+import { LoadSchema } from "../components/LoadSchema";
 
 export function CurrentDocument() {
   const [currentTab] = useAtom(ide.currentTab);

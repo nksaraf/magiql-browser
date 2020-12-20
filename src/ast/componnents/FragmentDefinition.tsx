@@ -38,7 +38,7 @@ export const FragmentDefinition = createAstComponent<gql.FragmentDefinitionNode>
           {node.metadata.isSelected && <Punctuation>{"{"}</Punctuation>}
         </Tokens>
         <Indented>
-          <SelectionSet node={node.selectionSet} type={type} />
+          <SelectionSet node={node.selectionSet} parentType={type} />
         </Indented>
         {node.metadata.isSelected && (
           <Tokens>

@@ -207,6 +207,25 @@ export function Loading(props) {
   );
 }
 
+export function ErrorIcon(props) {
+  return (
+    <svg
+      viewBox="0 0 1.094 1.094"
+      x="0px"
+      y="0px"
+      fillRule="evenodd"
+      clipRule="evenodd"
+      fill="currentColor"
+      shapeRendering="geometricPrecision"
+      textRendering="geometricPrecision"
+      imageRendering="optimizeQuality"
+      {...props}
+    >
+      <path d="M.934.934A.546.546 0 00.547 0 .546.546 0 00.16.934a.546.546 0 00.774 0zM.621.758A.074.074 0 00.547.684a.075.075 0 00-.075.074c0 .041.034.075.075.075A.075.075 0 00.621.758zM.547.609C.52.609.5.587.497.559L.472.336C.468.297.509.261.547.261s.079.036.074.075L.597.559c-.003.028-.023.05-.05.05z" />
+    </svg>
+  );
+}
+
 export function Response(props) {
   return (
     <svg width={15} height={15} viewBox="0 0 15 15" fill="none" {...props}>
