@@ -8,3 +8,5 @@ next-env.d.ts
 
 pkg
 min
+.yalc
+yalc.lock

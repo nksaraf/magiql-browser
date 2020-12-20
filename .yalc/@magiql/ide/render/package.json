@@ -1,6 +1,0 @@
-{
-  "name": "@magiql/ide/render",
-  "main": "../dist/render.js",
-  "modules": "../dist/esm/render.js",
-  "types": "../dist/types/render"
-}
