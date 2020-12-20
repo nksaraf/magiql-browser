@@ -9,7 +9,7 @@ import {
   useUpdateCollection,
   useSchema,
 } from "./components";
-import { Field } from "./ExpandableField";
+import { Field } from "./Field";
 import { InlineFragment } from "./InlineFragment";
 import { FragmentSpread } from "./FragmentSpread";
 import {

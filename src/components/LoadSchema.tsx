@@ -11,13 +11,14 @@ export function LoadSchema() {
   const [, setSchema] = useAtom(ide.schemaText);
 
   const { monaco } = useMonaco();
-  console.log(schemaStatus);
   React.useEffect(() => {
     if (monaco) {
       setSchemaStatus("loading");
       monaco.worker.updateOptions("graphql", {
         languageConfig: {
-          schemaConfig: config,
+          schemaConfig: {
+            uri: config.uri,
+          },
         },
       });
       loadSchema(monaco, currentTab)
@@ -26,12 +27,12 @@ export function LoadSchema() {
           setSchemaStatus("success");
         })
         .catch((e) => {
-          console.error(e);
+          console.log(e);
           setSchema(null);
           setSchemaStatus("error");
         });
     }
-  }, [config, monaco, setSchemaStatus]);
+  }, [config.uri, monaco, setSchemaStatus]);
 
   return null;
 }

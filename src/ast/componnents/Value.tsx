@@ -10,7 +10,8 @@ import {
   ListboxOption,
 } from "@reach/listbox";
 import { Variable } from "./Variable";
-import { createAstComponent, ListItems, ObjectFields } from "./components";
+import { createAstComponent, ObjectFields } from "./components";
+import { ListItems } from "./KeyValue";
 
 export const IntValue = createAstComponent<gql.IntValueNode>(({ node }) => {
   return (
@@ -112,39 +113,40 @@ export const ObjectValue = createAstComponent<gql.ObjectValueNode>(
 );
 ObjectValue.displayName = "ObjectValue";
 
-export const Value = createAstComponent<gql.ValueNode>(({ node }) => {
+export const Value = createAstComponent<gql.ValueNode>(({ node, type }) => {
   if (!node) {
     return null;
   }
 
   switch (node.kind) {
     case "Variable": {
-      return <Variable node={node} />;
+      return <Variable node={node} type={type} />;
     }
     case "IntValue": {
-      return <IntValue node={node} />;
+      return <IntValue node={node} type={type} />;
     }
     case "FloatValue": {
-      return <FloatValue node={node} />;
+      return <FloatValue node={node} type={type} />;
     }
     case "StringValue": {
-      return <StringValue node={node} />;
+      return <StringValue node={node} type={type} />;
     }
     case "BooleanValue": {
-      return <BooleanValue node={node} />;
+      return <BooleanValue node={node} type={type} />;
     }
     case "NullValue": {
-      return <NullValue node={node} />;
+      return <NullValue node={node} type={type} />;
     }
     case "EnumValue": {
-      return <EnumValue node={node} />;
+      return <EnumValue node={node} type={type} />;
     }
     case "ListValue": {
-      return <ListValue node={node} />;
+      return <ListValue node={node} type={type} />;
     }
     case "ObjectValue": {
-      return <ObjectValue node={node} />;
+      return <ObjectValue node={node} type={type} />;
     }
   }
 });
+
 Value.displayName = "Value";

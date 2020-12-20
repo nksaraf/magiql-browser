@@ -10,7 +10,8 @@ import {
   Tokens,
 } from "../tokens";
 import { Type } from "./Type";
-import { createAstComponent, ObjectFields, ListItems } from "./components";
+import { createAstComponent, ObjectFields } from "./components";
+import { ListItems } from "./KeyValue";
 import { Value } from "./Value";
 import { Variable } from "./Variable";
 

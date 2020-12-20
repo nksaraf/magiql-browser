@@ -8,7 +8,10 @@ import {
   Tree,
   Helmet,
   Loading,
+  BackButton,
+  ForwardButton,
   ErrorIcon,
+  Reload,
 } from "./Icons";
 import * as ide from "../lib/ide";
 
@@ -91,6 +94,11 @@ export function Toolbar() {
 
   const [uri, setUri] = React.useState(config.uri);
 
+  React.useEffect(() => {
+    if (uri !== config.uri) {
+      setUri(config.uri);
+    }
+  }, [config.uri]);
   useDebounce(
     uri,
     () => {
@@ -108,9 +116,43 @@ export function Toolbar() {
 
   return (
     <div
-      className={bw`w-full flex flex-row items-center gap-4 rounded-md bg-blueGray-100 h-10 py-1.5 px-3`}
+      className={bw`w-full relative flex flex-row items-center gap-4 rounded-md bg-blueGray-50 h-11 py-1.5 px-3 z-11`}
     >
-      <Tooltip className={bw`${tooltip}`} label="MagiQL IDE">
+      <BackButton
+        className={bw`${`text-blueGray-400`} hover:(mb-0.5 scale-110) ${iconButton}`}
+        onClick={() => {
+          // setFocused("schema");
+          // setPanels((props) =>
+          //   props[2].includes("schema")
+          //     ? props
+          //     : [props[0], props[1], ["schema"]]
+          // );
+        }}
+      />
+      <ForwardButton
+        className={bw`${`text-blueGray-400`} hover:(mb-0.5 scale-110) ${iconButton}`}
+        onClick={() => {
+          // setFocused("schema");
+          // setPanels((props) =>
+          //   props[2].includes("schema")
+          //     ? props
+          //     : [props[0], props[1], ["schema"]]
+          // );
+        }}
+      />
+      <Reload
+        className={bw`${`text-blueGray-400`} hover:(mb-0.5 scale-110) ${iconButton} w-5 h-5`}
+        onClick={() => {
+          // setFocused("schema");
+          // setPanels((props) =>
+          //   props[2].includes("schema")
+          //     ? props
+          //     : [props[0], props[1], ["schema"]]
+          // );
+        }}
+      />
+
+      {/* <Tooltip className={bw`${tooltip}`} label="MagiQL IDE">
         <div>
           <Logo
             className={bw`${`text-graphql-pink`} hover:(mb-0.5 scale-110) ${iconButton}`}
@@ -124,7 +166,7 @@ export function Toolbar() {
             }}
           />
         </div>
-      </Tooltip>
+      </Tooltip> */}
       <div
         className={bw`px-4 flex-1 text-blueGray-600 flex gap-3 flex-row col-span-4 bg-blueGray-200 h-full items-center rounded-md text-center`}
       >

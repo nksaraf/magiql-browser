@@ -11,6 +11,7 @@ import { ExplorerIcon } from "../components/Icons";
 
 import { useUpdateAtom } from "../lib/atom";
 import * as GQL from "../ast/componnents/components";
+import * as Document from "../ast/componnents/Document";
 import { buildASTSchema } from "graphql";
 import { LoadSchema } from "../components/LoadSchema";
 
@@ -39,7 +40,7 @@ export function CurrentDocument() {
       }}
     >
       <GQL.SchemaProvider schema={schema}>
-        <GQL.Document node={document} />
+        <Document.Document node={document} />
       </GQL.SchemaProvider>
     </GQL.ASTProvider>
   );

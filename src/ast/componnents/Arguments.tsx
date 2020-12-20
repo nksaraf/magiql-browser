@@ -4,7 +4,7 @@ import { useAtom } from "../../lib/atom";
 import { Lines } from "../tokens";
 import { GraphQLField } from "graphql";
 import * as ast from "../atoms";
-import { Argument } from "./Argument";
+import { Argument, defaultValue } from "./Argument";
 import { createAstComponent } from "./components";
 
 export const Arguments = createAstComponent<
@@ -22,24 +22,32 @@ export const Arguments = createAstComponent<
 
   return (
     <Lines>
-      {node.map((childNode, index) => (
-        <Argument
-          onToggle={() => {
-            onRemove(childNode);
-          }}
-          key={childNode.metadata.path}
-          node={childNode}
-          isLast={
-            unusedArguments.length === 0 ? index === node.length - 1 : false
-          }
-        />
-      ))}
+      {node.map((childNode, index) => {
+        const arg = field?.args?.find(
+          (arg) => arg.name === childNode.name.value
+        );
+        return (
+          <Argument
+            parentField={field}
+            onToggle={() => {
+              onRemove(childNode);
+            }}
+            argument={arg}
+            key={childNode.metadata.path}
+            node={childNode}
+            isLast={
+              unusedArguments.length === 0 ? index === node.length - 1 : false
+            }
+          />
+        );
+      })}
       {unusedArguments.map((arg, index) => {
         return (
           <UnusedArgument
             key={parentPath + ".argument:" + arg.name}
             argument={arg}
             onAdd={onAdd}
+            parentField={field}
             path={parentPath + ".argument:" + arg.name}
             isLast={index === unusedArguments.length - 1}
           />
@@ -48,17 +56,15 @@ export const Arguments = createAstComponent<
     </Lines>
   );
 });
+
 Arguments.displayName = "Arguments";
-function UnusedArgument({ argument, path, onAdd, isLast }) {
+
+function UnusedArgument({ argument, path, onAdd, isLast, parentField }) {
   let [node] = useAtom(ast.getArgument(path));
+  console.log(argument.type);
 
   let namedNode = {
     ...node,
-    value: {
-      kind: "IntValue",
-      metadata: {},
-      value: 0,
-    },
     name: {
       ...node.name,
       value: argument.name,
@@ -68,10 +74,14 @@ function UnusedArgument({ argument, path, onAdd, isLast }) {
   return (
     <Argument
       argument={argument}
+      parentField={parentField}
       onToggle={() => {
-        onAdd(namedNode);
+        onAdd({
+          ...namedNode,
+          value: defaultValue(argument.type),
+        });
       }}
-      node={namedNode as any}
+      node={namedNode}
       isLast={isLast}
     />
   );

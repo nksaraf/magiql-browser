@@ -6,6 +6,10 @@ import type {
 } from "graphql";
 
 export function getFields({ type, schema }) {
+  if (!type || !schema) {
+    return [];
+  }
+
   if (type.astNode.kind === "ObjectTypeDefinition") {
     return Object.values((type as GraphQLObjectType).getFields());
   }
@@ -25,6 +29,9 @@ export function getTypes({
   type: GraphQLInterfaceType | GraphQLObjectType | GraphQLUnionType;
   schema: GraphQLSchema;
 }) {
+  if (!type || !schema) {
+    return [];
+  }
   if (type.astNode.kind === "ObjectTypeDefinition") {
     return [];
   }

@@ -19,7 +19,7 @@ import { SelectionSet } from "./SelectionSet";
 import { VariableDefinitions } from "./VariableDefinitions";
 
 export const OperationDefinition = createAstComponent<gql.OperationDefinitionNode>(
-  ({ node }) => {
+  ({ node, onClick }) => {
     const schema = useSchema();
 
     const updateVariables = useUpdateCollection({
@@ -44,30 +44,32 @@ export const OperationDefinition = createAstComponent<gql.OperationDefinitionNod
     const name = node.metadata.isSelected ? (
       hasVars ? (
         <Tokens gap={0.75}>
-          <Name node={node.name} />
+          {node.name && <Name node={node.name} />}
           <Punctuation>{"("}</Punctuation>
         </Tokens>
       ) : (
         <>
-          <Name node={node.name} />
+          {node.name && <Name node={node.name} />}
           <Punctuation>{"{"}</Punctuation>
         </>
       )
     ) : (
-      <Name node={node.name} />
+      node.name && <Name node={node.name} />
     );
 
     return (
       <Lines>
-        <Tokens>
-          <Arrow
-            className={bw`text-graphql-opname`}
-            isOpen={node.metadata.isSelected}
-          />
+        <Tokens
+          onClick={onClick}
+          className={bw`text-graphql-opname group ${{
+            "opacity-50": !node.metadata.isSelected,
+          }}`}
+        >
+          <Arrow isOpen={node.metadata.isSelected} />
           <Keyword>{node.operation}</Keyword>
           {name}
         </Tokens>
-        {hasVars && (
+        {node.metadata.isSelected && hasVars && (
           <Indented>
             <VariableDefinitions
               node={node.variableDefinitions}
@@ -76,19 +78,23 @@ export const OperationDefinition = createAstComponent<gql.OperationDefinitionNod
             />
           </Indented>
         )}
-        {hasVars && (
+        {node.metadata.isSelected && hasVars && (
           <Tokens>
             <Punctuation>
               <span className={bw`pl-1`}>{") {"}</span>
             </Punctuation>
           </Tokens>
         )}
-        <Indented>
-          <SelectionSet parentType={type} node={node.selectionSet} />
-        </Indented>
-        <Tokens>
-          <Punctuation>{"}"}</Punctuation>
-        </Tokens>
+        {node.metadata.isSelected && (
+          <Indented>
+            <SelectionSet parentType={type} node={node.selectionSet} />
+          </Indented>
+        )}
+        {node.metadata.isSelected && (
+          <Tokens>
+            <Punctuation>{"}"}</Punctuation>
+          </Tokens>
+        )}
       </Lines>
     );
   }

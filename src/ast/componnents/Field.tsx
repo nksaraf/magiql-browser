@@ -11,7 +11,12 @@ import {
   Qualifier,
   Tokens,
 } from "../tokens";
-import { getNamedType, GraphQLInterfaceType, GraphQLNamedType, GraphQLObjectType } from "graphql";
+import {
+  getNamedType,
+  GraphQLInterfaceType,
+  GraphQLNamedType,
+  GraphQLObjectType,
+} from "graphql";
 import { SelectionSet } from "./SelectionSet";
 import { Arguments } from "./Arguments";
 import {
@@ -153,9 +158,6 @@ export const Field = createAstComponent<
 
   if (parentType) {
     field = parentType.getFields()[node.name.value];
-    if (!field?.type) {
-      return null;
-    }
   }
 
   const fieldType = field ? getNamedType(field.type) : null;
