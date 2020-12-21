@@ -54,7 +54,7 @@ export const getTabSettings = (tab: string) =>
     defaultValue: {
       panels: [["explorer"], ["query", "variables"], ["response"]],
       horizontalRatio: `35fr 8px 30fr 8px 35fr`,
-      verticalRatio: [`100fr`, `75fr 8px 25fr`, `100fr`],
+      verticalRatio: [`100fr 8px 0fr`, `75fr 8px 25fr`, `100fr 8px 0fr`],
     },
   });
 

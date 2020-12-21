@@ -31,7 +31,7 @@
     "render",
     "README.md"
   ],
-  "name": "@magiql/ide",
+  "name": "@magiql/browser",
   "types": "dist/types",
   "version": "0.0.31",
   "exports": {
