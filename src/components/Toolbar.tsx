@@ -78,9 +78,7 @@ const useDebounce = (
   }, [value]);
 };
 
-export const tooltip = `bg-blueGray-800 z-100000 text-blueGray-100 border-none rounded-md shadow-lg font-graphql text-xs`;
-const iconButton = `h-5.5 w-5.5 group-hover:(mb-0.5 scale-110) cursor-pointer transition-all mb-0`;
-export function Toolbar() {
+function SchemaURLInput() {
   const [currentTab] = useAtom(ide.currentTab);
   const [result, setResults] = useAtom(ide.getTabResults(currentTab));
   const [queryStatus, setQueryStatus] = useAtom(ide.queryStatus);
@@ -91,14 +89,7 @@ export function Toolbar() {
   const [focused, setFocused] = useAtom(ide.focused);
   const [schema] = useAtom(ide.schemaText);
   const monaco = useMonacoContext();
-
   const [uri, setUri] = React.useState(config.uri);
-
-  // React.useEffect(() => {
-  //   if (uri !== config.uri) {
-  //     setUri(config.uri);
-  //   }
-  // }, [config.uri]);
 
   useDebounce(
     uri,
@@ -114,6 +105,77 @@ export function Toolbar() {
     },
     1000
   );
+
+  return (
+    <div
+      className={bw`px-4 flex-1 text-blueGray-600 flex gap-3 flex-row col-span-4 bg-blueGray-200 h-full items-center rounded-md text-center`}
+    >
+      {schemaStatus === "success" ? (
+        <Tooltip
+          className={bw`${tooltip}`}
+          label={`Schema loaded successfully`}
+        >
+          <div className={bw`grid items-center w-3.75 h-3.75`}>
+            <div className={bw`rounded-full bg-green-500 w-2.5 h-2.5`}></div>
+          </div>
+        </Tooltip>
+      ) : schemaStatus === "error" ? (
+        <Tooltip className={bw`${tooltip}`} label={`Couldn't load schema`}>
+          <div>
+            <ErrorIcon className={bw`w-3.75 h-3.75 text-graphql-pink`} />
+          </div>
+        </Tooltip>
+      ) : (
+        <Tooltip className={bw`${tooltip}`} label={`Loading schema`}>
+          <div>
+            <Loading
+              className={bw`animate-spin text-graphql-pink w-3.75 h-3.75`}
+            />
+          </div>
+        </Tooltip>
+      )}
+      <div className={bw`flex flex-row gap-2 flex-1 items-center`}>
+        <input
+          className={bw`flex-1 w-full font-graphql text-sm bg-transparent`}
+          value={uri}
+          key={currentTab}
+          onChange={(e) => {
+            setSchemaStatus("loading");
+            setUri(e.currentTarget.value);
+          }}
+        />
+
+        {/* {schemaStatus === "loading" && ( */}
+
+        {/* {schemaStatus === "loading" && (
+      <div className={bw`flex flex-row gap-2 items-center`}>
+        <div className={bw`font-graphql text-xs text-blueGray-300`}>
+          Loading schema
+        </div>
+        <Loading
+          className={bw`text-graphql-pink animate-spin h-3.5 w-3.5`}
+        />
+      </div>
+    )} */}
+      </div>
+    </div>
+  );
+}
+
+export const tooltip = `bg-blueGray-800 z-100000 text-blueGray-100 border-none rounded-md shadow-lg font-graphql text-xs`;
+const iconButton = `h-5.5 w-5.5 group-hover:(mb-0.5 scale-110) cursor-pointer transition-all mb-0`;
+
+export function Toolbar() {
+  const [currentTab] = useAtom(ide.currentTab);
+  const [result, setResults] = useAtom(ide.getTabResults(currentTab));
+  const [queryStatus, setQueryStatus] = useAtom(ide.queryStatus);
+  const [schemaStatus, setSchemaStatus] = useAtom(ide.schemaStatus);
+  const fetchQuery = useCurrentQuery();
+  const [panels, setPanels] = useAtom(ide.getTabPanels(currentTab));
+  const [config, setConfig] = useAtom(ide.getTabSchemaConfig(currentTab));
+  const [focused, setFocused] = useAtom(ide.focused);
+  const [schema] = useAtom(ide.schemaText);
+  const monaco = useMonacoContext();
 
   return (
     <div
@@ -168,58 +230,7 @@ export function Toolbar() {
           />
         </div>
       </Tooltip> */}
-      <div
-        className={bw`px-4 flex-1 text-blueGray-600 flex gap-3 flex-row col-span-4 bg-blueGray-200 h-full items-center rounded-md text-center`}
-      >
-        {schemaStatus === "success" ? (
-          <Tooltip
-            className={bw`${tooltip}`}
-            label={`Schema loaded successfully`}
-          >
-            <div className={bw`grid items-center w-3.75 h-3.75`}>
-              <div className={bw`rounded-full bg-green-500 w-2.5 h-2.5`}></div>
-            </div>
-          </Tooltip>
-        ) : schemaStatus === "error" ? (
-          <Tooltip className={bw`${tooltip}`} label={`Couldn't load schema`}>
-            <div>
-              <ErrorIcon className={bw`w-3.75 h-3.75 text-graphql-pink`} />
-            </div>
-          </Tooltip>
-        ) : (
-          <Tooltip className={bw`${tooltip}`} label={`Loading schema`}>
-            <div>
-              <Loading
-                className={bw`animate-spin text-graphql-pink w-3.75 h-3.75`}
-              />
-            </div>
-          </Tooltip>
-        )}
-        <div className={bw`flex flex-row gap-2 flex-1 items-center`}>
-          <input
-            className={bw`flex-1 w-full font-graphql text-sm bg-transparent`}
-            value={uri}
-            key={currentTab}
-            onChange={(e) => {
-              setSchemaStatus("loading");
-              setUri(e.currentTarget.value);
-            }}
-          />
-
-          {/* {schemaStatus === "loading" && ( */}
-
-          {/* {schemaStatus === "loading" && (
-            <div className={bw`flex flex-row gap-2 items-center`}>
-              <div className={bw`font-graphql text-xs text-blueGray-300`}>
-                Loading schema
-              </div>
-              <Loading
-                className={bw`text-graphql-pink animate-spin h-3.5 w-3.5`}
-              />
-            </div>
-          )} */}
-        </div>
-      </div>
+      <SchemaURLInput key={config.uri} />
       <div
         className={bw`py-1 flex flex-row rounded-md items-center rounded-md`}
       >

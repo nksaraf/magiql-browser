@@ -111,7 +111,7 @@ const Tabs = () => {
       <div
         className={bw`grid ${`grid-cols-${Math.max(
           tabs.length,
-          10
+          8
         )}`} gap-2 ml-2 flex-1`}
       >
         {tabs.map((tab) => (
@@ -159,7 +159,7 @@ const Tabs = () => {
             ></div>
           </div>
         ))}
-        {tabs.length < 10 && (
+        {tabs.length < 8 && (
           <div className={bw`flex flex-row px-1 py-1`}>
             <div
               onClick={() => {
@@ -190,8 +190,8 @@ const Tabs = () => {
             });
           }}
           className={bw`px-2 rounded-full ${{
-            "text-blueGray-500": tabs.length >= 10,
-            "text-blueGray-300": tabs.length < 10,
+            "text-blueGray-500": tabs.length >= 8,
+            "text-blueGray-300": tabs.length < 8,
           }} text-xl cursor-pointer transition-all hover:(bg-blueGray-200)`}
         >
           +
