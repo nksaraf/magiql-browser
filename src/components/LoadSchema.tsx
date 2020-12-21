@@ -1,7 +1,7 @@
 import React from "react";
 import { useMonaco, useMonacoContext } from "use-monaco";
 import { useAtom } from "../lib/atom";
-import * as ide from "../lib/ide";
+import * as ide from "../lib/browser";
 import { loadSchemaFromWorker } from "../lib/schema";
 
 import flru from "flru";

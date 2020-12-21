@@ -12,13 +12,17 @@ import {
   ForwardButton,
   ErrorIcon,
   Reload,
+  VerticalDots,
+  SettingsIcon,
 } from "./Icons";
-import * as ide from "../lib/ide";
+import * as ide from "../lib/browser";
 
 import Tooltip, { useTooltip, TooltipPopup } from "@reach/tooltip";
 import { useDebouncedCallback, useMonacoContext } from "use-monaco";
 import { loadSchemaFromWorker } from "../lib/schema";
 import { useSchemaLoader } from "./LoadSchema";
+import * as ContextMenu from "@radix-ui/react-context-menu";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
 const useCurrentQuery = () => {
   const [currentTab] = useAtom(ide.currentTab);
@@ -88,7 +92,7 @@ function SchemaURLInput() {
   const fetchQuery = useCurrentQuery();
   const [panels, setPanels] = useAtom(ide.getTabPanels(currentTab));
   const [config, setConfig] = useAtom(ide.getTabSchemaConfig(currentTab));
-  const [focused, setFocused] = useAtom(ide.focused);
+  const [focused, setFocused] = useAtom(ide.focusedPanel);
   const [schema] = useAtom(ide.getTabSchema(currentTab));
   const monaco = useMonacoContext();
   const [uri, setUri] = React.useState(config.uri);
@@ -164,7 +168,7 @@ function SchemaURLInput() {
   );
 }
 
-export const tooltip = `bg-blueGray-800 z-100000 text-blueGray-100 border-none rounded-md shadow-lg font-graphql text-xs`;
+export const tooltip = `bg-blueGray-800 z-10000 text-blueGray-100 border-none rounded-md shadow-lg font-graphql text-xs`;
 const iconButton = `h-5.5 w-5.5 group-hover:(mb-0.5 scale-110) cursor-pointer transition-all mb-0`;
 
 export function Toolbar() {
@@ -175,7 +179,7 @@ export function Toolbar() {
   const fetchQuery = useCurrentQuery();
   const [panels, setPanels] = useAtom(ide.getTabPanels(currentTab));
   const [config, setConfig] = useAtom(ide.getTabSchemaConfig(currentTab));
-  const [focused, setFocused] = useAtom(ide.focused);
+  const [focused, setFocused] = useAtom(ide.focusedPanel);
   const [schema] = useAtom(ide.getTabSchema(currentTab));
   const monaco = useMonacoContext();
   const loadSchema = useSchemaLoader();
@@ -326,7 +330,112 @@ export function Toolbar() {
             />
           </div>
         </Tooltip>
+        <Tooltip className={bw`${tooltip}`} label="Schema">
+          <div
+            className={bw`group transition-all hover:(bg-blueGray-200) rounded-md py-1 px-2`}
+          >
+            <SettingsIcon
+              className={bw`${iconButton} ${
+                schemaStatus === "success" || schemaStatus === "stale"
+                  ? "text-graphql-pink"
+                  : "text-blueGray-400"
+              } `}
+              disabled={schemaStatus !== "success"}
+              onClick={() => {
+                setPanels((props) =>
+                  props[2].includes("schema")
+                    ? props
+                    : [props[0], props[1], ["schema"]]
+                );
+                setFocused("schema");
+              }}
+            />
+          </div>
+        </Tooltip>
+        <ContextMenu.Root>
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger
+              className={bw`group transition-all hover:(bg-blueGray-200) rounded-md py-1 px-1`}
+            >
+              <div>
+                <ContextMenu.Trigger>
+                  <div>
+                    <VerticalDots
+                      className={bw`${iconButton} ${
+                        // schemaStatus === "success" || schemaStatus === "stale"
+                        // ? "text-graphql-pink"
+                        "text-blueGray-800"
+                      } `}
+                      // disabled={schemaStatus !== "success"}
+                      // onClick={() => {
+                      //   setPanels((props) =>
+                      //     props[2].includes("schema")
+                      //       ? props
+                      //       : [props[0], props[1], ["schema"]]
+                      //   );
+                      //   setFocused("schema");
+                      // }}
+                    />
+                  </div>
+                </ContextMenu.Trigger>
+              </div>
+            </DropdownMenu.Trigger>
+            <ContextMenu.Content
+              align="end"
+              className={`${bw`${menu}`} higher`}
+            >
+              <ContextMenu.Item className={bw`${menuItem}`}>
+                <div>hello</div>
+              </ContextMenu.Item>
+              <ContextMenu.Item className={bw`${menuItem}`}>
+                <div>hello</div>
+              </ContextMenu.Item>
+            </ContextMenu.Content>
+            <DropdownMenu.Content
+              align="end"
+              sideOffset={4}
+              className={bw`${menu}`}
+            >
+              <DropdownMenu.Item
+                onClick={() => {
+                  localStorage.clear();
+                }}
+                className={bw`${menuItem}`}
+              >
+                <div>Reset Local Storage</div>
+              </DropdownMenu.Item>
+              <DropdownMenu.Item className={bw`${menuItem}`}>
+                <div>hello</div>
+              </DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
+        </ContextMenu.Root>
       </div>
     </div>
   );
 }
+
+export const menu = `relative px-0.5 py-0.5 bg-blueGray-50 border-2 border-blueGray-300 rounded-md shadow-xl`;
+export const menuItem = `w-32 px-2 py-1 font-graphql rounded-sm text-sm text-blueGray-900 hover:(bg-blue-400 border-blue-400 text-white)`;
+
+// export default () => (
+//   <ContextMenu.Root>
+//     <ContextMenu.Trigger />
+//     <ContextMenu.Content>
+//       <ContextMenu.Label />
+//       <ContextMenu.Item />
+//       <ContextMenu.Group>
+//         <ContextMenu.Item />
+//       </ContextMenu.Group>
+//       <ContextMenu.CheckboxItem>
+//         <ContextMenu.ItemIndicator />
+//       </ContextMenu.CheckboxItem>
+//       <ContextMenu.RadioGroup>
+//         <ContextMenu.RadioItem>
+//           <ContextMenu.ItemIndicator />
+//         </ContextMenu.RadioItem>
+//       </ContextMenu.RadioGroup>
+//       <ContextMenu.Separator />
+//     </ContextMenu.Content>
+//   </ContextMenu.Root>
+// );

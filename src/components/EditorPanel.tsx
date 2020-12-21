@@ -1,13 +1,15 @@
 import React from "react";
 import { bw } from "@beamwind/play";
 import { useAtom } from "../lib/atom";
-import * as ide from "../lib/ide";
-import { panel } from "../lib/styles";
+import * as browser from "../lib/browser";
 import { noop, useEditor, UseEditorOptions, useFile } from "use-monaco";
+import { Panel, PanelHeader } from "../lib/styles";
+import { PanelMenu } from "./PanelMenu";
+import { usePanel } from "./Panels";
 
 export function EditorPanel({
-  children = undefined as React.ReactNode,
   className = "",
+  renderHeader = undefined,
   onFocus = () => {},
   onBlur = () => {},
   containerProps = {},
@@ -22,11 +24,11 @@ export function EditorPanel({
   editorDidMount = (() => {}) as UseEditorOptions["editorDidMount"],
   ...props
 }) {
-  const [currentTab] = useAtom(ide.currentTab);
-  const [sizes] = useAtom(ide.getTabHorizontalRatio(currentTab));
-  const [vert] = useAtom(ide.getTabVerticalRatio(currentTab));
-
-  const [focused, setIsFocused] = React.useState(false);
+  const [currentTab] = useAtom(browser.currentTab);
+  const [sizes] = useAtom(browser.getTabHorizontalRatio(currentTab));
+  const [vert] = useAtom(browser.getTabVerticalRatio(currentTab));
+  const panel = usePanel();
+  const [focused, setFocused] = useAtom(browser.focusedPanel);
 
   const model = useFile({
     path,
@@ -48,11 +50,11 @@ export function EditorPanel({
     onChange,
     editorDidMount: (editor) => {
       const dis1 = editor.onDidFocusEditorText(() => {
-        setIsFocused(true);
+        panel?.id && setFocused(panel.id);
         onFocus?.();
       });
       const dis2 = editor.onDidBlurEditorText(() => {
-        setIsFocused(false);
+        panel?.id && setFocused(null);
         onBlur?.();
       });
 
@@ -66,17 +68,34 @@ export function EditorPanel({
     editor?.layout();
   }, [sizes, vert, editor]);
 
+  console.log({ panel });
+
   return (
-    <div
-      className={bw`${panel} relative pb-2 pt-12 ${className}`}
-      {...containerProps}
-    >
+    <Panel className={bw`relative pb-2 pt-12 ${className}`} {...containerProps}>
       <div
         ref={containerRef}
         {...props}
         style={{ height, width, ...props.style }}
       />
-      {children}
-    </div>
+      {renderHeader ? (
+        renderHeader()
+      ) : (
+        <PanelHeader
+          onClick={() => {
+            panel?.id && setFocused(panel?.id);
+          }}
+          focused={focused === panel?.id}
+          className={bw`justify-between`}
+        >
+          <div className={bw`flex flex-row items-center gap-1.5`}>
+            <div className={bw`h-4.5 w-4.5 -mt-1`}>
+              {panel.icon ? <panel.icon className={bw`h-4.5 w-4.5`} /> : null}
+            </div>
+            <div>{panel.title}</div>
+          </div>
+          <PanelMenu />
+        </PanelHeader>
+      )}
+    </Panel>
   );
 }

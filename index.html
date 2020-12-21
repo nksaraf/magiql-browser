@@ -8,7 +8,7 @@
     />
     <meta name="theme-color" content="#000000" />
     <style>
-      #MAGIQL_IDE_CONFIG {
+      #BROWSER_CONFIG {
         display: none;
       }
     </style>
@@ -20,17 +20,17 @@
   <body>
     <noscript> You need to enable JavaScript to run this app. </noscript>
     <div id="root"></div>
-    <div id="MAGIQL_IDE_CONFIG">
+    <div id="BROWSER_CONFIG">
       { "uri": "https://poke-api-delta.vercel.app/api/graphql" }
     </div>
     <script type="module">
       import React from "react";
       import { render } from "react-dom";
-      import { GraphQLIDE } from "./src/index.tsx";
+      import { Browser } from "./src/index.tsx";
 
-      const config = document.getElementById("MAGIQL_IDE_CONFIG");
+      const config = document.getElementById("BROWSER_CONFIG");
       render(
-        React.createElement(GraphQLIDE, {
+        React.createElement(Browser, {
           initialSchemaConfig: config
             ? JSON.parse(config.innerText)
             : undefined,

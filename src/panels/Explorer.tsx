@@ -1,8 +1,7 @@
 import React from "react";
 import { bw } from "@beamwind/play";
 import { useAtom } from "../lib/atom";
-import * as ide from "../lib/ide";
-import { panel, editorPanelHeader } from "../lib/styles";
+import * as ide from "../lib/browser";
 import { parse, print } from "graphql";
 import * as gqlAst from "../ast/atoms";
 import { ErrorBoundary } from "react-error-boundary";
@@ -15,6 +14,7 @@ import * as Document from "../ast/componnents/Document";
 import { buildASTSchema } from "graphql";
 import { LoadSchema } from "../components/LoadSchema";
 import flru from "flru";
+import { PanelHeader, Panel } from "../lib/styles";
 
 const schemaCache = flru(10);
 
@@ -63,7 +63,7 @@ export function CurrentDocument() {
 export function Explorer() {
   const [currentTab] = useAtom(ide.currentTab);
   const [query, setQueryText] = useAtom(ide.getTabQueryFile(currentTab));
-  const [focused, setFocused] = useAtom(ide.focused);
+  const [focused, setFocused] = useAtom(ide.focusedPanel);
   const [document, setDocument] = useAtom(gqlAst.getDocument(`${currentTab}`));
   const [lasEditedBy] = useAtom(ide.lastEditedBy);
 
@@ -91,18 +91,21 @@ export function Explorer() {
   return (
     <>
       <LoadSchema />
-      <div
+      <Panel
         onClick={() => {
           setFocused("explorer");
         }}
-        className={bw`${panel} relative`}
+        className={bw`relative`}
       >
-        <div className={bw`${editorPanelHeader(focused === "explorer")} gap-1`}>
+        <PanelHeader
+          focused={focused === "explorer"}
+          className={bw`gap-1`}
+        >
           <div className={bw`h-4.5 w-4.5 -mt-1`}>
             <ExplorerIcon className={bw`h-4.5 w-4.5`} />
           </div>
           <div>Explorer</div>
-        </div>
+        </PanelHeader>
         <div className={bw`pt-12 pb-3 overflow-scroll w-full h-full`}>
           <div className={bw`px-4`}>
             <ErrorBoundary
@@ -117,7 +120,7 @@ export function Explorer() {
             </ErrorBoundary>
           </div>
         </div>
-      </div>
+      </Panel>
     </>
   );
 }

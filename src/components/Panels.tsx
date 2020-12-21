@@ -1,24 +1,56 @@
 import React from "react";
 import { bw } from "@beamwind/play";
 import { useAtom } from "../lib/atom";
-import * as ide from "../lib/ide";
+import * as ide from "../lib/browser";
 import SplitGrid from "react-split-grid";
 import { createContext } from "create-hook-context";
+import { Panel, styled } from "../lib/styles";
 
 export const [PanelConfigProvider, usePanelConfig] = createContext(
-  ({ panels }: { panels: { [key: string]: React.FC<{}> } }) => {
-    return panels;
+  ({ panels }: { panels: { [key: string]: PanelConfig } }) => {
+    return React.useState(panels);
+  },
+  null,
+  "Panel"
+);
+
+type PanelConfig = {
+  id: string;
+  render: React.FC<{}>;
+  title: string;
+  icon: any;
+};
+
+export const [PanelProvider, usePanel] = createContext(
+  ({ panel }: { panel: PanelConfig }) => {
+    return panel;
   }
 );
+
+const EmptyPanel = styled(Panel)`
+  bg-blueGray-200
+`;
 
 export function VerticalPanels({ index, panels }) {
   const [currentTab] = useAtom(ide.currentTab);
   const [sizes, setSizes] = useAtom(ide.getTabVerticalRatio(currentTab));
-  const panelConfig = usePanelConfig();
+  const [panelConfig] = usePanelConfig();
 
   if (panels.length === 1) {
-    const Panel = panelConfig[panels[0]];
-    return <Panel />;
+    const config = panelConfig[panels[0]];
+    const Panel = config?.render;
+    if (!Panel) {
+      return (
+        <PanelProvider panel={{ id: panels[0], ...config }}>
+          <EmptyPanel />
+        </PanelProvider>
+      );
+    }
+    return (
+      <PanelProvider panel={{ id: panels[0], ...config }}>
+        <Panel />
+      </PanelProvider>
+    );
   }
 
   return (
@@ -37,11 +69,14 @@ export function VerticalPanels({ index, panels }) {
         return (
           <div className={bw`w-full h-full grid`} {...getGridProps()}>
             {panels.map((panel, i) => {
-              const Panel = panelConfig[panel];
+              let Panel = panelConfig[panel]?.render ?? EmptyPanel;
+
               return (
                 <React.Fragment key={panel}>
                   <div className={bw`h-full w-full overflow-scroll`}>
-                    <Panel />
+                    <PanelProvider panel={{ id: panel, ...panelConfig[panel] }}>
+                      <Panel />
+                    </PanelProvider>
                   </div>
                   {i < panels.length - 1 && (
                     <div {...getGutterProps("row", i + 1)} />

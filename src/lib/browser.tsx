@@ -52,7 +52,7 @@ export const getTabSettings = (tab: string) =>
   fs.getJSONFile(`/${tab}/settings.json`, {
     persist: true,
     defaultValue: {
-      panels: [["explorer"], ["editor", "variables"], ["response"]],
+      panels: [["explorer"], ["query", "variables"], ["response"]],
       horizontalRatio: `35fr 8px 30fr 8px 35fr`,
       verticalRatio: [`100fr`, `75fr 8px 25fr`, `100fr`],
     },
@@ -90,7 +90,7 @@ export const getTabSchema = (tab: string) =>
     defaultValue: "",
   });
 
-export const focused = atom<string | null>(null);
+export const focusedPanel = atom<string | null>(null);
 export const queryStatus = atom("idle");
 export const schemaStatus = atom(
   "unavailable" as "unavailable" | "loading" | "error" | "success" | "stale"
