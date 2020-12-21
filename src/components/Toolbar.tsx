@@ -339,11 +339,11 @@ export function Toolbar() {
               disabled={schemaStatus !== "success"}
               onClick={() => {
                 setPanels((props) =>
-                  props[2].includes("schema")
+                  props[2].includes("settings")
                     ? props
-                    : [props[0], props[1], ["schema"]]
+                    : [props[0], props[1], ["settings"]]
                 );
-                setFocused("schema");
+                setFocused("settings");
               }}
             />
           </div>

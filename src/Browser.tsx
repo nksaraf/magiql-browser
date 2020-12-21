@@ -20,6 +20,8 @@ import { Tabs } from "./components/Tabs";
 import { styled } from "./lib/styles";
 import { GraphQLMonacoProvider } from "./GraphQLMonacoProvider";
 import * as icons from "./components/Icons";
+import { EditorPanel } from "./components/EditorPanel";
+import { useAtom } from "./lib/browser";
 export const DEFAULT_PANELS = {
   query: {
     render: QueryEditor,
@@ -35,6 +37,21 @@ export const DEFAULT_PANELS = {
     render: ResponseEditor,
     icon: icons.Response,
     title: "Response",
+  },
+  settings: {
+    render: () => {
+      const [currentTab] = useAtom(browser.currentTab);
+      const [settings] = useAtom(browser.getTabSettings(currentTab));
+
+      return (
+        <EditorPanel
+          path={`/${currentTab}/settings.json`}
+          contents={JSON.stringify(settings, null, 2)}
+        />
+      );
+    },
+    icon: icons.SettingsIcon,
+    title: "Settings",
   },
   schema: {
     render: SchemaEditor,

@@ -91,58 +91,63 @@ function Tab({
 }) {
   const [dragging, setDragging] = React.useState(false);
   const ref = useMeasurePosition((pos) => updatePosition(i, pos));
+  const [config] = useAtom(browser.getTabSchemaConfig(tab));
 
   return (
-    <motion.div
-      drag="x"
-      dragConstraints={containerRef}
-      dragDirectionLock={true}
-      layout
-      ref={ref}
-      onDragStart={() => setDragging(true)}
-      onDragEnd={() => setDragging(false)}
-      key={tab}
-      onViewportBoxUpdate={(_viewportBox, delta) => {
-        dragging && updateOrder(i, delta.x.translate);
-      }}
-      onClick={() => {
-        onSelect(tab);
-      }}
-      className={bw`flex-1 ${{
-        "z-11": dragging,
-      }} group cursor-pointer justify-between pr-2 font-graphql flex flex-row items-center relative text-sm ${{
-        "bg-blueGray-50 text-blueGray-700 z-10": isSelected,
-        "bg-blueGray-200  text-blueGray-500 z-9 hover:(bg-blueGray-100)": !isSelected,
-      }} pl-4 py-1.5 rounded-t-lg`}
-    >
-      <div
-        className={bw`absolute left-0 z-8 top-0 w-3 -translate-x-1 translate-y-2 rotate-15 h-8 ${{
-          "bg-blueGray-50": isSelected,
-          "bg-blueGray-200 group-hover:(bg-blueGray-100)": !isSelected,
-        }}`}
-      ></div>
-      <div className={bw`flex-1 truncate select-none`}>{tab}</div>
-      <div
-        onClick={(e) => {
-          e.stopPropagation();
-          onClose(tab);
-        }}
-        className={bw`px-1 py-1 hover:(bg-blueGray-200) rounded-full relative z-20`}
-      >
-        <Close
-          className={bw`h-3.5 w-3.5 ${{
-            "text-blueGray-700": isSelected,
-            "text-blueGray-400 group-hover:(bg-transparent)": !isSelected,
-          }}`}
-        />
+    <Tooltip className={bw`${tooltip}`} label={config.uri}>
+      <div className={bw`flex-1`}>
+        <motion.div
+          drag="x"
+          dragConstraints={containerRef}
+          dragDirectionLock={true}
+          layout
+          ref={ref}
+          onDragStart={() => setDragging(true)}
+          onDragEnd={() => setDragging(false)}
+          key={tab}
+          onViewportBoxUpdate={(_viewportBox, delta) => {
+            dragging && updateOrder(i, delta.x.translate);
+          }}
+          onClick={() => {
+            onSelect(tab);
+          }}
+          className={bw`flex-1 h-full ${{
+            "z-11": dragging,
+          }} group cursor-pointer justify-between pr-2 font-graphql flex flex-row items-center relative text-sm ${{
+            "bg-blueGray-50 text-blueGray-700 z-10": isSelected,
+            "bg-blueGray-200  text-blueGray-500 z-9 hover:(bg-blueGray-100)": !isSelected,
+          }} pl-4 py-1.5 rounded-t-lg`}
+        >
+          <div
+            className={bw`absolute left-0 z-8 top-0 w-3 -translate-x-1 translate-y-2 rotate-15 h-8 ${{
+              "bg-blueGray-50": isSelected,
+              "bg-blueGray-200 group-hover:(bg-blueGray-100)": !isSelected,
+            }}`}
+          ></div>
+          <div className={bw`flex-1 truncate select-none`}>{tab}</div>
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose(tab);
+            }}
+            className={bw`px-1 py-1 hover:(bg-blueGray-200) rounded-full relative z-20`}
+          >
+            <Close
+              className={bw`h-3.5 w-3.5 ${{
+                "text-blueGray-700": isSelected,
+                "text-blueGray-400 group-hover:(bg-transparent)": !isSelected,
+              }}`}
+            />
+          </div>
+          <div
+            className={bw`absolute right-0 z-8 top-0 w-3 translate-x-1 translate-y-2 -rotate-15 h-8 ${{
+              "bg-blueGray-50": isSelected,
+              "bg-blueGray-200  group-hover:(bg-blueGray-100)": !isSelected,
+            }}`}
+          ></div>
+        </motion.div>
       </div>
-      <div
-        className={bw`absolute right-0 z-8 top-0 w-3 translate-x-1 translate-y-2 -rotate-15 h-8 ${{
-          "bg-blueGray-50": isSelected,
-          "bg-blueGray-200  group-hover:(bg-blueGray-100)": !isSelected,
-        }}`}
-      ></div>
-    </motion.div>
+    </Tooltip>
   );
 }
 

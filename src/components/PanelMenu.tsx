@@ -5,8 +5,9 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as ContextMenu from "@radix-ui/react-context-menu";
 import { usePanel, usePanelConfig } from "./Panels";
 import * as browser from "../lib/browser";
+import { AnimatePresence, motion } from "framer-motion";
 
-export const menu = `relative px-0.5 py-1 bg-blueGray-50 border-white border-1 rounded-md shadow-2xl`;
+export const menu = `relative px-0.5 py-1 bg-white border-white border-1 rounded-md shadow-2xl`;
 
 const renderers = {
   context: ContextMenu,
@@ -36,9 +37,15 @@ export function PanelMenu({
   return (
     <Menu.Root>
       {children}
+      {/* <AnimatePresence> */}
       <Menu.Content
+        key="menu-content"
         align="end"
         sideOffset={4}
+        // initial={{ opacity: 0 }}
+        // animate={{ opacity: 1 }}
+        // exit={{ opacity: 0 }}
+        // as={motion.div}
         style={{
           boxShadow: "rgba(0, 0, 0, 0.25) 0px 7px 25px 2px",
         }}
@@ -81,6 +88,7 @@ export function PanelMenu({
           })}
         </Menu.RadioGroup>
       </Menu.Content>
+      {/* </AnimatePresence> */}
     </Menu.Root>
   );
 }
