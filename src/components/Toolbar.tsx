@@ -335,11 +335,7 @@ export function Toolbar() {
             className={bw`group transition-all hover:(bg-blueGray-200) rounded-md py-1 px-2`}
           >
             <SettingsIcon
-              className={bw`${iconButton} ${
-                schemaStatus === "success" || schemaStatus === "stale"
-                  ? "text-graphql-pink"
-                  : "text-blueGray-400"
-              } `}
+              className={bw`${iconButton} ${"text-blueGray-600"} `}
               disabled={schemaStatus !== "success"}
               onClick={() => {
                 setPanels((props) =>
@@ -380,17 +376,7 @@ export function Toolbar() {
                 </ContextMenu.Trigger>
               </div>
             </DropdownMenu.Trigger>
-            <ContextMenu.Content
-              align="end"
-              className={`${bw`${menu}`} higher`}
-            >
-              <ContextMenu.Item className={bw`${menuItem}`}>
-                <div>hello</div>
-              </ContextMenu.Item>
-              <ContextMenu.Item className={bw`${menuItem}`}>
-                <div>hello</div>
-              </ContextMenu.Item>
-            </ContextMenu.Content>
+            
             <DropdownMenu.Content
               align="end"
               sideOffset={4}

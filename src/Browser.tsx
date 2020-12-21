@@ -43,8 +43,8 @@ export const DEFAULT_PANELS = {
   },
   explorer: {
     render: Explorer,
-    icon: icons.Helmet,
-    title: "Header",
+    icon: icons.ExplorerIcon,
+    title: "Explorer",
   },
   ast: {
     render: ASTViewer,

@@ -15,6 +15,7 @@ import { buildASTSchema } from "graphql";
 import { LoadSchema } from "../components/LoadSchema";
 import flru from "flru";
 import { PanelHeader, Panel } from "../lib/styles";
+import { CurrentPanelHeader } from "../components/EditorPanel";
 
 const schemaCache = flru(10);
 
@@ -24,8 +25,6 @@ export function CurrentDocument() {
   const [schemaText] = useAtom(ide.getTabSchema(currentTab));
   const [schema, setSchema] = React.useState(null);
   const setLastEditedBy = useUpdateAtom(ide.lastEditedBy);
-
-  console.log(schema);
 
   React.useEffect(() => {
     if (schemaText) {
@@ -97,15 +96,7 @@ export function Explorer() {
         }}
         className={bw`relative`}
       >
-        <PanelHeader
-          focused={focused === "explorer"}
-          className={bw`gap-1`}
-        >
-          <div className={bw`h-4.5 w-4.5 -mt-1`}>
-            <ExplorerIcon className={bw`h-4.5 w-4.5`} />
-          </div>
-          <div>Explorer</div>
-        </PanelHeader>
+        <CurrentPanelHeader />
         <div className={bw`pt-12 pb-3 overflow-scroll w-full h-full`}>
           <div className={bw`px-4`}>
             <ErrorBoundary

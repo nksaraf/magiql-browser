@@ -18,6 +18,8 @@ type PanelConfig = {
   id: string;
   render: React.FC<{}>;
   title: string;
+  x?: number;
+  y?: number;
   icon: any;
 };
 
@@ -41,13 +43,13 @@ export function VerticalPanels({ index, panels }) {
     const Panel = config?.render;
     if (!Panel) {
       return (
-        <PanelProvider panel={{ id: panels[0], ...config }}>
+        <PanelProvider panel={{ id: panels[0], ...config, x: index, y: 0 }}>
           <EmptyPanel />
         </PanelProvider>
       );
     }
     return (
-      <PanelProvider panel={{ id: panels[0], ...config }}>
+      <PanelProvider panel={{ id: panels[0], ...config, x: index, y: 0 }}>
         <Panel />
       </PanelProvider>
     );
@@ -74,7 +76,14 @@ export function VerticalPanels({ index, panels }) {
               return (
                 <React.Fragment key={panel}>
                   <div className={bw`h-full w-full overflow-scroll`}>
-                    <PanelProvider panel={{ id: panel, ...panelConfig[panel] }}>
+                    <PanelProvider
+                      panel={{
+                        id: panel,
+                        ...panelConfig[panel],
+                        x: index,
+                        y: i,
+                      }}
+                    >
                       <Panel />
                     </PanelProvider>
                   </div>

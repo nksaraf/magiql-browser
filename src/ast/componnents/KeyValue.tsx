@@ -265,7 +265,6 @@ function ListItemList({ node: childNode, onToggle, isLast, itemType }) {
 function ListItemObject({ node: childNode, onToggle, isLast, itemType }) {
   const updateList = useUpdateCollection({ node: childNode, key: "fields" });
   const fields = itemType?.getFields();
-  console.log({ itemType, fields });
 
   return (
     <Lines>

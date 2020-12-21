@@ -55,6 +55,9 @@ export const getTabSettings = (tab: string) =>
       panels: [["explorer"], ["query", "variables"], ["response"]],
       horizontalRatio: `35fr 8px 30fr 8px 35fr`,
       verticalRatio: [`100fr 8px 0fr`, `75fr 8px 25fr`, `100fr 8px 0fr`],
+      schema: {
+        uri: "https://poke-api-delta.vercel.app/api/graphql ",
+      } as SchemaConfig,
     },
   });
 
@@ -78,11 +81,12 @@ export const getTabVerticalRatio = atomFamily(
   }
 );
 
-export const getTabSchemaConfig = (tab: string) =>
-  fs.getJSONFile(`/${tab}/schema.config.json`, {
-    persist: true,
-    defaultValue: {} as SchemaConfig,
-  });
+export const getTabSchemaConfig = atomFamily(
+  (tab: string) => (get) => get(getTabSettings(tab)).schema,
+  (tab: string) => (get, set, val) => {
+    set(getTabSettings(tab), (old) => ({ ...old, schema: val }));
+  }
+);
 
 export const getTabSchema = (tab: string) =>
   fs.getFile("/" + tab + "/schema.graphql", {

@@ -22,7 +22,6 @@ type Styled = {
 
 export const styled: Styled = new Proxy(styledProxy, {
   get(target, prop, receiver) {
-    console.log(target, prop, receiver);
     if (typeof prop !== "string" || prop.length == 0) {
       throw new Error(`Invalid element ${prop.toString()}`);
     }

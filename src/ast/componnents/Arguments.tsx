@@ -61,7 +61,6 @@ Arguments.displayName = "Arguments";
 
 function UnusedArgument({ argument, path, onAdd, isLast, parentField }) {
   let [node] = useAtom(ast.getArgument(path));
-  console.log(argument.type);
 
   let namedNode = {
     ...node,

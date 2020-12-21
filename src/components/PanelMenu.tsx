@@ -1,13 +1,19 @@
 import React from "react";
 import { bw } from "@beamwind/play";
 import { Check, VerticalDots } from "./Icons";
-import { menu } from "../lib/styles";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { usePanel, usePanelConfig } from "./Panels";
+import * as browser from "../lib/browser";
+
+export const menu = `relative px-0.5 py-0.5 bg-blueGray-50 border-white border-2 rounded-md shadow-xl`;
 
 export function PanelMenu() {
   const [panelConfig] = usePanelConfig();
   const panel = usePanel();
+  const [currentTab] = browser.useAtom(browser.currentTab);
+
+  const [panels, setPanels] = browser.useAtom(browser.getTabPanels(currentTab));
+
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
@@ -23,6 +29,17 @@ export function PanelMenu() {
           {Object.keys(panelConfig).map((panelName) => {
             return (
               <DropdownMenu.RadioItem
+                onSelect={(e) => {
+                  setPanels((old) => {
+                    return panels.map((v, i) =>
+                      i === panel.x
+                        ? v.map((h, j) => (panel.y === j ? panelName : h))
+                        : [...v]
+                    );
+                    // const ver = panels[panel.x][panel.y]
+                    // e.target.value;
+                  });
+                }}
                 value={panelName}
                 className={bw`${menuItem} items-center`}
               >
@@ -31,7 +48,12 @@ export function PanelMenu() {
                 >
                   <Check className={bw`w-3 h-3`} />
                 </DropdownMenu.ItemIndicator>
-                <div>{panelName}</div>
+                <div className={bw`flex flex-row gap-2 items-center`}>
+                  {React.createElement(panelConfig[panelName]?.icon, {
+                    className: bw`w-3.5 h-3.5 -mt-1`,
+                  })}
+                  <div>{panelConfig[panelName]?.title}</div>
+                </div>
               </DropdownMenu.RadioItem>
             );
           })}

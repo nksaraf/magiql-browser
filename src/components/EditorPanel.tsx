@@ -14,6 +14,7 @@ export function EditorPanel({
   onBlur = () => {},
   containerProps = {},
   path = "index.ts",
+  renderActions = () => {},
   language = undefined,
   defaultContents = "",
   height = "100%",
@@ -68,7 +69,6 @@ export function EditorPanel({
     editor?.layout();
   }, [sizes, vert, editor]);
 
-  console.log({ panel });
 
   return (
     <Panel className={bw`relative pb-2 pt-12 ${className}`} {...containerProps}>
@@ -77,25 +77,29 @@ export function EditorPanel({
         {...props}
         style={{ height, width, ...props.style }}
       />
-      {renderHeader ? (
-        renderHeader()
-      ) : (
-        <PanelHeader
-          onClick={() => {
-            panel?.id && setFocused(panel?.id);
-          }}
-          focused={focused === panel?.id}
-          className={bw`justify-between`}
-        >
-          <div className={bw`flex flex-row items-center gap-1.5`}>
-            <div className={bw`h-4.5 w-4.5 -mt-1`}>
-              {panel.icon ? <panel.icon className={bw`h-4.5 w-4.5`} /> : null}
-            </div>
-            <div>{panel.title}</div>
-          </div>
-          <PanelMenu />
-        </PanelHeader>
-      )}
+      {renderHeader ? renderHeader() : <CurrentPanelHeader />}
     </Panel>
+  );
+}
+export function CurrentPanelHeader() {
+  const [focused, setFocused] = useAtom(browser.focusedPanel);
+  const panel = usePanel();
+
+  return (
+    <PanelHeader
+      onClick={() => {
+        panel?.id && setFocused(panel?.id);
+      }}
+      focused={focused === panel?.id}
+      className={bw`justify-between`}
+    >
+      <div className={bw`flex flex-row items-center gap-1.5`}>
+        <div className={bw`h-4.5 w-4.5 -mt-1`}>
+          {panel.icon ? <panel.icon className={bw`h-4.5 w-4.5`} /> : null}
+        </div>
+        <div>{panel.title}</div>
+      </div>
+      <PanelMenu />
+    </PanelHeader>
   );
 }
