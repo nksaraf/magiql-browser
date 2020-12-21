@@ -30,8 +30,8 @@ export function useMeasurePosition(update) {
 import { clamp, distance } from "popmotion";
 import move from "array-move";
 
-export function usePositionReorder(initialState) {
-  const [order, setOrder] = useState(initialState);
+export function usePositionReorder(order, setOrder) {
+  // const [order, setOrder] = useState(initialState);
 
   // We need to collect an array of height and position data for all of this component's
   // `Item` children, so we can later us that in calculations to decide when a dragging
@@ -150,7 +150,10 @@ export const Tabs = () => {
   const [tabs, setTabs] = useAtom(browser.tabs);
   const [currentTab, setCurrentTab] = useAtom(browser.currentTab);
 
-  const [order, updatePosition, updateOrder] = usePositionReorder(tabs);
+  const [order, updatePosition, updateOrder] = usePositionReorder(
+    tabs,
+    setTabs
+  );
 
   const addTab = browser.useCallback(({ set, snapshot }) => () => {
     const old = snapshot.getLoadable(browser.tabs).contents as string[];

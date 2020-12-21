@@ -1,32 +1,39 @@
-import manifest from "../pkg/dist/_assets/manifest.json";
-import { version } from "../package.json";
+// @ts-ignore
+const manifest = require("../pkg/dist/_assets/manifest.json");
+// @ts-ignore
+const { version } = require("../package.json");
 
-const html = ({
+export function renderBrowser({
   uri,
-  cdn = `https://unpkg.com/@magiql/ide@${version}/dist`,
-}) => `
+  cdn = `https://unpkg.com/@magiql/browser@${version}/dist`,
+}: {
+  uri: string;
+  cdn?: string;
+}) {
+  return `
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <title>GraphQL Browser - ${uri}</title>
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <meta name="theme-color" content="#000000" />
     <style>
-      #MAGIQL_IDE_CONFIG {
+      #BROWSER_CONFIG {
         display: none;
       }
     </style>
     <link rel="icon" href="${cdn}/logo.svg" />
   </head>
   <body>
-    <noscript> You need to enable JavaScript to run this app. </noscript>
+    <noscript> You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <div id="MAGIQL_IDE_CONFIG"></div>
+    <div id="BROWSER_CONFIG"></div>
     <script>
-      document.getElementById('MAGIQL_IDE_CONFIG').innerHTML = JSON.stringify({ uri: ${
+      document.getElementById('BROWSER_CONFIG').innerHTML = JSON.stringify({ uri: ${
         uri.startsWith("/") ? `window.location.origin + "${uri}"` : `"${uri}"`
       } });
     </script>
@@ -34,9 +41,6 @@ const html = ({
   </body>
 </html>
 `;
-
-export function renderPlayground(props: { uri: string; cdn?: string }) {
-  return html(props);
 }
 
-export default renderPlayground;
+export default renderBrowser;

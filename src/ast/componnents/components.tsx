@@ -8,7 +8,7 @@ import { GraphQLInterfaceType, GraphQLSchema, GraphQLUnionType } from "graphql";
 import * as ast from "../atoms";
 import { createContext } from "create-hook-context";
 
-export const [SchemaProvider, useSchema] = createContext(
+const [SchemaProvider, useSchema] = createContext(
   ({ schema }: { schema: GraphQLSchema | null }) => {
     return schema;
   },
@@ -16,13 +16,15 @@ export const [SchemaProvider, useSchema] = createContext(
   "GraphQLSchema"
 );
 
-export const [ASTProvider, useAST] = createContext(
+const [ASTProvider, useAST] = createContext(
   (options?: { onChange?: () => void }) => {
     return options;
   },
   null,
   "AST"
 );
+
+export { SchemaProvider, useSchema, ASTProvider, useAST };
 
 export function createAstComponent<
   T extends gql.ASTNode | gql.ASTNode[],

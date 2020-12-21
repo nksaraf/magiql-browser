@@ -12,7 +12,7 @@ shellac`
       fs.writeFileSync("./package.json", JSON.stringify(pkg, null, 2));
     }
   }}
-  $$ yarn tsup src/render.tsx src/index.tsx --out-dir pkg/dist --format cjs,esm --legacy-output --external --external @magiql/ide react --external graphql --external react-dom
+  $$ yarn tsup src/render.tsx --out-dir pkg/dist --format cjs,esm --legacy-output --external react --external graphql --external react-dom
   $$ cp -r render pkg/
   $$ cp -r README.md pkg/
   $$ yarn tsc

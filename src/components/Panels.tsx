@@ -6,7 +6,7 @@ import SplitGrid from "react-split-grid";
 import { createContext } from "create-hook-context";
 import { Panel, styled } from "../lib/styles";
 
-export const [PanelConfigProvider, usePanelConfig] = createContext(
+const [PanelConfigProvider, usePanelConfig] = createContext(
   ({ panels }: { panels: { [key: string]: PanelConfig } }) => {
     return React.useState(panels);
   },
@@ -23,11 +23,13 @@ type PanelConfig = {
   icon: any;
 };
 
-export const [PanelProvider, usePanel] = createContext(
+const [PanelProvider, usePanel] = createContext(
   ({ panel }: { panel: PanelConfig }) => {
     return panel;
   }
 );
+
+export { PanelConfigProvider, usePanelConfig, PanelProvider, usePanel };
 
 const EmptyPanel = styled(Panel)`
   bg-blueGray-200

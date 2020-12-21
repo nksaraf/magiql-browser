@@ -55,9 +55,7 @@ export const getTabSettings = (tab: string) =>
       panels: [["explorer"], ["query", "variables"], ["response"]],
       horizontalRatio: `35fr 8px 30fr 8px 35fr`,
       verticalRatio: [`100fr 8px 0fr`, `75fr 8px 25fr`, `100fr 8px 0fr`],
-      schema: {
-        uri: "https://poke-api-delta.vercel.app/api/graphql ",
-      } as SchemaConfig,
+      schema: {} as SchemaConfig | null,
     },
   });
 

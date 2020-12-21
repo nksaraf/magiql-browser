@@ -1,5 +1,5 @@
 {
-  "name": "@magiql/ide/render",
+  "name": "@magiql/browser/render",
   "main": "../dist/render.js",
   "modules": "../dist/esm/render.js",
   "types": "../dist/types/render"

@@ -81,7 +81,7 @@ export function BrowserProvider({
             snapshot.set(browser.getTabSchemaConfig(currentTab), schemaConfig);
           } else if (
             initialSchemaConfig &&
-            !(oldConfig as SchemaConfig).uri?.length
+            !(oldConfig as SchemaConfig)?.uri?.length
           ) {
             snapshot.set(
               browser.getTabSchemaConfig(currentTab),
