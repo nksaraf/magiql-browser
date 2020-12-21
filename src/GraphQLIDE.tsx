@@ -100,7 +100,7 @@ const Tabs = () => {
   const [currentTab, setCurrentTab] = useAtom(ide.currentTab);
 
   return (
-    <div className={bw`flex flex-row gap-2 px-3 z-9`}>
+    <div className={bw`flex flex-row gap-2 pl-3 z-9`}>
       <Tooltip className={bw`${tooltip}`} label="MagiQL IDE">
         <div className={bw`self-center`}>
           <Logo
@@ -108,33 +108,41 @@ const Tabs = () => {
           />
         </div>
       </Tooltip>
-      <div className={bw`flex flex-row gap-2 ml-2`}>
+      <div
+        className={bw`grid ${`grid-cols-${Math.max(
+          tabs.length,
+          10
+        )}`} gap-2 ml-2 flex-1`}
+      >
         {tabs.map((tab) => (
           <div
+            key={tab}
             onClick={() => {
               setCurrentTab(tab);
             }}
-            className={bw`group cursor-pointer justify-between pr-2 font-graphql flex flex-row items-center relative text-sm ${{
-              "bg-blueGray-50 text-blueGray-700 w-36 z-10": currentTab === tab,
-              "bg-blueGray-200  text-blueGray-500 w-36 z-9 hover:(bg-blueGray-100)":
+            className={bw`flex-1 group cursor-pointer justify-between pr-2 font-graphql flex flex-row items-center relative text-sm ${{
+              "bg-blueGray-50 text-blueGray-700 max-w-36 z-10":
+                currentTab === tab,
+              "bg-blueGray-200  text-blueGray-500 max-w-36 z-9 hover:(bg-blueGray-100)":
                 currentTab !== tab,
             }} pl-4 py-1.5 rounded-t-lg`}
           >
             <div
-              className={bw`absolute left-0 z-8 top-0 w-3 -translate-x-1 translate-y-3.5 rotate-15 h-6 ${{
+              className={bw`absolute left-0 z-8 top-0 w-3 -translate-x-1 translate-y-2 rotate-15 h-8 ${{
                 "bg-blueGray-50": currentTab === tab,
                 "bg-blueGray-200 group-hover:(bg-blueGray-100)":
                   currentTab !== tab,
               }}`}
             ></div>
-            <div>{tab}</div>
+            <div className={bw`flex-1 truncate select-none`}>{tab}</div>
             <div
+              onClick={(e) => {
+                e.stopPropagation();
+                setTabs((old) => old.filter((t) => t !== tab));
+              }}
               className={bw`px-1 py-1 hover:(bg-blueGray-200) rounded-full relative z-20`}
             >
               <Close
-                onClick={() => {
-                  setTabs((old) => old.filter((t) => t !== tab));
-                }}
                 className={bw`h-3.5 w-3.5 ${{
                   "text-blueGray-700": currentTab === tab,
                   "text-blueGray-400 group-hover:(bg-transparent)":
@@ -143,7 +151,7 @@ const Tabs = () => {
               />
             </div>
             <div
-              className={bw`absolute right-0 z-8 top-0 w-3 translate-x-1 translate-y-3.5 -rotate-15 h-6 ${{
+              className={bw`absolute right-0 z-8 top-0 w-3 translate-x-1 translate-y-2 -rotate-15 h-8 ${{
                 "bg-blueGray-50": currentTab === tab,
                 "bg-blueGray-200  group-hover:(bg-blueGray-100)":
                   currentTab !== tab,
@@ -151,6 +159,24 @@ const Tabs = () => {
             ></div>
           </div>
         ))}
+        {tabs.length < 10 && (
+          <div className={bw`flex flex-row px-1 py-1`}>
+            <div
+              onClick={() => {
+                setTabs((old) => {
+                  for (var i = 1; i < 100; i++) {
+                    if (!old.includes(`query${i}`)) {
+                      return [...old, `query${i}`];
+                    }
+                  }
+                });
+              }}
+              className={bw`px-2 rounded-full text-blueGray-500 text-xl cursor-pointer transition-all hover:(bg-blueGray-200)`}
+            >
+              +
+            </div>
+          </div>
+        )}
       </div>
       <div className={bw`px-1 py-1`}>
         <div
@@ -163,7 +189,10 @@ const Tabs = () => {
               }
             });
           }}
-          className={bw`px-1.5 rounded-lg text-blueGray-500 text-xl cursor-pointer transition-all hover:(bg-blueGray-200)`}
+          className={bw`px-2 rounded-full ${{
+            "text-blueGray-500": tabs.length >= 10,
+            "text-blueGray-300": tabs.length < 10,
+          }} text-xl cursor-pointer transition-all hover:(bg-blueGray-200)`}
         >
           +
         </div>

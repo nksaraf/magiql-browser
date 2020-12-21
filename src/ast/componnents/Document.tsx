@@ -21,6 +21,7 @@ export const Document = createAstComponent<gql.DocumentNode>(({ node }) => {
             case "OperationDefinition": {
               return (
                 <OperationDefinition
+                  key={childNode.metadata.path}
                   node={childNode}
                   onClick={() => updateDef.removeItem(childNode)}
                 />
@@ -29,6 +30,7 @@ export const Document = createAstComponent<gql.DocumentNode>(({ node }) => {
             case "FragmentDefinition": {
               return (
                 <FragmentDefinition
+                  key={childNode.metadata.path}
                   node={childNode}
                   onClick={() => updateDef.removeItem(childNode)}
                 />

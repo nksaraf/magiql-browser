@@ -94,11 +94,12 @@ export function Toolbar() {
 
   const [uri, setUri] = React.useState(config.uri);
 
-  React.useEffect(() => {
-    if (uri !== config.uri) {
-      setUri(config.uri);
-    }
-  }, [config.uri]);
+  // React.useEffect(() => {
+  //   if (uri !== config.uri) {
+  //     setUri(config.uri);
+  //   }
+  // }, [config.uri]);
+
   useDebounce(
     uri,
     () => {
@@ -198,6 +199,7 @@ export function Toolbar() {
           <input
             className={bw`flex-1 w-full font-graphql text-sm bg-transparent`}
             value={uri}
+            key={currentTab}
             onChange={(e) => {
               setSchemaStatus("loading");
               setUri(e.currentTarget.value);

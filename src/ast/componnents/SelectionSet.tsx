@@ -93,6 +93,7 @@ export const SelectionSet = createAstComponent<
               case "Field": {
                 return (
                   <Field
+                    key={childNode.metadata.path}
                     node={childNode}
                     parentType={parentType as GraphQLInterfaceType}
                     onToggle={removeItem}
@@ -102,6 +103,7 @@ export const SelectionSet = createAstComponent<
               case "FragmentSpread": {
                 return (
                   <FragmentSpread
+                    key={childNode.metadata.path}
                     node={childNode}
                     parentType={parentType}
                     onToggle={removeItem}
@@ -111,6 +113,7 @@ export const SelectionSet = createAstComponent<
               case "InlineFragment": {
                 return (
                   <InlineFragment
+                    key={childNode.metadata.path}
                     parentType={parentType}
                     node={childNode}
                     onToggle={removeItem}
