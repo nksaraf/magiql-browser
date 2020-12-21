@@ -11,13 +11,17 @@ import { createContext } from "create-hook-context";
 export const [SchemaProvider, useSchema] = createContext(
   ({ schema }: { schema: GraphQLSchema | null }) => {
     return schema;
-  }
+  },
+  null,
+  "GraphQLSchema"
 );
 
 export const [ASTProvider, useAST] = createContext(
   (options?: { onChange?: () => void }) => {
     return options;
-  }
+  },
+  null,
+  "AST"
 );
 
 export function createAstComponent<
