@@ -8,6 +8,7 @@
     "@reach/tooltip": "^0.12.1",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "array-move": "^3.0.1",
     "beamwind": "^2.0.2",
     "create-hook-context": "^1.0.0",
     "flru": "^1.0.2",

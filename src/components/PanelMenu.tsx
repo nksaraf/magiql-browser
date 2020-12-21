@@ -29,6 +29,7 @@ export function PanelMenu() {
           {Object.keys(panelConfig).map((panelName) => {
             return (
               <DropdownMenu.RadioItem
+                key={panelName}
                 onSelect={(e) => {
                   setPanels((old) => {
                     return panels.map((v, i) =>

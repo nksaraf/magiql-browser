@@ -186,7 +186,7 @@ export function Toolbar() {
 
   return (
     <div
-      className={bw`w-full relative flex flex-row items-center gap-4 rounded-md bg-blueGray-50 h-11 py-1.5 px-3 z-11`}
+      className={bw`w-full relative flex flex-row items-center gap-4 rounded-md bg-blueGray-50 h-11 py-1.5 px-3 z-15`}
     >
       <BackButton
         className={bw`${`text-blueGray-400`} hover:(mb-0.5 scale-110) ${iconButton}`}
@@ -376,7 +376,7 @@ export function Toolbar() {
                 </ContextMenu.Trigger>
               </div>
             </DropdownMenu.Trigger>
-            
+
             <DropdownMenu.Content
               align="end"
               sideOffset={4}
