@@ -1,19 +1,67 @@
 import React from "react";
-import { useMonaco } from "use-monaco";
+import { useMonaco, useMonacoContext } from "use-monaco";
 import { useAtom } from "../lib/atom";
 import * as ide from "../lib/ide";
-import { loadSchema } from "../lib/schema";
+import { loadSchemaFromWorker } from "../lib/schema";
+
+import flru from "flru";
+
+const uriCache = flru(10);
+
+export function useSchemaLoader() {
+  const [currentTab] = useAtom(ide.currentTab);
+  const [schemaStatus, setSchemaStatus] = useAtom(ide.schemaStatus);
+  const [config, setConfig] = useAtom(ide.getTabSchemaConfig(currentTab));
+  const [, setSchema] = useAtom(ide.getTabSchema(currentTab));
+  const { monaco } = useMonacoContext();
+
+  return React.useCallback(
+    ({ force = false } = {}) => {
+      if (!force && uriCache.has(config.uri)) {
+        setSchemaStatus("stale");
+        setSchema(uriCache.get(config.uri));
+        // loadSchemaFromWorker(monaco, currentTab)
+        //   .then((schema) => {
+        //     setSchema(schema);
+        //     uriCache.set(config.uri, schema);
+        //     setSchemaStatus("success");
+        //   })
+        //   .catch((e) => {
+        //     console.log(e);
+        //     setSchema(null);
+        //     setSchemaStatus("error");
+        //   });
+      } else {
+        setSchemaStatus("loading");
+        if (monaco) {
+          loadSchemaFromWorker(monaco, currentTab)
+            .then((schema) => {
+              setSchema(schema);
+              uriCache.set(config.uri, schema);
+              setSchemaStatus("success");
+            })
+            .catch((e) => {
+              console.log(e);
+              setSchema(null);
+              setSchemaStatus("error");
+            });
+        }
+      }
+    },
+    [setSchemaStatus, setSchema, config.uri, monaco]
+  );
+}
 
 export function LoadSchema() {
   const [currentTab] = useAtom(ide.currentTab);
   const [schemaStatus, setSchemaStatus] = useAtom(ide.schemaStatus);
   const [config, setConfig] = useAtom(ide.getTabSchemaConfig(currentTab));
-  const [, setSchema] = useAtom(ide.schemaText);
+  const [, setSchema] = useAtom(ide.getTabSchema(currentTab));
+  const loadSchema = useSchemaLoader();
+  const { monaco } = useMonacoContext();
 
-  const { monaco } = useMonaco();
   React.useEffect(() => {
     if (monaco) {
-      setSchemaStatus("loading");
       monaco.worker.updateOptions("graphql", {
         languageConfig: {
           schemaConfig: {
@@ -21,18 +69,10 @@ export function LoadSchema() {
           },
         },
       });
-      loadSchema(monaco, currentTab)
-        .then((schema) => {
-          setSchema(schema);
-          setSchemaStatus("success");
-        })
-        .catch((e) => {
-          console.log(e);
-          setSchema(null);
-          setSchemaStatus("error");
-        });
+
+      loadSchema();
     }
-  }, [config.uri, monaco, setSchemaStatus]);
+  }, [config.uri, monaco, loadSchema]);
 
   return null;
 }

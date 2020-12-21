@@ -22,8 +22,7 @@ export const VariableDefinition = createAstComponent<gql.VariableDefinitionNode>
         <Tokens>
           <Tokens
             onClick={onToggle}
-            className={bw`text-graphql-variable`}
-            gap={0.25}
+            className={bw`text-graphql-variable gap-0.25`}
           >
             <Variable node={node.variable} />
             <Punctuation>:</Punctuation>
@@ -41,7 +40,7 @@ export const VariableDefinition = createAstComponent<gql.VariableDefinitionNode>
                 className={bw`text-graphql-variable`}
                 isOpen={true}
               />
-              <Tokens className={bw`text-graphql-variable`} gap={0.25}>
+              <Tokens className={bw`text-graphql-variable gap-0.25`}>
                 <Variable node={node.variable} />
                 <Punctuation>:</Punctuation>
               </Tokens>
@@ -70,7 +69,7 @@ export const VariableDefinition = createAstComponent<gql.VariableDefinitionNode>
                 className={bw`text-graphql-variable`}
                 isOpen={true}
               />
-              <Tokens className={bw`text-graphql-variable`} gap={0.25}>
+              <Tokens className={bw`text-graphql-variable gap-0.25`}>
                 <Variable node={node.variable} />
                 <Punctuation>:</Punctuation>
               </Tokens>
@@ -94,7 +93,7 @@ export const VariableDefinition = createAstComponent<gql.VariableDefinitionNode>
         <Tokens>
           <Tokens className={bw`group`}>
             <Checkbox onClick={onToggle} checked={true} />
-            <Tokens className={bw`text-graphql-variable`} gap={0.25}>
+            <Tokens className={bw`text-graphql-variable gap-0.25`}>
               <Variable node={node.variable} />
               <Punctuation>:</Punctuation>
             </Tokens>

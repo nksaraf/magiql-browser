@@ -84,7 +84,11 @@ export const getTabSchemaConfig = (tab: string) =>
     defaultValue: {} as SchemaConfig,
   });
 
-export const schemaText = atom<string | null>(null);
+export const getTabSchema = (tab: string) =>
+  fs.getFile("/" + tab + "/schema.graphql", {
+    persist: true,
+    defaultValue: "",
+  });
 
 export const focused = atom<string | null>(null);
 export const queryStatus = atom("idle");

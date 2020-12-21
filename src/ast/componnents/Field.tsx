@@ -84,7 +84,7 @@ export const ExpandableField = createAstComponent<gql.FieldNode>(
 
     const header = node.metadata.isSelected ? (
       hasArgs ? (
-        <Tokens gap={0.75}>
+        <Tokens className={bw`gap-0.75`}>
           {aliasedField}
           <Punctuation>{"("}</Punctuation>
         </Tokens>
@@ -194,7 +194,7 @@ export const Field = createAstComponent<
 
   const header = node.metadata.isSelected ? (
     hasArgs ? (
-      <Tokens gap={0.75}>
+      <Tokens className={bw`gap-0.75`}>
         {aliasedField}
         <Punctuation>{"("}</Punctuation>
       </Tokens>
@@ -211,14 +211,11 @@ export const Field = createAstComponent<
         <div>
           <Tokens
             onClick={() => onToggle(node)}
-            className={bw`${{
+            className={bw`text-graphql-field ${{
               "opacity-50": !node.metadata.isSelected,
             }} group`}
           >
-            <Checkbox
-              className={bw`text-graphql-field`}
-              checked={node.metadata.isSelected}
-            />
+            <Checkbox checked={node.metadata.isSelected} />
             {header}
           </Tokens>
         </div>

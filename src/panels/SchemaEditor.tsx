@@ -8,7 +8,7 @@ import { editorPanelHeader } from "../lib/styles";
 
 export function SchemaEditor() {
   const [currentTab] = useAtom(ide.currentTab);
-  const [schema] = useAtom(ide.schemaText);
+  const [schema] = useAtom(ide.getTabSchema(currentTab));
   const [focused, setFocused] = useAtom(ide.focused);
 
   return (

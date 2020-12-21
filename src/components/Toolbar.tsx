@@ -17,6 +17,8 @@ import * as ide from "../lib/ide";
 
 import Tooltip, { useTooltip, TooltipPopup } from "@reach/tooltip";
 import { useDebouncedCallback, useMonacoContext } from "use-monaco";
+import { loadSchemaFromWorker } from "../lib/schema";
+import { useSchemaLoader } from "./LoadSchema";
 
 const useCurrentQuery = () => {
   const [currentTab] = useAtom(ide.currentTab);
@@ -87,7 +89,7 @@ function SchemaURLInput() {
   const [panels, setPanels] = useAtom(ide.getTabPanels(currentTab));
   const [config, setConfig] = useAtom(ide.getTabSchemaConfig(currentTab));
   const [focused, setFocused] = useAtom(ide.focused);
-  const [schema] = useAtom(ide.schemaText);
+  const [schema] = useAtom(ide.getTabSchema(currentTab));
   const monaco = useMonacoContext();
   const [uri, setUri] = React.useState(config.uri);
 
@@ -110,7 +112,7 @@ function SchemaURLInput() {
     <div
       className={bw`px-4 flex-1 text-blueGray-600 flex gap-3 flex-row col-span-4 bg-blueGray-200 h-full items-center rounded-md text-center`}
     >
-      {schemaStatus === "success" ? (
+      {schemaStatus === "success" || schemaStatus === "stale" ? (
         <Tooltip
           className={bw`${tooltip}`}
           label={`Schema loaded successfully`}
@@ -174,8 +176,9 @@ export function Toolbar() {
   const [panels, setPanels] = useAtom(ide.getTabPanels(currentTab));
   const [config, setConfig] = useAtom(ide.getTabSchemaConfig(currentTab));
   const [focused, setFocused] = useAtom(ide.focused);
-  const [schema] = useAtom(ide.schemaText);
+  const [schema] = useAtom(ide.getTabSchema(currentTab));
   const monaco = useMonacoContext();
+  const loadSchema = useSchemaLoader();
 
   return (
     <div
@@ -206,6 +209,8 @@ export function Toolbar() {
       <Reload
         className={bw`${`text-blueGray-400`} hover:(mb-0.5 scale-110) ${iconButton} w-5 h-5`}
         onClick={() => {
+          loadSchema({ force: true });
+
           // setFocused("schema");
           // setPanels((props) =>
           //   props[2].includes("schema")
@@ -305,7 +310,7 @@ export function Toolbar() {
           >
             <Graphql
               className={bw`${iconButton} ${
-                schemaStatus === "success"
+                schemaStatus === "success" || schemaStatus === "stale"
                   ? "text-graphql-pink"
                   : "text-blueGray-400"
               } `}

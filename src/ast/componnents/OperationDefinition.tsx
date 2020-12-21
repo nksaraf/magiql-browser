@@ -43,7 +43,7 @@ export const OperationDefinition = createAstComponent<gql.OperationDefinitionNod
 
     const name = node.metadata.isSelected ? (
       hasVars ? (
-        <Tokens gap={0.75}>
+        <Tokens className={bw`gap-0.75`}>
           {node.name && <Name node={node.name} />}
           <Punctuation>{"("}</Punctuation>
         </Tokens>

@@ -1,49 +1,24 @@
 import { bw } from "@beamwind/play";
 import React from "react";
 import { Check } from "../components/Icons";
+import { styled } from "../lib/styles";
 
 export const graphqlNode = `cursor-pointer select-none flex flex-row items-center font-mono text-xs`;
 
-export function FieldName({ children }) {
-  return <div className={bw`text-graphql-field`}>{children}</div>;
-}
-export function Indented({ children }) {
-  return <div className={bw`indent`}>{children}</div>;
-}
-export function Type({ children }) {
-  return <div className={bw`text-graphql-typename`}>{children}</div>;
-}
-export function Keyword({ children }) {
-  return <div className={bw`text-graphql-keyword`}>{children}</div>;
-}
-export function Name({ children }) {
-  return <div className={bw`text-graphql-opname`}>{children}</div>;
-}
-export function Variable({ children }) {
-  return <div className={bw`text-graphql-variable`}>${children}</div>;
-}
-export function ArgumentName({ children }) {
-  return <div className={bw`text-graphql-argname`}>{children}</div>;
-}
-export function Punctuation({ children }) {
-  return <div className={bw`text-blueGray-400`}>{children}</div>;
-}
-export function Qualifier({ children }) {
-  return <div className={bw`text-graphql-alias`}>{children}</div>;
-}
-export function Lines({ children }) {
-  return <div className={bw`flex flex-col gap-0.5`}>{children}</div>;
-}
-export function Tokens({ children, gap = 1.5, className = "", ...props }) {
-  return (
-    <div
-      className={`${bw`${className} ${graphqlNode} ${"gap" + "-" + gap} `}`}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-}
+export const FieldName = styled.div`text-graphql-field`;
+
+export const Indented = styled.div`indent`;
+export const Type = styled.div`text-graphql-typename`;
+export const Keyword = styled.div`text-graphql-keyword`;
+export const Name = styled.div`text-graphql-opname`;
+export const Variable = styled.div`text-graphql-variable`;
+export const ArgumentName = styled.div`text-graphql-argname`;
+export const Punctuation = styled.div`text-blueGray-400`;
+export const Qualifier = styled.div`text-graphql-alias`;
+export const Lines = styled.div`flex flex-col gap-0.5`;
+export const Tokens = styled.div`
+  cursor-pointer select-none flex flex-row items-center font-mono text-xs gap-1.5
+`;
 
 export function Arrow({ isOpen, className, ...props }: any) {
   return (

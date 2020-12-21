@@ -14,22 +14,36 @@ import * as GQL from "../ast/componnents/components";
 import * as Document from "../ast/componnents/Document";
 import { buildASTSchema } from "graphql";
 import { LoadSchema } from "../components/LoadSchema";
+import flru from "flru";
+
+const schemaCache = flru(10);
 
 export function CurrentDocument() {
   const [currentTab] = useAtom(ide.currentTab);
   const [document] = useAtom(gqlAst.getDocument(currentTab));
-  const [schemaText] = useAtom(ide.schemaText);
+  const [schemaText] = useAtom(ide.getTabSchema(currentTab));
   const [schema, setSchema] = React.useState(null);
   const setLastEditedBy = useUpdateAtom(ide.lastEditedBy);
+
+  console.log(schema);
+
   React.useEffect(() => {
     if (schemaText) {
-      try {
-        setSchema(buildASTSchema(parse(schemaText)));
-      } catch (e) {
-        return null;
+      if (!schemaCache.has(schemaText)) {
+        try {
+          const parsedSchema = buildASTSchema(parse(schemaText));
+          schemaCache.set(schemaText, parsedSchema);
+          setSchema(parsedSchema);
+        } catch (e) {
+          setSchema(null);
+          return;
+        }
+      } else {
+        setSchema(schemaCache.get(schemaText));
+        return;
       }
     } else {
-      return null;
+      return;
     }
   }, [schemaText]);
 

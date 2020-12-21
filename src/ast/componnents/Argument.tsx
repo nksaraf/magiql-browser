@@ -89,7 +89,7 @@ export const Argument = createAstComponent<
           className={bw`text-graphql-argname opacity-50 group`}
         >
           <Checkbox checked={false} />
-          <Tokens gap={0.25}>
+          <Tokens className={bw`gap-0.25`}>
             {node.name.value}
             <Punctuation>:</Punctuation>
           </Tokens>
@@ -102,7 +102,7 @@ export const Argument = createAstComponent<
           className={bw`text-graphql-argname opacity-50 group`}
         >
           <Arrow isOpen={false} />
-          <Tokens gap={0.25}>
+          <Tokens className={bw`gap-0.25`}>
             {node.name.value}
             <Punctuation>:</Punctuation>
           </Tokens>
@@ -115,7 +115,7 @@ export const Argument = createAstComponent<
           className={bw`text-graphql-argname opacity-50 group`}
         >
           <Checkbox checked={false} />
-          <Tokens gap={0.25}>
+          <Tokens className={bw`gap-0.25`}>
             {node.name.value}
             <Punctuation>:</Punctuation>
           </Tokens>

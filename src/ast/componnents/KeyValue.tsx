@@ -61,6 +61,7 @@ export function KeyWithObjectValue({
                 const fieldType = fields?.[childNode.name.value]?.type;
                 return (
                   <KeyValue
+                    key={childNode.metadata.path}
                     onToggle={() => {
                       update.removeItem(childNode);
                     }}
@@ -78,6 +79,7 @@ export function KeyWithObjectValue({
               Object.keys(fields).map((field, index) => {
                 return (
                   <KeyValue
+                    key={field}
                     name={{
                       kind: "Name",
                       value: fields[field].name,
