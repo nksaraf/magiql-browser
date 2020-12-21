@@ -4,8 +4,9 @@ import { useAtom } from "../lib/atom";
 import * as browser from "../lib/browser";
 import { noop, useEditor, UseEditorOptions, useFile } from "use-monaco";
 import { Panel, PanelHeader } from "../lib/styles";
-import { PanelMenu } from "./PanelMenu";
+import { PanelMenu, PanelMenuTrigger } from "./PanelMenu";
 import { usePanel } from "./Panels";
+import { VerticalDots } from "./Icons";
 
 export function EditorPanel({
   className = "",
@@ -69,7 +70,6 @@ export function EditorPanel({
     editor?.layout();
   }, [sizes, vert, editor]);
 
-
   return (
     <Panel className={bw`relative pb-2 pt-12 ${className}`} {...containerProps}>
       <div
@@ -81,6 +81,7 @@ export function EditorPanel({
     </Panel>
   );
 }
+
 export function CurrentPanelHeader() {
   const [focused, setFocused] = useAtom(browser.focusedPanel);
   const panel = usePanel();
@@ -93,13 +94,26 @@ export function CurrentPanelHeader() {
       focused={focused === panel?.id}
       className={bw`justify-between`}
     >
-      <div className={bw`flex flex-row items-center gap-1.5`}>
-        <div className={bw`h-4.5 w-4.5 -mt-1`}>
-          {panel.icon ? <panel.icon className={bw`h-4.5 w-4.5`} /> : null}
-        </div>
-        <div>{panel.title}</div>
-      </div>
-      <PanelMenu />
+      <PanelMenu mode="context">
+        <PanelMenuTrigger mode="context">
+          <div className={bw`flex flex-row items-center gap-1.5`}>
+            <div className={bw`h-4.5 w-4.5 -mt-1`}>
+              {panel.icon ? <panel.icon className={bw`h-4.5 w-4.5`} /> : null}
+            </div>
+            <div>{panel.title}</div>
+          </div>
+        </PanelMenuTrigger>
+      </PanelMenu>
+      <PanelMenu mode="dropdown">
+        <PanelMenuTrigger
+          mode="dropdown"
+          className={bw`focus:ring-2 focus:ring-blue-400 focus:outline-none active:outline-none transition-all hover:(bg-blueGray-500) rounded-full py-1 px-1`}
+        >
+          <div>
+            <VerticalDots className={bw`w-3.5 h-3.5`} />
+          </div>
+        </PanelMenuTrigger>
+      </PanelMenu>
     </PanelHeader>
   );
 }
