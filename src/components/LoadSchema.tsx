@@ -20,17 +20,6 @@ export function useSchemaLoader() {
       if (!force && uriCache.has(config.uri)) {
         setSchemaStatus("stale");
         setSchema(uriCache.get(config.uri));
-        // loadSchemaFromWorker(monaco, currentTab)
-        //   .then((schema) => {
-        //     setSchema(schema);
-        //     uriCache.set(config.uri, schema);
-        //     setSchemaStatus("success");
-        //   })
-        //   .catch((e) => {
-        //     console.log(e);
-        //     setSchema(null);
-        //     setSchemaStatus("error");
-        //   });
       } else {
         setSchemaStatus("loading");
         if (monaco) {
