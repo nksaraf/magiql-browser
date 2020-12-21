@@ -1,6 +1,6 @@
 <p align="center">
    <img src="https://magiql-browser.vercel.app/logo.svg" width=72 />
-<h1  align="center"><code margin="0">@magiql/ide</code></h1><p align="center"><i>Web-based IDE and Browser for GraphQL APIs, based on <code><a href=“https://microsoft.github.io/monaco-editor/“>monaco-editor</a></code></I></p>
+<h1  align="center"><code margin="0">@magiql/browser</code></h1><p align="center"><i>Web-based IDE and Browser for GraphQL APIs, built on <code><a href=“https://microsoft.github.io/monaco-editor/“>monaco-editor</a></code> and <code><a href=“https://www.github.com/FacebookExperimental/“>recoil</a></code></I></p>
 </p>
 
 <div>
@@ -9,7 +9,10 @@ Check out the demo at: https://magiql-browser.vercel.app
 
 **Important: Very early project and under active development, would love any feedback or help**
 
-**Goal:** Browser-like experience for GraphQL exploration + all the developer tools for development
+**Goal:** 
+- Browser-like experience for GraphQL API exploration and consumption + all the developer tools (like 'Inspect') that could make up an amazing GraphQL IDE experience (eg. mocking, code-generation, validation)
+- Embeddable and composable in other ways (like using the Explorer in API documentation)
+- Extendable (all parts, menus, toolbars, and panels) with plugins 
 
 **Inspirations:**
 
@@ -63,7 +66,7 @@ yarn add @magiql/browser
     - Hasura: create panel to generate declarative metadata/migrations like tables, etc
     - Response manipulation: Allow user to write custom code in a panel that can be run with the result of the response, (like lodash, etc or persisting)
   - Could create CLI / plugin to read directory and get GraphQL documents and have them available for exploration
-- `@magiql/ide/render` can be used by GraphQL servers as an alternative to GraphQL playground (usage shown below)
+- `@magiql/browser/render` can be used by GraphQL servers as an alternative to GraphQL playground (usage shown below)
   - Should be configurable with plugins and initial state of IDE
 - **Tech used:**
   - [`react`](https://github.com/facebook/react)
@@ -80,7 +83,7 @@ import {
   shouldRenderGraphiQL,
 } from "graphql-helix";
 
-import { renderPlayground } from "@magiql/ide/render";
+import { renderBrowser } from "@magiql/browser/render";
 
 const allowCors = (fn) => async (req, res) => {
   // ... middleware to allow cors for development
@@ -100,7 +103,7 @@ export default allowCors(async (req, res) => {
       /*
        * returns HTML that you send from a server
        */
-      renderPlayground({
+      renderBrowser({
         uri: "/api/graphql",
       })
     );
@@ -127,11 +130,11 @@ export default allowCors(async (req, res) => {
 ## Usage in React App
 
 ```tsx
-import GraphQLIDE from "@magiql/ide";
+import GraphQLBrowser from "@magiql/browser";
 export default function App() {
   return (
-    <GraphQLIDE
-      schemaConfig={{
+    <GraphQLBrowser
+      initialSchemaConfig={{
         // whichever GraphQL endpoint you want to connect to,
         // to access Next JS API Routes, we need the full url
         uri: window.location.origin + "/api/graphql",
@@ -146,11 +149,11 @@ export default function App() {
 As the tool is web-based, in case your app is server-rendered, use the following to skip rendering the IDE on the server
 
 ```tsx
-import GraphQLIDE from "@magiql/ide";
+import GraphQLBrowser from "@magiql/browser";
 export default function App() {
   return typeof window !== "undefined" ? (
-    <GraphQLIDE
-      schemaConfig={{
+    <GraphQLBrowser
+      initialSchemaConfig={{
         uri: window.location.origin + "/api/graphql",
       }}
     />
