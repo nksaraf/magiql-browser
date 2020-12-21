@@ -1,6 +1,6 @@
 <p align="center">
    <img src="https://magiql-browser.vercel.app/logo.svg" width=72 />
-<h1  align="center"><code margin="0">@magiql/browser</code></h1><p align="center"><i>Web-based IDE and Browser for GraphQL APIs, built on <code><a href=“https://microsoft.github.io/monaco-editor/“>monaco-editor</a></code> and <code><a href=“https://www.github.com/FacebookExperimental/“>recoil</a></code></I></p>
+<h1  align="center"><code margin="0">@magiql/browser</code></h1><p align="center"><i>Web-based Browser and IDE for GraphQL APIs, built on <code><a href=“https://microsoft.github.io/monaco-editor/“>monaco-editor</a></code> and <code><a href=“https://www.github.com/FacebookExperimental/“>recoil</a></code></I></p>
 </p>
 
 <div>
