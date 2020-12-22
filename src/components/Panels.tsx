@@ -5,6 +5,7 @@ import * as ide from "../lib/browser";
 import SplitGrid from "react-split-grid";
 import { createContext } from "create-hook-context";
 import { Panel, styled } from "../lib/styles";
+import { useWindowSize } from "../hooks/useWindowSize";
 
 const [PanelConfigProvider, usePanelConfig] = createContext(
   ({ panels }: { panels: { [key: string]: PanelConfig } }) => {
@@ -39,20 +40,37 @@ export function VerticalPanels({ index, panels }) {
   const [currentTab] = useAtom(ide.currentTab);
   const [sizes, setSizes] = useAtom(ide.getTabVerticalRatio(currentTab));
   const [panelConfig] = usePanelConfig();
+  const { height, width } = useWindowSize();
 
+  const mappedSizes = sizes[index].split(" ");
+  console.log(height);
   if (panels.length === 1) {
     const config = panelConfig[panels[0]];
     const Panel = config?.render;
     if (!Panel) {
       return (
         <PanelProvider panel={{ id: panels[0], ...config, x: index, y: 0 }}>
+          {/* <div
+            style={{
+              height:
+                Number(mappedSizes[0].substr(0, mappedSizes[0].length - 2)) *
+                height,
+            }}
+          > */}
           <EmptyPanel />
+          {/* </div> */}
         </PanelProvider>
       );
     }
     return (
       <PanelProvider panel={{ id: panels[0], ...config, x: index, y: 0 }}>
+        {/* <div
+          style={{
+            height: mappedSizes[0].substr(0, mappedSizes[0].length - 2),
+          }}
+        > */}
         <Panel />
+        {/* </div> */}
       </PanelProvider>
     );
   }
@@ -118,7 +136,7 @@ export function HorizontalPanels() {
         <div className={bw`w-full h-full grid`} {...getGridProps()}>
           {panels.map((panel, i) => (
             <React.Fragment key={JSON.stringify(panel)}>
-              <div className={bw`h-full w-full overflow-scroll`}>
+              <div className={bw`w-full h-full overflow-scroll`}>
                 <VerticalPanels panels={panel} index={i} />
               </div>
               {i < panels.length - 1 && (

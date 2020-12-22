@@ -127,7 +127,7 @@ export function BrowserProvider({
 export const tabBreakpoints = [3, 5, 7, 9];
 
 const Background = styled.div`h-screen w-screen pt-1 gap-1 bg-blueGray-300 w-full flex flex-col`;
-const PanelWindow = styled.div`flex-1 w-full px-1 pb-1 flex flex-row overflow-hidden`;
+const PanelWindow = styled.div`flex-1 w-full px-1 pb-1 flex flex-row overflow-scroll`;
 
 export function Browser({
   initializeState,
