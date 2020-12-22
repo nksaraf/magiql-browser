@@ -24,7 +24,7 @@
     "react-error-boundary": "^3.1.0",
     "react-split-grid": "^1.0.3",
     "recoil": "^0.1.2",
-    "use-monaco": "^0.0.31"
+    "use-monaco": "^0.0.32"
   },
   "peerDependencies": {
     "graphql": "*",
