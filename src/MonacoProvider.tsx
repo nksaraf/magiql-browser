@@ -13,30 +13,29 @@ export const [ThemeProvider, useTheme] = createContext(
   ({ mode = "light" as "light" | "dark" }: { mode: string }) => {
     const [state, setState] = React.useState({ mode });
 
-    React.useEffect(() => {
-      if (state.mode === "light") {
-        setup({
-          theme: {
-            extend: {
-              colors: {
-                blueGray: colors["blueGray"],
-              },
-            },
-          },
-        });
-      } else {
-        console.log("hereee");
-        setup({
-          theme: {
-            extend: {
-              colors: {
-                blueGray: darkBG,
-              },
-            },
-          },
-        });
-      }
-    }, [state.mode]);
+    // React.useEffect(() => {
+    //   if (state.mode === "light") {
+    //     setup({
+    //       theme: {
+    //         extend: {
+    //           colors: {
+    //             blueGray: colors["blueGray"],
+    //           },
+    //         },
+    //       },
+    //     });
+    //   } else {
+    //     setup({
+    //       theme: {
+    //         extend: {
+    //           colors: {
+    //             blueGray: darkBG,
+    //           },
+    //         },
+    //       },
+    //     });
+    //   }
+    // }, [state.mode]);
 
     return [state, setState] as const;
   }
@@ -49,56 +48,57 @@ import graphQLTMLang from "./graphql.tmlanguage.json";
 import jsonTMLang from "./json.tmlanguage.json";
 import { convertTheme } from "./themes/theme-convertor";
 
-export async function textMatePlugin(monaco: typeof monacoApi) {
-  await loadWASM("../node_modules/onigasm/lib/onigasm.wasm"); // See https://www.npmjs.com/package/onigasm#light-it-up
-  const languageRepo = {
-    "source.graphql": {
-      format: "json",
-      content: JSON.stringify(graphQLTMLang, null, 2),
-    },
-    "source.json.comments": {
-      format: "json",
-      content: JSON.stringify(jsonTMLang, null, 2),
-    },
-  };
+// export async function textMatePlugin(monaco: typeof monacoApi) {
+//   await loadWASM("../node_modules/onigasm/lib/onigasm.wasm"); // See https://www.npmjs.com/package/onigasm#light-it-up
+//   const languageRepo = {
+//     "source.graphql": {
+//       format: "json",
+//       content: JSON.stringify(graphQLTMLang, null, 2),
+//     },
+//     "source.json.comments": {
+//       format: "json",
+//       content: JSON.stringify(jsonTMLang, null, 2),
+//     },
+//   };
 
-  // map of monaco "language id's" to TextMate scopeNames
-  const grammars = new Map();
+//   // map of monaco "language id's" to TextMate scopeNames
+//   const grammars = new Map();
 
-  const registry = new Registry({
-    getGrammarDefinition: async (scopeName) => {
-      return (
-        languageRepo[scopeName] ?? {
-          format: "json",
-          content: JSON.stringify(jsonTMLang, null, 2),
-        }
-      );
-    },
-  });
+//   const registry = new Registry({
+//     getGrammarDefinition: async (scopeName) => {
+//       return (
+//         languageRepo[scopeName] ?? {
+//           format: "json",
+//           content: JSON.stringify(jsonTMLang, null, 2),
+//         }
+//       );
+//     },
+//   });
 
-  grammars.set("graphql", "source.graphql");
-  grammars.set("json", "source.json.comments");
+//   grammars.set("graphql", "source.graphql");
+//   grammars.set("json", "source.json.comments");
 
-  return monaco.editor.onCreatedEditor(async (editor) => {
-    try {
-      await wireTmGrammars(monaco, registry, grammars, editor);
-    } catch (e) {
-      console.error(e);
-    }
-  });
-}
+//   return monaco.editor.onCreatedEditor(async (editor) => {
+//     try {
+//       await wireTmGrammars(monaco, registry, grammars, editor);
+//     } catch (e) {
+//       console.error(e);
+//     }
+//   });
+// }
 
 const converted = convertTheme(sand as any);
-console.log(converted);
+
 export function GraphQLMonacoProvider({ initialSchemaConfig, children }) {
   const [theme, setTheme] = useTheme();
 
   return (
     <MonacoProvider
-      paths={{
-        monaco: "https://unpkg.com/monaco-editor-core/min/vs",
-        // monaco: "https://unpkg.com/@nksaraf/monaco-editor@0.21.2/min/vs/",
-      }}
+      paths={
+        {
+          // monaco: "https://unpkg.com/monaco-editor-core/min/vs",
+        }
+      }
       theme={
         // converted
         lightTheme
@@ -113,14 +113,14 @@ export function GraphQLMonacoProvider({ initialSchemaConfig, children }) {
         //     } as any)
       }
       plugins={{
-        json: (monaco) => {
-          monaco.languages.register({
-            id: "json",
-            extensions: [".json"],
-          });
-        },
+        // json: (monaco) => {
+        //   monaco.languages.register({
+        //     id: "json",
+        //     extensions: [".json"],
+        //   });
+        // },
         prettier: ["graphql", "json"],
-        textmate: textMatePlugin,
+        // textmate: textMatePlugin,
         "magiql-ide": async (monaco) => {
           return monaco.languages.register({
             id: "graphql",
@@ -140,6 +140,7 @@ export function GraphQLMonacoProvider({ initialSchemaConfig, children }) {
             },
             extensions: [".graphql", ".gql"],
             aliases: ["graphql"],
+            loader: async () => graphqlLanguageConfig as any,
             mimetypes: ["application/graphql", "text/graphql"],
           });
         },
