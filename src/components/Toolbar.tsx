@@ -186,10 +186,10 @@ export function Toolbar() {
 
   return (
     <div
-      className={bw`w-full relative flex flex-row items-center gap-4 rounded-md bg-blueGray-50 h-11 py-1.5 px-3 z-15`}
+      className={bw`w-full relative flex flex-row items-center gap-4 rounded-md bg-blueGray-50 h-11 py-1.5 px-3 z-4`}
     >
       <BackButton
-        className={bw`${`text-blueGray-400`} hover:(mb-0.5 scale-110) ${iconButton}`}
+        className={bw`${`text-blueGray-500`} hover:(mb-0.5 scale-110) ${iconButton}`}
         onClick={() => {
           // setFocused("schema");
           // setPanels((props) =>
@@ -200,7 +200,7 @@ export function Toolbar() {
         }}
       />
       <ForwardButton
-        className={bw`${`text-blueGray-400`} hover:(mb-0.5 scale-110) ${iconButton}`}
+        className={bw`${`text-blueGray-500`} hover:(mb-0.5 scale-110) ${iconButton}`}
         onClick={() => {
           // setFocused("schema");
           // setPanels((props) =>
@@ -211,7 +211,7 @@ export function Toolbar() {
         }}
       />
       <Reload
-        className={bw`${`text-blueGray-400`} hover:(mb-0.5 scale-110) ${iconButton} w-5 h-5`}
+        className={bw`${`text-blueGray-500`} hover:(mb-0.5 scale-110) ${iconButton} w-5 h-5`}
         onClick={() => {
           loadSchema({ force: true });
 
@@ -315,7 +315,7 @@ export function Toolbar() {
             <Graphql
               className={bw`${iconButton} ${
                 schemaStatus === "success" || schemaStatus === "stale"
-                  ? "text-graphql-pink"
+                  ? "text-pink-400"
                   : "text-blueGray-400"
               } `}
               disabled={schemaStatus !== "success"}
@@ -335,7 +335,7 @@ export function Toolbar() {
             className={bw`group transition-all hover:(bg-blueGray-200) rounded-md py-1 px-2`}
           >
             <SettingsIcon
-              className={bw`${iconButton} ${"text-blueGray-600"} `}
+              className={bw`${iconButton} ${"text-blueGray-500"} `}
               disabled={schemaStatus !== "success"}
               onClick={() => {
                 setPanels((props) =>
@@ -402,7 +402,7 @@ export function Toolbar() {
 }
 
 export const menu = `relative px-0.5 py-0.5 bg-blueGray-50 border-2 border-blueGray-300 rounded-md shadow-xl`;
-export const menuItem = `w-32 px-2 py-1 font-graphql rounded-sm text-sm text-blueGray-900 hover:(bg-blue-400 border-blue-400 text-white)`;
+export const menuItem = `w-32 px-2 py-1 font-graphql rounded-sm text-sm text-blueGray-900 hover:(bg-blue-400 border-blue-400 text-blueGray-50)`;
 
 // export default () => (
 //   <ContextMenu.Root>

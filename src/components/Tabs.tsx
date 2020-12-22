@@ -112,14 +112,14 @@ function Tab({
             onSelect(tab);
           }}
           className={bw`flex-1 h-full ${{
-            "z-11": dragging,
+            "z-6": dragging,
           }} group cursor-pointer justify-between pr-2 font-graphql flex flex-row items-center relative text-sm ${{
-            "bg-blueGray-50 text-blueGray-700 z-10": isSelected,
-            "bg-blueGray-200  text-blueGray-500 z-9 hover:(bg-blueGray-100)": !isSelected,
+            "bg-blueGray-50 text-blueGray-700 z-4": isSelected,
+            "bg-blueGray-200  text-blueGray-500 z-3 hover:(bg-blueGray-100)": !isSelected,
           }} pl-4 py-1.5 rounded-t-lg`}
         >
           <div
-            className={bw`absolute left-0 z-8 top-0 w-3 -translate-x-1 translate-y-2 rotate-15 h-8 ${{
+            className={bw`absolute left-0 z-3 top-0 w-3 -translate-x-1 translate-y-2 rotate-15 h-8 ${{
               "bg-blueGray-50": isSelected,
               "bg-blueGray-200 group-hover:(bg-blueGray-100)": !isSelected,
             }}`}
@@ -140,7 +140,7 @@ function Tab({
             />
           </div>
           <div
-            className={bw`absolute right-0 z-8 top-0 w-3 translate-x-1 translate-y-2 -rotate-15 h-8 ${{
+            className={bw`absolute right-0 z-3 top-0 w-3 translate-x-1 translate-y-2 -rotate-15 h-8 ${{
               "bg-blueGray-50": isSelected,
               "bg-blueGray-200  group-hover:(bg-blueGray-100)": !isSelected,
             }}`}
@@ -222,7 +222,7 @@ export const Tabs = () => {
   const ref = React.useRef();
 
   return (
-    <div className={bw`flex flex-row gap-2 pl-3 z-9`}>
+    <div className={bw`flex flex-row gap-2 pl-3 z-3`}>
       <Tooltip className={bw`${tooltip}`} label="GraphQL Browser">
         <div className={bw`self-center`}>
           <Logo

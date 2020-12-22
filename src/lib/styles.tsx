@@ -1,7 +1,6 @@
 import * as React from "react";
 
 import { bw } from "@beamwind/play";
-import * as ContextMenu from "@radix-ui/react-context-menu";
 
 const styledProxy = () => {};
 
@@ -63,10 +62,10 @@ export const styled: Styled = new Proxy(styledProxy, {
   },
 }) as any;
 
-export const Panel = styled.div`h-full bg-white shadow-xl rounded-md`;
+export const Panel = styled.div`h-full bg-blueGray-50 shadow-xl rounded-md`;
 
 export const StyledHeader = styled.div`
-font-graphql select-none group cursor-pointer rounded-t-lg text-sm font-400 bg-blueGray-100 transition-all hover:(text-white bg-blueGray-600) z-1000 text-blueGray-500 py-2 pl-3 pr-1.5 flex flex-row items-center absolute top-0 w-full
+font-graphql select-none group cursor-pointer rounded-t-md text-sm font-400 bg-blueGray-100 transition-all hover:(text-blueGray-50 bg-blueGray-600) z-1 text-blueGray-500 py-2 pl-3 pr-1.5 flex flex-row items-center absolute top-0 w-full
 `;
 
 export function PanelHeader({ focused, ...props }) {
@@ -82,4 +81,4 @@ export function PanelHeader({ focused, ...props }) {
 }
 export const menu = `relative px-0.5 py-0.5 bg-blueGray-50 border-2 border-blueGray-300 rounded-md shadow-xl`;
 
-export const menuItem = `w-32 px-2 py-1 font-graphql rounded-sm text-sm text-blueGray-900 hover:(bg-blue-400 border-blue-400 text-white)`;
+export const menuItem = `w-32 px-2 py-1 font-graphql rounded-sm text-sm text-blueGray-900 hover:(bg-blue-400 border-blue-400 text-blueGray-50)`;

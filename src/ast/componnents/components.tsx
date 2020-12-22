@@ -75,7 +75,7 @@ export function useUpdateCollection({ node, key }) {
 
 Variable.displayName = "Variable";
 
-export const tooltip = `bg-gray-700 text-white border-none rounded-md shadow-lg font-graphql`;
+export const tooltip = `bg-gray-700 text-blueGray-50 border-none rounded-md shadow-lg font-graphql`;
 
 export const withTooltip = (description, children) =>
   description ? (

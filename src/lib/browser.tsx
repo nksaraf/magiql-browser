@@ -48,13 +48,19 @@ export const currentTab = atom(
   }
 );
 
+const GUTTER_WIDTH = 4;
+
 export const getTabSettings = (tab: string) =>
   fs.getJSONFile(`/${tab}/settings.json`, {
     persist: true,
     defaultValue: {
       panels: [["explorer"], ["query", "variables"], ["response"]],
-      horizontalRatio: `35fr 8px 30fr 8px 35fr`,
-      verticalRatio: [`100fr 8px 0fr`, `75fr 8px 25fr`, `100fr 8px 0fr`],
+      horizontalRatio: `35fr ${GUTTER_WIDTH}px 30fr ${GUTTER_WIDTH}px 35fr`,
+      verticalRatio: [
+        `100fr ${GUTTER_WIDTH}px 0fr`,
+        `75fr ${GUTTER_WIDTH}px 25fr`,
+        `100fr ${GUTTER_WIDTH}px 0fr`,
+      ],
       schema: {} as SchemaConfig | null,
     },
   });

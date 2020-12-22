@@ -18,10 +18,11 @@ import { QueryEditor } from "./panels/QueryEditor";
 import { PanelConfigProvider, Panels } from "./components/Panels";
 import { Tabs } from "./components/Tabs";
 import { styled } from "./lib/styles";
-import { GraphQLMonacoProvider } from "./GraphQLMonacoProvider";
+import { GraphQLMonacoProvider, ThemeProvider } from "./MonacoProvider";
 import * as icons from "./components/Icons";
 import { EditorPanel } from "./components/EditorPanel";
 import { useAtom } from "./lib/browser";
+
 export const DEFAULT_PANELS = {
   query: {
     render: QueryEditor,
@@ -83,45 +84,50 @@ export function BrowserProvider({
   children,
 }) {
   return (
-    <GraphQLMonacoProvider initialSchemaConfig={initialSchemaConfig}>
-      <RecoilRoot
-        initializeState={(snapshot) => {
-          snapshot.set(fs.persistedFiles, { "/browser.json": true });
-          const currentTab = snapshot.getLoadable(browser.currentTab)
-            .contents as string;
+    <ThemeProvider mode={"dark"}>
+      <GraphQLMonacoProvider initialSchemaConfig={initialSchemaConfig}>
+        <RecoilRoot
+          initializeState={(snapshot) => {
+            snapshot.set(fs.persistedFiles, { "/browser.json": true });
+            const currentTab = snapshot.getLoadable(browser.currentTab)
+              .contents as string;
 
-          const oldConfig = snapshot.getLoadable(
-            browser.getTabSchemaConfig(currentTab)
-          ).contents;
+            const oldConfig = snapshot.getLoadable(
+              browser.getTabSchemaConfig(currentTab)
+            ).contents;
 
-          if (schemaConfig) {
-            snapshot.set(browser.getTabSchemaConfig(currentTab), schemaConfig);
-          } else if (
-            initialSchemaConfig &&
-            !(oldConfig as SchemaConfig)?.uri?.length
-          ) {
-            snapshot.set(
-              browser.getTabSchemaConfig(currentTab),
-              initialSchemaConfig
-            );
-          }
+            if (schemaConfig) {
+              snapshot.set(
+                browser.getTabSchemaConfig(currentTab),
+                schemaConfig
+              );
+            } else if (
+              initialSchemaConfig &&
+              !(oldConfig as SchemaConfig)?.uri?.length
+            ) {
+              snapshot.set(
+                browser.getTabSchemaConfig(currentTab),
+                initialSchemaConfig
+              );
+            }
 
-          initializeState?.(snapshot, browser);
-        }}
-      >
-        <PanelConfigProvider panels={panels}>
-          <fs.Persist />
-          {children}
-        </PanelConfigProvider>
-      </RecoilRoot>
-    </GraphQLMonacoProvider>
+            initializeState?.(snapshot, browser);
+          }}
+        >
+          <PanelConfigProvider panels={panels}>
+            <fs.Persist />
+            {children}
+          </PanelConfigProvider>
+        </RecoilRoot>
+      </GraphQLMonacoProvider>
+    </ThemeProvider>
   );
 }
 
 export const tabBreakpoints = [3, 5, 7, 9];
 
-const Background = styled.div`h-screen w-screen pt-1 gap-2 bg-blueGray-300 w-full flex flex-col`;
-const PanelWindow = styled.div`flex-1 w-full px-2 pb-3 flex flex-row overflow-hidden`;
+const Background = styled.div`h-screen w-screen pt-1 gap-1 bg-blueGray-300 w-full flex flex-col`;
+const PanelWindow = styled.div`flex-1 w-full px-1 pb-1 flex flex-row overflow-hidden`;
 
 export function Browser({
   initializeState,
@@ -140,7 +146,7 @@ export function Browser({
       panels={DEFAULT_PANELS}
     >
       <Background>
-        <div className={bw`px-2 relative`}>
+        <div className={bw`px-1 relative`}>
           <Tabs />
           <Toolbar />
         </div>

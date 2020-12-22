@@ -19,6 +19,6 @@
     "isolatedModules": true,
     "jsx": "react"
   },
-  "include": ["src"],
+  "include": ["src", "render/codesandbox.js"],
   "exclude": ["node_modules"]
 }

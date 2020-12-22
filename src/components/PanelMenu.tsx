@@ -7,7 +7,7 @@ import { usePanel, usePanelConfig } from "./Panels";
 import * as browser from "../lib/browser";
 import { AnimatePresence, motion } from "framer-motion";
 
-export const menu = `relative px-0.5 py-1 bg-white border-white border-1 rounded-md shadow-2xl`;
+export const menu = `relative px-0.5 py-1 bg-blueGray-50 border-blueGray-50 border-1 rounded-md shadow-2xl`;
 
 const renderers = {
   context: ContextMenu,
@@ -71,10 +71,18 @@ export function PanelMenu({
                 className={bw`${menuItem} items-center`}
               >
                 <Menu.ItemIndicator
-                  className={bw`absolute left-2 translate-y-0.5 group-hover:(text-white) text-blue-500 `}
+                  className={bw`absolute left-2 translate-y-0.5 group-hover:(text-blueGray-50) text-blue-500 `}
                 >
                   <Check className={bw`w-3.5 h-3.5`} />
                 </Menu.ItemIndicator>
+                {!(panelName === panel.id) &&
+                  panels.find((p) => p.find((i) => i === panelName)) && (
+                    <div
+                      className={bw`absolute left-2 translate-y-0.5 group-hover:(text-blueGray-50) text-blue-500 `}
+                    >
+                      <Check className={bw`w-3.5 h-3.5`} />
+                    </div>
+                  )}
                 <div
                   className={bw`flex font-graphql flex-row gap-2 items-center`}
                 >
@@ -93,4 +101,7 @@ export function PanelMenu({
   );
 }
 
-export const menuItem = `cursor-pointer select-none group w-48 px-1 pl-8 py-1 font-graphql rounded-sm text-sm border-none text-blueGray-500 hover:(outline-none bg-blue-500 text-white)`;
+export const menuItem = `cursor-pointer 
+select-none group w-48 px-1 pl-8 py-1 font-graphql
+rounded-sm text-sm border-none text-blueGray-500
+hover:(outline-none bg-blue-500 text-blueGray-50)`;

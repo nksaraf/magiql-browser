@@ -1,6 +1,17 @@
 import * as monacoApi from "monaco-editor";
+import allThemes from "use-monaco/themes";
+import { colors } from "./colors";
+import { theme } from "@beamwind/play";
 
-export default {
+export const darkTheme = {
+  ...allThemes["ayu-dark"],
+  colors: {
+    ...allThemes["ayu-dark"]["colors"],
+    // "editor.background": theme("colors", "blueGray.50"),
+  },
+};
+
+export const lightTheme = {
   base: "vs",
   inherit: true,
   rules: [
