@@ -48,44 +48,43 @@ import graphQLTMLang from "./graphql.tmlanguage.json";
 import jsonTMLang from "./json.tmlanguage.json";
 import { convertTheme } from "./themes/theme-convertor";
 
-// export async function textMatePlugin(monaco: typeof monacoApi) {
-//   await loadWASM("../node_modules/onigasm/lib/onigasm.wasm"); // See https://www.npmjs.com/package/onigasm#light-it-up
-//   const languageRepo = {
-//     "source.graphql": {
-//       format: "json",
-//       content: JSON.stringify(graphQLTMLang, null, 2),
-//     },
-//     "source.json.comments": {
-//       format: "json",
-//       content: JSON.stringify(jsonTMLang, null, 2),
-//     },
-//   };
+export async function textMatePlugin(monaco: typeof monacoApi) {
+  await loadWASM("https://www.unpkg.com/onigasm/lib/onigasm.wasm"); // See https://www.npmjs.com/package/onigasm#light-it-up
+  const languageRepo = {
+    "source.graphql": {
+      format: "json",
+      content: JSON.stringify(graphQLTMLang, null, 2),
+    },
+    "source.json.comments": {
+      format: "json",
+      content: JSON.stringify(jsonTMLang, null, 2),
+    },
+  };
 
-//   // map of monaco "language id's" to TextMate scopeNames
-//   const grammars = new Map();
+  // map of monaco "language id's" to TextMate scopeNames
+  const grammars = new Map();
 
-//   const registry = new Registry({
-//     getGrammarDefinition: async (scopeName) => {
-//       return (
-//         languageRepo[scopeName] ?? {
-//           format: "json",
-//           content: JSON.stringify(jsonTMLang, null, 2),
-//         }
-//       );
-//     },
-//   });
+  const registry = new Registry({
+    getGrammarDefinition: async (scopeName) => {
+      return (
+        languageRepo[scopeName] ?? {
+          format: "json",
+          content: JSON.stringify(jsonTMLang, null, 2),
+        }
+      );
+    },
+  });
 
-//   grammars.set("graphql", "source.graphql");
-//   grammars.set("json", "source.json.comments");
-
-//   return monaco.editor.onCreatedEditor(async (editor) => {
-//     try {
-//       await wireTmGrammars(monaco, registry, grammars, editor);
-//     } catch (e) {
-//       console.error(e);
-//     }
-//   });
-// }
+  grammars.set("graphql", "source.graphql");
+  grammars.set("json", "source.json.comments");
+  return monaco.editor.onCreatedEditor(async (editor) => {
+    try {
+      await wireTmGrammars(monaco, registry, grammars, editor);
+    } catch (e) {
+      console.error(e);
+    }
+  });
+}
 
 const converted = convertTheme(sand as any);
 
@@ -120,7 +119,7 @@ export function GraphQLMonacoProvider({ initialSchemaConfig, children }) {
         //   });
         // },
         prettier: ["graphql", "json"],
-        // textmate: textMatePlugin,
+        textmate: textMatePlugin,
         "magiql-ide": async (monaco) => {
           return monaco.languages.register({
             id: "graphql",

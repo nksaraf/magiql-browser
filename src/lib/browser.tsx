@@ -1,7 +1,8 @@
 import { atom, atomFamily } from "./atom";
 import { GraphQLSchema, buildASTSchema, parse } from "graphql";
-import type { SchemaConfig } from "monaco-graphql";
 import * as fs from "./fs";
+
+import type { SchemaConfig } from "use-monaco/dist/types/src/plugins/graphql/typings";
 
 export * from "./fs";
 export * from "./atom";
